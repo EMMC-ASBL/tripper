@@ -2243,14 +2243,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2778,8 +2778,6 @@ Keywords        </code>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Keywords</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""A class representing all keywords within a theme."""</span>
 
-    <span class="c1"># pylint: disable=too-many-public-methods</span>
-
     <span class="n">rootdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -2814,7 +2812,7 @@ Keywords        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
 
         <span class="c1"># Themes and files that has been parsed</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span> <span class="s2">"set"</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span> <span class="nb">set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="c1"># Used for parsing dicts. Maps any of the elements in the</span>
         <span class="c1"># value to the key (with highest precedence first).</span>
@@ -2972,7 +2970,6 @@ Keywords        </code>
                         <span class="n">name</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">)</span> <span class="k">else</span> <span class="n">kw</span>
                         <span class="n">fmt</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span>
                     <span class="n">fmt</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-                    <span class="c1"># pylint:disable=consider-using-get</span>
                     <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="n">RDFLIB_SUFFIX_FORMAT_MAP</span><span class="p">:</span>
                         <span class="n">fmt</span> <span class="o">=</span> <span class="n">RDFLIB_SUFFIX_FORMAT_MAP</span><span class="p">[</span><span class="n">fmt</span><span class="p">]</span>
 
@@ -3131,8 +3128,6 @@ Keywords        </code>
 <span class="sd">                  - "raise": Raise an RedefineError (default).</span>
 
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=too-many-nested-blocks,too-many-statements</span>
-        <span class="c1"># pylint: disable=too-many-locals</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"basedOn"</span><span class="p">))</span>
 
         <span class="n">required_resource_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"iri"</span><span class="p">}</span>
@@ -3233,7 +3228,6 @@ Keywords        </code>
             <span class="n">resval</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"keywords"</span><span class="p">,</span> <span class="n">AttrDict</span><span class="p">())</span>
 
             <span class="k">for</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">defs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"keywords"</span><span class="p">,</span> <span class="n">AttrDict</span><span class="p">())</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
                 <span class="c1"># If a value only contain an IRI, replace it with a more</span>
                 <span class="c1"># elaborate definition (if it exists)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -3247,7 +3241,7 @@ Keywords        </code>
 
                 <span class="c1"># If strict, check that all keys are known</span>
                 <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_keywords</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
                                 <span class="sa">f</span><span class="s2">"keyword '</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">' has invalid key: </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span>
@@ -3375,16 +3369,16 @@ Keywords        </code>
         <span class="n">recursive_update</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">{},</span> <span class="bp">cls</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
         <span class="n">data</span><span class="p">[</span><span class="s2">"resources"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resources</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">yaml</span><span class="o">.</span><span class="n">safe_dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">load_table</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="s2">"FileLoc"</span><span class="p">,</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">theme</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">basedOn</span><span class="p">:</span> <span class="s2">"Optional[Union[str, List[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">basedOn</span><span class="p">:</span> <span class="s2">"Optional[Union[str, list[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Load keywords from a csv file.</span>
@@ -3397,7 +3391,6 @@ Keywords        </code>
 <span class="sd">            basedOn: Theme(s) that the table is based on.</span>
 <span class="sd">            kwargs: Keyword arguments passed on to TableDoc.parse_csv().</span>
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=import-outside-toplevel</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.tabledoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">TableDoc</span>
 
         <span class="n">td</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span>
@@ -3409,13 +3402,12 @@ Keywords        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_table</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="s2">"FileLoc"</span><span class="p">,</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">names</span><span class="p">:</span> <span class="s2">"Optional[Sequence]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">keymode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"name"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">        </span><span class="sd">"""Load keywords from a csv file.</span>
 
 <span class="sd">        Arguments:</span>
@@ -3433,7 +3425,6 @@ Keywords        </code>
 <span class="sd">        References:</span>
 <span class="sd">        [write_csv()]: https://emmc-asbl.github.io/tripper/latest/api_reference/datadoc/tabledoc/#tripper.datadoc.tabledoc.TableDoc.write_csv</span>
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=import-outside-toplevel</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.tabledoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">TableDoc</span>
 
         <span class="n">dicts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asdicts</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">keymode</span><span class="o">=</span><span class="n">keymode</span><span class="p">)</span>
@@ -3442,7 +3433,7 @@ Keywords        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">keywordnames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"list"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a list with all keyword names defined in this instance."""</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s2">":"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="k">if</span> <span class="s2">":"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">classnames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"list"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a list with all class names defined in this instance."""</span>
@@ -3452,7 +3443,7 @@ Keywords        </code>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">names</span><span class="p">:</span> <span class="s2">"Optional[Sequence]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keymode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"prefixed"</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[dict]"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"list[dict]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the content of this Keywords object as a list of JSON-LD</span>
 <span class="sd">        dicts.</span>
 
@@ -3526,7 +3517,7 @@ Keywords        </code>
 
         <span class="k">if</span> <span class="n">classes</span><span class="p">:</span>
             <span class="n">classmaps</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="p">:</span>
                 <span class="n">classmaps</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
                 <span class="n">classmaps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">k</span>
                 <span class="n">classmaps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">k</span>
@@ -3549,7 +3540,7 @@ Keywords        </code>
         <span class="n">dicts</span><span class="p">:</span> <span class="s2">"Sequence[dict]"</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">theme</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">basedOn</span><span class="p">:</span> <span class="s2">"Optional[Union[str, List[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">basedOn</span><span class="p">:</span> <span class="s2">"Optional[Union[str, list[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -3584,12 +3575,11 @@ Keywords        </code>
         <span class="n">dicts</span><span class="p">:</span> <span class="s2">"Sequence[dict]"</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">theme</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">basedOn</span><span class="p">:</span> <span class="s2">"Optional[Union[str, List[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">basedOn</span><span class="p">:</span> <span class="s2">"Optional[Union[str, list[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Help method for `fromdicts()` that returns a dict with</span>
 <span class="sd">        keyword definitions following the format of the YAML file.</span>
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=too-many-locals,too-many-statements</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">to_prefixed</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">"""Help function that converts an IRI or list of IRIs to</span>
@@ -3709,11 +3699,15 @@ Keywords        </code>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="p">[</span><span class="n">domainname</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
                     <span class="n">resources</span><span class="p">[</span><span class="n">domainname</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
-                    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
-                        <span class="n">r</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                    <span class="k">for</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="p">(</span>
+                        <span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                    <span class="p">):</span>
+                        <span class="n">r</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
-                        <span class="n">resources</span><span class="p">[</span><span class="n">domainname</span><span class="p">]</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                    <span class="k">for</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="p">(</span>
+                        <span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                    <span class="p">):</span>
+                        <span class="n">resources</span><span class="p">[</span><span class="n">domainname</span><span class="p">]</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
             <span class="k">if</span> <span class="s2">"range"</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                 <span class="n">_types</span> <span class="o">=</span> <span class="n">asseq</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"type"</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">AnnotationProperty</span><span class="p">))</span>
                 <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_types</span><span class="p">]</span>
@@ -3740,7 +3734,7 @@ Keywords        </code>
         <span class="n">ts</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">,</span>
         <span class="n">include_classes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">return_existing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[list, Tuple[list, list]]"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[list, tuple[list, list]]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""List keywords not defined in triplestore `ts`.</span>
 
 <span class="sd">        Arguments:</span>
@@ -3754,7 +3748,7 @@ Keywords        </code>
 <span class="sd">            List with the names of keywords in this instance that are</span>
 <span class="sd">            not defined in triplestore `ts`.</span>
 <span class="sd">        """</span>
-        <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s2">"://"</span> <span class="ow">in</span> <span class="n">k</span><span class="p">}</span>
+        <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="k">if</span> <span class="s2">"://"</span> <span class="ow">in</span> <span class="n">k</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">include_classes</span><span class="p">:</span>
             <span class="n">expanded</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classnames</span><span class="p">())</span>
 
@@ -3763,7 +3757,7 @@ Keywords        </code>
 
         <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">        SELECT ?s WHERE </span><span class="se">{{</span>
-<span class="s2">          VALUES ?s </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="w"> </span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&lt;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s1">&gt;'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">iri</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">expanded</span><span class="p">)</span><span class="w"> </span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span>
+<span class="s2">          VALUES ?s </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&gt;"</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">iri</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">expanded</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span>
 <span class="s2">          ?s a ?o</span>
 <span class="s2">        </span><span class="se">}}</span>
 <span class="s2">        """</span>
@@ -3784,8 +3778,6 @@ Keywords        </code>
 
 <span class="sd">        If `iris` is not given, all OWL properties in `ts` will be loaded.</span>
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=import-outside-toplevel,too-many-nested-blocks</span>
-        <span class="c1"># pylint: disable=too-many-locals</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Context</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">acquire</span>
 
@@ -3836,7 +3828,6 @@ Keywords        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">save_rdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Save to triplestore."""</span>
-        <span class="c1"># pylint: disable=import-outside-toplevel,cyclic-import</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">store</span>
 
         <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -3861,8 +3852,8 @@ Keywords        </code>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            ts: Triplestore to load keywords from.</span>
-<span class="sd">            iris: IRIs to load. The default is to load IRIs corresponding to all</span>
-<span class="sd">                properties an classes.</span>
+<span class="sd">            iris: IRIs to load. The default is to load IRIs corresponding</span>
+<span class="sd">                to all properties an classes.</span>
 <span class="sd">            strict: Whether to raise an `InvalidKeywordError` exception if `d`</span>
 <span class="sd">                contains an unknown key.</span>
 <span class="sd">            redefine: Determine how to handle redefinition of existing</span>
@@ -3921,9 +3912,7 @@ Keywords        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">isnested</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyword</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Returns whether the keyword corresponds to an object property."""</span>
         <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">keyword</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">"datatype"</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">or</span> <span class="n">d</span><span class="o">.</span><span class="n">range</span> <span class="o">==</span> <span class="s2">"rdfs:Literal"</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">"datatype"</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">or</span> <span class="n">d</span><span class="o">.</span><span class="n">range</span> <span class="o">==</span> <span class="s2">"rdfs:Literal"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">expanded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyword</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the keyword expanded to its full IRI."""</span>
@@ -4006,7 +3995,7 @@ Keywords        </code>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">iri</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">if</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">iri</span>
         <span class="n">expanded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -4144,7 +4133,7 @@ Keywords        </code>
 <span class="sd">            indent: Indentation level. Defaults to two.</span>
 <span class="sd">        """</span>
         <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"@context"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_context</span><span class="p">()}</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
 
@@ -4154,7 +4143,7 @@ Keywords        </code>
         <span class="n">classes</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">themes</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">namespace_filter</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Tuple[Set[str], Set[str], Set[str]]"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"tuple[set[str], set[str], set[str]]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Help function returning a list of keywords corresponding to</span>
 <span class="sd">        arguments `keywords`, `classes` and `themes`.</span>
 
@@ -4242,13 +4231,12 @@ Keywords        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">_keywords_table</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Sequence[str]"</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[str]"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"list[str]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Help function for save_markdown_table().</span>
 
 <span class="sd">        Returns a list with Markdown table documenting the provided</span>
 <span class="sd">        sequence of keywords.</span>
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=too-many-locals,too-many-branches</span>
         <span class="n">header</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">"Keyword"</span><span class="p">,</span>
             <span class="s2">"Range"</span><span class="p">,</span>
@@ -4294,7 +4282,7 @@ Keywords        </code>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Save markdown file with documentation of the keywords."""</span>
         <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keywords_table</span><span class="p">(</span><span class="n">keywords</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">table</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">save_markdown</span><span class="p">(</span>
@@ -4323,7 +4311,6 @@ Keywords        </code>
 <span class="sd">                JSON-LD keywords.</span>
 
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=too-many-locals,too-many-branches</span>
         <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keywords_list</span><span class="p">(</span>
             <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span><span class="p">,</span> <span class="n">namespace_filter</span><span class="o">=</span><span class="n">namespace_filter</span>
         <span class="p">)</span>
@@ -4359,15 +4346,14 @@ Keywords        </code>
             <span class="s2">"## Special keywords (from JSON-LD)"</span><span class="p">,</span>
             <span class="s2">"See the [JSON-LD specification] for more details."</span><span class="p">,</span>
             <span class="s2">""</span><span class="p">,</span>
-            <span class="c1"># pylint: disable=line-too-long</span>
-            <span class="s2">"| Keyword    | Range         | Conformance | Definition                                                              | Usage note |"</span><span class="p">,</span>
-            <span class="s2">"|------------|---------------|-------------|-------------------------------------------------------------------------|------------|"</span><span class="p">,</span>
-            <span class="s2">"| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |"</span><span class="p">,</span>
-            <span class="s2">"| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |"</span><span class="p">,</span>
-            <span class="s2">"| [@context] | dict&amp;#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |"</span><span class="p">,</span>
-            <span class="s2">"| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |"</span><span class="p">,</span>
-            <span class="s2">"| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |"</span><span class="p">,</span>
-            <span class="s2">"| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |"</span><span class="p">,</span>
+            <span class="s2">"| Keyword    | Range         | Conformance | Definition                                                              | Usage note |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+            <span class="s2">"|------------|---------------|-------------|-------------------------------------------------------------------------|------------|"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+            <span class="s2">"| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+            <span class="s2">"| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+            <span class="s2">"| [@context] | dict&amp;#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+            <span class="s2">"| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+            <span class="s2">"| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+            <span class="s2">"| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
             <span class="s2">""</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">if</span> <span class="n">explanation</span><span class="p">:</span>
@@ -4419,7 +4405,6 @@ Keywords        </code>
 
         <span class="c1"># References</span>
         <span class="n">extra_refs</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="c1"># pylint: disable=line-too-long</span>
             <span class="s2">"[@id]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords"</span><span class="p">,</span>
             <span class="s2">"[@type]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords"</span><span class="p">,</span>
             <span class="s2">"[@context]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords"</span><span class="p">,</span>
@@ -4432,7 +4417,7 @@ Keywords        </code>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
         <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">save_markdown_prefixes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">:</span> <span class="s2">"FileLoc"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -4457,12 +4442,11 @@ Keywords        </code>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
         <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="c1"># pylint: disable=line-too-long</span>
                 <span class="s2">"[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json"</span><span class="p">,</span>
-                <span class="s2">"[User-defined prefixes]: customisation.md/#user-defined-prefixes"</span><span class="p">,</span>
+                <span class="s2">"[User-defined prefixes]: customisation.md/#user-defined-prefixes"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
             <span class="p">]</span>
         <span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_to_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="s2">"Sequence"</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="s2">"Iterable"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
@@ -4636,7 +4620,7 @@ belong to.</p></td>
     <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
 
     <span class="c1"># Themes and files that has been parsed</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span> <span class="s2">"set"</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span> <span class="nb">set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
     <span class="c1"># Used for parsing dicts. Maps any of the elements in the</span>
     <span class="c1"># value to the key (with highest precedence first).</span>
@@ -4817,7 +4801,6 @@ keywords.  Should be one of the following strings:
                     <span class="n">name</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">)</span> <span class="k">else</span> <span class="n">kw</span>
                     <span class="n">fmt</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span>
                 <span class="n">fmt</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-                <span class="c1"># pylint:disable=consider-using-get</span>
                 <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="n">RDFLIB_SUFFIX_FORMAT_MAP</span><span class="p">:</span>
                     <span class="n">fmt</span> <span class="o">=</span> <span class="n">RDFLIB_SUFFIX_FORMAT_MAP</span><span class="p">[</span><span class="n">fmt</span><span class="p">]</span>
 
@@ -5084,7 +5067,7 @@ default is to return all keywords.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>List[dict]</code></td>
+      <td><code>list[dict]</code></td>
       <td><p>List of JSON-LD dicts corresponding to <code>names</code>.</p></td>
     </tr>
   </tbody>
@@ -5095,7 +5078,7 @@ default is to return all keywords.</p></td>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">names</span><span class="p">:</span> <span class="s2">"Optional[Sequence]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keymode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"prefixed"</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[dict]"</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"list[dict]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return the content of this Keywords object as a list of JSON-LD</span>
 <span class="sd">    dicts.</span>
 
@@ -5169,7 +5152,7 @@ default is to return all keywords.</p></td>
 
     <span class="k">if</span> <span class="n">classes</span><span class="p">:</span>
         <span class="n">classmaps</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="p">:</span>
             <span class="n">classmaps</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
             <span class="n">classmaps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">k</span>
             <span class="n">classmaps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">k</span>
@@ -5335,7 +5318,7 @@ tripper.datadoc.acquire().</p></td>
       </tr>
       <tr>
         <td><code>basedOn</code></td>
-        <td><code>Optional[Union[str, List[str]]]</code></td>
+        <td><code>Optional[Union[str, list[str]]]</code></td>
         <td><p>Theme(s) that <code>dicts</code> are based on.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -5365,7 +5348,7 @@ keywords.  Should be one of the following strings:
     <span class="n">dicts</span><span class="p">:</span> <span class="s2">"Sequence[dict]"</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">theme</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">basedOn</span><span class="p">:</span> <span class="s2">"Optional[Union[str, List[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">basedOn</span><span class="p">:</span> <span class="s2">"Optional[Union[str, list[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -5535,9 +5518,7 @@ keyword in a JSON-LD document.</p>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">isnested</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyword</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Returns whether the keyword corresponds to an object property."""</span>
     <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">keyword</span><span class="p">]</span>
-    <span class="k">if</span> <span class="s2">"datatype"</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">or</span> <span class="n">d</span><span class="o">.</span><span class="n">range</span> <span class="o">==</span> <span class="s2">"rdfs:Literal"</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">"datatype"</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">or</span> <span class="n">d</span><span class="o">.</span><span class="n">range</span> <span class="o">==</span> <span class="s2">"rdfs:Literal"</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -5599,7 +5580,7 @@ keyword in a JSON-LD document.</p>
           <summary>Source code in <code>tripper/datadoc/keywords.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">keywordnames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"list"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return a list with all keyword names defined in this instance."""</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s2">":"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="k">if</span> <span class="s2">":"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">]</span>
 </code></pre></div>
         </details>
     </div>
@@ -5642,8 +5623,8 @@ keyword in a JSON-LD document.</p>
       <tr>
         <td><code>iris</code></td>
         <td><code>Optional[Sequence[str]]</code></td>
-        <td><p>IRIs to load. The default is to load IRIs corresponding to all
-properties an classes.</p></td>
+        <td><p>IRIs to load. The default is to load IRIs corresponding
+to all properties an classes.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -5680,8 +5661,8 @@ keywords.  Should be one of the following strings:
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore to load keywords from.</span>
-<span class="sd">        iris: IRIs to load. The default is to load IRIs corresponding to all</span>
-<span class="sd">            properties an classes.</span>
+<span class="sd">        iris: IRIs to load. The default is to load IRIs corresponding</span>
+<span class="sd">            to all properties an classes.</span>
 <span class="sd">        strict: Whether to raise an `InvalidKeywordError` exception if `d`</span>
 <span class="sd">            contains an unknown key.</span>
 <span class="sd">        redefine: Determine how to handle redefinition of existing</span>
@@ -5875,7 +5856,7 @@ keywords.  Should be one of the following strings:
       </tr>
       <tr>
         <td><code>basedOn</code></td>
-        <td><code>Optional[Union[str, List[str]]]</code></td>
+        <td><code>Optional[Union[str, list[str]]]</code></td>
         <td><p>Theme(s) that the table is based on.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -5892,10 +5873,10 @@ keywords.  Should be one of the following strings:
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_table</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">filename</span><span class="p">:</span> <span class="s2">"FileLoc"</span><span class="p">,</span>
-    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">theme</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">basedOn</span><span class="p">:</span> <span class="s2">"Optional[Union[str, List[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">basedOn</span><span class="p">:</span> <span class="s2">"Optional[Union[str, list[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Load keywords from a csv file.</span>
@@ -5908,7 +5889,6 @@ keywords.  Should be one of the following strings:
 <span class="sd">        basedOn: Theme(s) that the table is based on.</span>
 <span class="sd">        kwargs: Keyword arguments passed on to TableDoc.parse_csv().</span>
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=import-outside-toplevel</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.tabledoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">TableDoc</span>
 
     <span class="n">td</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span>
@@ -6084,7 +6064,7 @@ keywords.  Should be one of the following strings:
   </thead>
   <tbody>
     <tr>
-      <td><code>Union[list, Tuple[list, list]]</code></td>
+      <td><code>Union[list, tuple[list, list]]</code></td>
       <td><p>List with the names of keywords in this instance that are
 not defined in triplestore <code>ts</code>.</p></td>
     </tr>
@@ -6097,7 +6077,7 @@ not defined in triplestore <code>ts</code>.</p></td>
     <span class="n">ts</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">,</span>
     <span class="n">include_classes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">return_existing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[list, Tuple[list, list]]"</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[list, tuple[list, list]]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""List keywords not defined in triplestore `ts`.</span>
 
 <span class="sd">    Arguments:</span>
@@ -6111,7 +6091,7 @@ not defined in triplestore <code>ts</code>.</p></td>
 <span class="sd">        List with the names of keywords in this instance that are</span>
 <span class="sd">        not defined in triplestore `ts`.</span>
 <span class="sd">    """</span>
-    <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s2">"://"</span> <span class="ow">in</span> <span class="n">k</span><span class="p">}</span>
+    <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="k">if</span> <span class="s2">"://"</span> <span class="ow">in</span> <span class="n">k</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">include_classes</span><span class="p">:</span>
         <span class="n">expanded</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classnames</span><span class="p">())</span>
 
@@ -6120,7 +6100,7 @@ not defined in triplestore <code>ts</code>.</p></td>
 
     <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">    SELECT ?s WHERE </span><span class="se">{{</span>
-<span class="s2">      VALUES ?s </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="w"> </span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&lt;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s1">&gt;'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">iri</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">expanded</span><span class="p">)</span><span class="w"> </span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span>
+<span class="s2">      VALUES ?s </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&gt;"</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">iri</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">expanded</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span>
 <span class="s2">      ?s a ?o</span>
 <span class="s2">    </span><span class="se">}}</span>
 <span class="s2">    """</span>
@@ -6272,7 +6252,7 @@ keywords.prefixed("title")
 <span class="sd">        indent: Indentation level. Defaults to two.</span>
 <span class="sd">    """</span>
     <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"@context"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_context</span><span class="p">()}</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
 </code></pre></div>
@@ -6384,7 +6364,6 @@ JSON-LD keywords.</p></td>
 <span class="sd">            JSON-LD keywords.</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=too-many-locals,too-many-branches</span>
     <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keywords_list</span><span class="p">(</span>
         <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span><span class="p">,</span> <span class="n">namespace_filter</span><span class="o">=</span><span class="n">namespace_filter</span>
     <span class="p">)</span>
@@ -6420,15 +6399,14 @@ JSON-LD keywords.</p></td>
         <span class="s2">"## Special keywords (from JSON-LD)"</span><span class="p">,</span>
         <span class="s2">"See the [JSON-LD specification] for more details."</span><span class="p">,</span>
         <span class="s2">""</span><span class="p">,</span>
-        <span class="c1"># pylint: disable=line-too-long</span>
-        <span class="s2">"| Keyword    | Range         | Conformance | Definition                                                              | Usage note |"</span><span class="p">,</span>
-        <span class="s2">"|------------|---------------|-------------|-------------------------------------------------------------------------|------------|"</span><span class="p">,</span>
-        <span class="s2">"| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |"</span><span class="p">,</span>
-        <span class="s2">"| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |"</span><span class="p">,</span>
-        <span class="s2">"| [@context] | dict&amp;#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |"</span><span class="p">,</span>
-        <span class="s2">"| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |"</span><span class="p">,</span>
-        <span class="s2">"| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |"</span><span class="p">,</span>
-        <span class="s2">"| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |"</span><span class="p">,</span>
+        <span class="s2">"| Keyword    | Range         | Conformance | Definition                                                              | Usage note |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+        <span class="s2">"|------------|---------------|-------------|-------------------------------------------------------------------------|------------|"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+        <span class="s2">"| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+        <span class="s2">"| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+        <span class="s2">"| [@context] | dict&amp;#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+        <span class="s2">"| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+        <span class="s2">"| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
+        <span class="s2">"| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
         <span class="s2">""</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="k">if</span> <span class="n">explanation</span><span class="p">:</span>
@@ -6480,7 +6458,6 @@ JSON-LD keywords.</p></td>
 
     <span class="c1"># References</span>
     <span class="n">extra_refs</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="c1"># pylint: disable=line-too-long</span>
         <span class="s2">"[@id]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords"</span><span class="p">,</span>
         <span class="s2">"[@type]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords"</span><span class="p">,</span>
         <span class="s2">"[@context]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords"</span><span class="p">,</span>
@@ -6493,7 +6470,7 @@ JSON-LD keywords.</p></td>
     <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
     <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
     <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -6541,12 +6518,11 @@ JSON-LD keywords.</p></td>
     <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
     <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="c1"># pylint: disable=line-too-long</span>
             <span class="s2">"[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json"</span><span class="p">,</span>
-            <span class="s2">"[User-defined prefixes]: customisation.md/#user-defined-prefixes"</span><span class="p">,</span>
+            <span class="s2">"[User-defined prefixes]: customisation.md/#user-defined-prefixes"</span><span class="p">,</span>  <span class="c1"># noqa: E501</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -6577,7 +6553,7 @@ JSON-LD keywords.</p></td>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Save markdown file with documentation of the keywords."""</span>
     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keywords_table</span><span class="p">(</span><span class="n">keywords</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">table</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -6605,7 +6581,6 @@ JSON-LD keywords.</p></td>
           <summary>Source code in <code>tripper/datadoc/keywords.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_rdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Save to triplestore."""</span>
-    <span class="c1"># pylint: disable=import-outside-toplevel,cyclic-import</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">store</span>
 
     <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -6699,13 +6674,12 @@ For more details, see [write_csv()].</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_table</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">filename</span><span class="p">:</span> <span class="s2">"FileLoc"</span><span class="p">,</span>
-    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">names</span><span class="p">:</span> <span class="s2">"Optional[Sequence]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">keymode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"name"</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">    </span><span class="sd">"""Load keywords from a csv file.</span>
 
 <span class="sd">    Arguments:</span>
@@ -6723,7 +6697,6 @@ For more details, see [write_csv()].</p></td>
 <span class="sd">    References:</span>
 <span class="sd">    [write_csv()]: https://emmc-asbl.github.io/tripper/latest/api_reference/datadoc/tabledoc/#tripper.datadoc.tabledoc.TableDoc.write_csv</span>
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=import-outside-toplevel</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.tabledoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">TableDoc</span>
 
     <span class="n">dicts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asdicts</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">keymode</span><span class="o">=</span><span class="n">keymode</span><span class="p">)</span>
@@ -6836,7 +6809,7 @@ these namespaces.</p></td>
     <span class="n">recursive_update</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">{},</span> <span class="bp">cls</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
     <span class="n">data</span><span class="p">[</span><span class="s2">"resources"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resources</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">yaml</span><span class="o">.</span><span class="n">safe_dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -6889,7 +6862,7 @@ keywords.shortname("dcterms:title")
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">iri</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
-    <span class="k">if</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">iri</span>
     <span class="n">expanded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -7178,7 +7151,6 @@ keywords.  Should be one of the following strings:
 <span class="sd">    Returns:</span>
 <span class="sd">        Keywords instance.</span>
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=import-outside-toplevel</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_context</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">from_context</span><span class="p">():</span>
@@ -7306,9 +7278,9 @@ keywords.  Should be one of the following strings:
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/keywords.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-statements</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Main function providing CLI access to keywords."""</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
@@ -7350,7 +7322,7 @@ keywords.  Should be one of the following strings:
         <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">"Whether to raise an exception of input contains an unknown key."</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>  <span class="c1"># pylint: disable=duplicate-code</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">"--redefine"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">"raise"</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"allow"</span><span class="p">,</span> <span class="s2">"skip"</span><span class="p">],</span>

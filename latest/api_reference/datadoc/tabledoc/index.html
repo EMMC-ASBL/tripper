@@ -1996,14 +1996,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2282,10 +2282,7 @@ Column        </code>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Column</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Help class representing a column."""</span>
 
-    <span class="c1"># pylint: disable=too-few-public-methods</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="c1"># pylint: disable=line-too-long,too-many-branches</span>
 <span class="w">        </span><span class="sd">"""Initialise a column opject.</span>
 
 <span class="sd">        Arguments:</span>
@@ -2355,14 +2352,17 @@ Column        </code>
             <span class="c1"># defines it, ensure the exact header string is present in the</span>
             <span class="c1"># JSON-LD context as a synonym (so coercion like @type:@id</span>
             <span class="c1"># applies). Do NOT create entries for undefined terms.</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">is_full_iri</span> <span class="ow">or</span> <span class="n">is_prefixed</span><span class="p">)</span> <span class="ow">and</span> <span class="n">df</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">leafname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">():</span>
-                    <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"@id"</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]}</span>
-                    <span class="k">if</span> <span class="s2">"@type"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
-                        <span class="n">entry</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span>
-                    <span class="k">elif</span> <span class="s2">"@language"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
-                        <span class="n">entry</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span>
-                    <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">({</span><span class="n">leafname</span><span class="p">:</span> <span class="n">entry</span><span class="p">})</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">is_full_iri</span> <span class="ow">or</span> <span class="n">is_prefixed</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">df</span>
+                <span class="ow">and</span> <span class="n">leafname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">()</span>
+            <span class="p">):</span>
+                <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"@id"</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]}</span>
+                <span class="k">if</span> <span class="s2">"@type"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+                    <span class="n">entry</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="s2">"@language"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+                    <span class="n">entry</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">({</span><span class="n">leafname</span><span class="p">:</span> <span class="n">entry</span><span class="p">})</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
@@ -2460,7 +2460,6 @@ Column        </code>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="c1"># pylint: disable=line-too-long,too-many-branches</span>
 <span class="w">    </span><span class="sd">"""Initialise a column opject.</span>
 
 <span class="sd">    Arguments:</span>
@@ -2530,14 +2529,17 @@ Column        </code>
         <span class="c1"># defines it, ensure the exact header string is present in the</span>
         <span class="c1"># JSON-LD context as a synonym (so coercion like @type:@id</span>
         <span class="c1"># applies). Do NOT create entries for undefined terms.</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">is_full_iri</span> <span class="ow">or</span> <span class="n">is_prefixed</span><span class="p">)</span> <span class="ow">and</span> <span class="n">df</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">leafname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">():</span>
-                <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"@id"</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]}</span>
-                <span class="k">if</span> <span class="s2">"@type"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
-                    <span class="n">entry</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span>
-                <span class="k">elif</span> <span class="s2">"@language"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
-                    <span class="n">entry</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span>
-                <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">({</span><span class="n">leafname</span><span class="p">:</span> <span class="n">entry</span><span class="p">})</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">is_full_iri</span> <span class="ow">or</span> <span class="n">is_prefixed</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">df</span>
+            <span class="ow">and</span> <span class="n">leafname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"@id"</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]}</span>
+            <span class="k">if</span> <span class="s2">"@type"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+                <span class="n">entry</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s2">"@language"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+                <span class="n">entry</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">({</span><span class="n">leafname</span><span class="p">:</span> <span class="n">entry</span><span class="p">})</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
@@ -2761,9 +2763,6 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">            resolve relative IRIs. (I.e. Not valid URLs).</span>
 <span class="sd">    """</span>
 
-    <span class="c1"># pylint: disable=redefined-builtin,too-few-public-methods</span>
-    <span class="c1"># pylint: disable=too-many-arguments,too-many-instance-attributes</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">headers</span><span class="p">:</span> <span class="s2">"Sequence[str]"</span><span class="p">,</span>
@@ -2831,7 +2830,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
             <span class="n">unknown_key</span><span class="o">=</span><span class="n">unknown_key</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[dict]"</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"list[dict]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the table as a list of dicts."""</span>
         <span class="c1"># Parse column headers. Follow the syntax defined in</span>
         <span class="c1"># https://emmc-asbl.github.io/tripper/latest/datadoc/documenting-a-resource/#documenting-as-table</span>
@@ -2972,7 +2971,6 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TableDoc"</span><span class="p">:</span>
-        <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">        </span><span class="sd">"""Parse a csv file using the standard library csv module.</span>
 
 <span class="sd">        Arguments:</span>
@@ -3065,7 +3063,6 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">        </span><span class="sd">"""Write the table to a csv file using the standard library csv module.</span>
 
 <span class="sd">        Arguments:</span>
@@ -3092,7 +3089,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
                 <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                         <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
-                            <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                            <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">))</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                             <span class="k">break</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
@@ -3104,7 +3101,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
                 <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">write</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
@@ -3123,7 +3120,6 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
         <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TableDoc"</span><span class="p">:</span>
-        <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">        </span><span class="sd">"""Parse a csv file using the standard library csv module.</span>
 
 <span class="sd">        Arguments:</span>
@@ -3140,7 +3136,8 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">            context: Dict with user-defined JSON-LD context.</span>
 <span class="sd">            prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">                JSON-LD context.  Should map namespace prefixes to IRIs.</span>
-<span class="sd">            strip: Whether to strip leading and trailing whitespaces from cells.</span>
+<span class="sd">            strip: Whether to strip leading and trailing whitespaces from</span>
+<span class="sd">                cells.</span>
 <span class="sd">            strict: Whether to raise an `InvalidKeywordError` exception if `d`</span>
 <span class="sd">                contains an unknown key.</span>
 <span class="sd">            redefine: Determine how to handle redefinition of existing</span>
@@ -3157,7 +3154,6 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">            New TableDoc instance.</span>
 
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=import-outside-toplevel</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">openpyxl</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_workbook</span>
 
         <span class="n">wb</span> <span class="o">=</span> <span class="n">load_workbook</span><span class="p">(</span>
@@ -3255,7 +3251,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[dict]"</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"list[dict]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return the table as a list of dicts."""</span>
     <span class="c1"># Parse column headers. Follow the syntax defined in</span>
     <span class="c1"># https://emmc-asbl.github.io/tripper/latest/datadoc/documenting-a-resource/#documenting-as-table</span>
@@ -3646,7 +3642,6 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
     <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TableDoc"</span><span class="p">:</span>
-    <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">    </span><span class="sd">"""Parse a csv file using the standard library csv module.</span>
 
 <span class="sd">    Arguments:</span>
@@ -3817,7 +3812,8 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
       <tr>
         <td><code>strip</code></td>
         <td><code>bool</code></td>
-        <td><p>Whether to strip leading and trailing whitespaces from cells.</p></td>
+        <td><p>Whether to strip leading and trailing whitespaces from
+cells.</p></td>
         <td><code>True</code></td>
       </tr>
       <tr>
@@ -3879,7 +3875,6 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
     <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
     <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TableDoc"</span><span class="p">:</span>
-    <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">    </span><span class="sd">"""Parse a csv file using the standard library csv module.</span>
 
 <span class="sd">    Arguments:</span>
@@ -3896,7 +3891,8 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">        context: Dict with user-defined JSON-LD context.</span>
 <span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
-<span class="sd">        strip: Whether to strip leading and trailing whitespaces from cells.</span>
+<span class="sd">        strip: Whether to strip leading and trailing whitespaces from</span>
+<span class="sd">            cells.</span>
 <span class="sd">        strict: Whether to raise an `InvalidKeywordError` exception if `d`</span>
 <span class="sd">            contains an unknown key.</span>
 <span class="sd">        redefine: Determine how to handle redefinition of existing</span>
@@ -3913,7 +3909,6 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">        New TableDoc instance.</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=import-outside-toplevel</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">openpyxl</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_workbook</span>
 
     <span class="n">wb</span> <span class="o">=</span> <span class="n">load_workbook</span><span class="p">(</span>
@@ -4176,7 +4171,6 @@ formatting parameters.  For more details, see
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">    </span><span class="sd">"""Write the table to a csv file using the standard library csv module.</span>
 
 <span class="sd">    Arguments:</span>
@@ -4203,7 +4197,7 @@ formatting parameters.  For more details, see
             <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
-                        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">))</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                         <span class="k">break</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
@@ -4215,7 +4209,7 @@ formatting parameters.  For more details, see
             <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">write</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
@@ -4306,7 +4300,6 @@ formatting parameters.  For more details, see
     <span class="k">class</span><span class="w"> </span><span class="nc">dialect</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">Dialect</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Custom dialect."""</span>
 
-        <span class="c1"># pylint: disable=too-few-public-methods</span>
         <span class="n">_name</span> <span class="o">=</span> <span class="s2">"sniffed"</span>
         <span class="n">delimiter</span> <span class="o">=</span> <span class="n">delim</span>
         <span class="n">doublequote</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># quote chars inside quotes are duplicated</span>

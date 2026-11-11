@@ -1885,14 +1885,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2058,7 +2058,7 @@
           <summary>Source code in <code>tripper/datadoc/prefixes.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">bnode</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Returns a new unique blank node."""</span>
-    <span class="k">global</span> <span class="n">_bnode_counter</span>  <span class="c1"># pylint: disable=global-statement</span>
+    <span class="k">global</span> <span class="n">_bnode_counter</span>
     <span class="n">_bnode_counter</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">"_:b</span><span class="si">{</span><span class="n">_bnode_counter</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div>

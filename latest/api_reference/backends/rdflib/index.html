@@ -2012,14 +2012,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2383,10 +2383,10 @@ creating a new empty Graph object.</p></td>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">database</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">triplestore_url</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">graph</span><span class="p">:</span> <span class="s2">"Optional[Graph]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Note that although `base_iri` is unused in this backend, it may</span>
@@ -2431,7 +2431,7 @@ creating a new empty Graph object.</p></td>
         <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Parse source and add the resulting triples to triplestore.</span>
@@ -2457,15 +2457,16 @@ creating a new empty Graph object.</p></td>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[None, str]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Serialise to destination.</span>
 
 <span class="sd">        Parameters:</span>
-<span class="sd">            destination: File name or object to write to. If None, the serialisation is</span>
-<span class="sd">                returned.</span>
-<span class="sd">            format: Format to serialise as. Supported formats, depends on the backend.</span>
+<span class="sd">            destination: File name or object to write to. If None, the</span>
+<span class="sd">                serialisation is returned.</span>
+<span class="sd">            format: Format to serialise as. Supported formats, depends on</span>
+<span class="sd">                the backend.</span>
 <span class="sd">            kwargs: Passed to the rdflib.Graph.serialize() method.</span>
 <span class="sd">                See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.serialize</span>
 
@@ -2483,7 +2484,7 @@ creating a new empty Graph object.</p></td>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List[tuple], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[list[tuple], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
@@ -2513,7 +2514,8 @@ creating a new empty Graph object.</p></td>
             <span class="n">resulttype</span> <span class="o">=</span> <span class="s2">"CONSTRUCT"</span>  <span class="c1"># also DESCRIBE</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">"Unknown return type from rdflib.query(). Return it unprocessed."</span>
+                <span class="s2">"Unknown return type from rdflib.query(). "</span>
+                <span class="s2">"Return it unprocessed."</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">result</span>  <span class="c1"># type: ignore</span>
 
@@ -2524,7 +2526,7 @@ creating a new empty Graph object.</p></td>
             <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">resulttype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"CONSTRUCT"</span><span class="p">,</span> <span class="s2">"DESCRIBE"</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"should never be reached"</span>  <span class="c1"># nosec</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"should never be reached"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Update triplestore with SPARQL.</span>
@@ -2782,7 +2784,7 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.par
     <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Parse source and add the resulting triples to triplestore.</span>
@@ -2876,7 +2878,7 @@ https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result<
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List[tuple], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[list[tuple], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
@@ -2906,7 +2908,8 @@ https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result<
         <span class="n">resulttype</span> <span class="o">=</span> <span class="s2">"CONSTRUCT"</span>  <span class="c1"># also DESCRIBE</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">"Unknown return type from rdflib.query(). Return it unprocessed."</span>
+            <span class="s2">"Unknown return type from rdflib.query(). "</span>
+            <span class="s2">"Return it unprocessed."</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>  <span class="c1"># type: ignore</span>
 
@@ -2917,7 +2920,7 @@ https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result<
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">resulttype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"CONSTRUCT"</span><span class="p">,</span> <span class="s2">"DESCRIBE"</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"should never be reached"</span>  <span class="c1"># nosec</span>
+    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"should never be reached"</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2981,14 +2984,15 @@ https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result<
       <tr>
         <td><code>destination</code></td>
         <td></td>
-        <td><p>File name or object to write to. If None, the serialisation is
-returned.</p></td>
+        <td><p>File name or object to write to. If None, the
+serialisation is returned.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>format</code></td>
         <td></td>
-        <td><p>Format to serialise as. Supported formats, depends on the backend.</p></td>
+        <td><p>Format to serialise as. Supported formats, depends on
+the backend.</p></td>
         <td><code>&#39;turtle&#39;</code></td>
       </tr>
       <tr>
@@ -3020,15 +3024,16 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[None, str]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Serialise to destination.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">        destination: File name or object to write to. If None, the serialisation is</span>
-<span class="sd">            returned.</span>
-<span class="sd">        format: Format to serialise as. Supported formats, depends on the backend.</span>
+<span class="sd">        destination: File name or object to write to. If None, the</span>
+<span class="sd">            serialisation is returned.</span>
+<span class="sd">        format: Format to serialise as. Supported formats, depends on</span>
+<span class="sd">            the backend.</span>
 <span class="sd">        kwargs: Passed to the rdflib.Graph.serialize() method.</span>
 <span class="sd">            See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.serialize</span>
 
@@ -3170,14 +3175,14 @@ the query() method for SELECT queries.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Help function converting an rdflib value to corresponding tripper value.</p>
+      <p>Help function converting an rdflib value to a tripper value.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fromrdflib</span><span class="p">(</span>
     <span class="n">value</span><span class="p">:</span> <span class="s2">"Union[URIRef, rdflibLiteral, BNode, None]"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[str, Literal, None]"</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Help function converting an rdflib value to corresponding tripper value."""</span>
+<span class="w">    </span><span class="sd">"""Help function converting an rdflib value to a tripper value."""</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_:"</span><span class="p">):</span>

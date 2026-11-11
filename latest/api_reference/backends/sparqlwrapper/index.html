@@ -1957,14 +1957,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2308,8 +2308,8 @@ Defaults to base_iri.</p></td>
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">query_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[list[tuple[str, ...]], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
@@ -2389,7 +2389,7 @@ Defaults to base_iri.</p></td>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">update_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Update triplestore with SPARQL query.</span>
 
@@ -2486,7 +2486,9 @@ Defaults to base_iri.</p></td>
                 <span class="p">(</span>
                     <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
+                    <span class="k">else</span> <span class="n">value</span>
+                    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">triple</span>
             <span class="p">)</span>
@@ -2510,7 +2512,9 @@ Defaults to base_iri.</p></td>
                 <span class="k">else</span> <span class="p">(</span>
                     <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
+                    <span class="k">else</span> <span class="n">value</span>
+                    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
                 <span class="p">)</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">"spo"</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
@@ -2603,7 +2607,9 @@ Defaults to base_iri.</p></td>
             <span class="p">(</span>
                 <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
+                <span class="k">else</span> <span class="n">value</span>
+                <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">triple</span>
         <span class="p">)</span>
@@ -2779,8 +2785,8 @@ otherwise false is returned.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">query_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[list[tuple[str, ...]], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
@@ -2870,7 +2876,9 @@ otherwise false is returned.</p></td>
             <span class="k">else</span> <span class="p">(</span>
                 <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
+                <span class="k">else</span> <span class="n">value</span>
+                <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">"spo"</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
@@ -3005,7 +3013,7 @@ the query() method for ASK/CONSTRUCT/SELECT/DESCRIBE queries.</p>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">update_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Update triplestore with SPARQL query.</span>
 

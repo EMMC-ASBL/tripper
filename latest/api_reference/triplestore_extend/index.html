@@ -1900,14 +1900,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2103,12 +2103,12 @@ such as get_value, add_data and add_interpolation_source.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">func</span><span class="p">:</span> <span class="s2">"Union[Callable, Literal]"</span><span class="p">,</span>
-        <span class="n">iri</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">configurations</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">,</span>
+        <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">configurations</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Register a data source to the triplestore.</span>
 
@@ -2190,11 +2190,11 @@ such as get_value, add_data and add_interpolation_source.</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">iri</span><span class="p">,</span>
         <span class="n">routeno</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">unit</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">magnitude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">quantity</span><span class="p">:</span> <span class="s2">"Optional[Any]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Value"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Value</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the value of an individual.</span>
 
 <span class="sd">        Parameters:</span>
@@ -2214,7 +2214,7 @@ such as get_value, add_data and add_interpolation_source.</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            The value of the individual.</span>
 <span class="sd">        """</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.mappings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.mappings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">Value</span><span class="p">,</span>
             <span class="n">mapping_routes</span><span class="p">,</span>
         <span class="p">)</span>
@@ -2242,7 +2242,7 @@ such as get_value, add_data and add_interpolation_source.</p>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">hasAccessFunction</span><span class="p">):</span>  <span class="c1"># callable</span>
                 <span class="n">func_iri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">hasAccessFunction</span><span class="p">)</span>
                 <span class="n">func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">[</span><span class="n">func_iri</span><span class="p">]</span>
-                <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>  <span class="c1"># nosec</span>
+                <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>  <span class="c1"># noqa: S101</span>
                 <span class="n">retval</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">Value</span><span class="p">):</span>
                     <span class="k">return</span> <span class="n">retval</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
@@ -2274,18 +2274,18 @@ such as get_value, add_data and add_interpolation_source.</p>
             <span class="n">quantity</span><span class="o">=</span><span class="n">quantity</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_interpolation_source</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-arguments</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_interpolation_source</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">xcoord</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">ycoord</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">input_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">output_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">left</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">right</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">period</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">left</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">right</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Add data source to triplestore, such that it can be used to</span>
 <span class="sd">        transparently transform other data.</span>
@@ -2324,7 +2324,7 @@ such as get_value, add_data and add_interpolation_source.</p>
 
 <span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="s2">"Triplestore.add_interpolation_source() requires numpy.</span><span class="se">\n</span><span class="s2">"</span>
@@ -2394,7 +2394,7 @@ such as get_value, add_data and add_interpolation_source.</p>
   <tbody>
       <tr>
         <td><code>func</code></td>
-        <td><code>&#39;Union[Callable, Literal]&#39;</code></td>
+        <td><code>Callable | Literal</code></td>
         <td><p>A callable that should return the value of the registered
 data source.  It is called with following protopype:</p>
 <div class="language-text highlight"><pre><span></span><code>func(returns, configurations, triplestore)
@@ -2407,7 +2407,7 @@ Alternatively, <code>func</code> may also be a literal value.</p></td>
       </tr>
       <tr>
         <td><code>iri</code></td>
-        <td><code>&#39;Optional[Union[str, Sequence]]&#39;</code></td>
+        <td><code>str | Sequence | None</code></td>
         <td><p>IRI of ontological concept or individual that the data
 returned by <code>func</code> should be mapped to.  If <code>func</code> is a
 callable and multiple values are returned, it may also be
@@ -2417,13 +2417,13 @@ If not given, it will default to a new blank node.</p></td>
       </tr>
       <tr>
         <td><code>configurations</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>Configurations passed on to <code>func</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>base_iri</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Base of the IRI representing the function in the
 knowledge base.  Defaults to the base IRI of the triplestore.</p></td>
         <td><code>None</code></td>
@@ -2439,7 +2439,7 @@ function.  Valid values are:
       </tr>
       <tr>
         <td><code>cost</code></td>
-        <td><code>&#39;Optional[Union[float, Callable]]&#39;</code></td>
+        <td><code>float | Callable | None</code></td>
         <td><p>User-defined cost of following this mapping relation
 represented as a float.  It may be given either as a
 float or as a callable taking the same arguments as <code>func</code>
@@ -2467,12 +2467,12 @@ returning the cost as a float.</p></td>
           <summary>Source code in <code>tripper/triplestore_extend.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_data</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">func</span><span class="p">:</span> <span class="s2">"Union[Callable, Literal]"</span><span class="p">,</span>
-    <span class="n">iri</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">configurations</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">,</span>
+    <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">configurations</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
-    <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Register a data source to the triplestore.</span>
 
@@ -2616,7 +2616,7 @@ data should be mapped to.</p></td>
       </tr>
       <tr>
         <td><code>base_iri</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Base of the IRI representing the transformation in the
 knowledge base.  Defaults to the base IRI of the triplestore.</p></td>
         <td><code>None</code></td>
@@ -2632,7 +2632,7 @@ transformation.  Valid values are:
       </tr>
       <tr>
         <td><code>cost</code></td>
-        <td><code>&#39;Optional[Union[float, Callable]]&#39;</code></td>
+        <td><code>float | Callable | None</code></td>
         <td><p>User-defined cost of following this mapping relation
 represented as a float.  It may be given either as a
 float or as a callable taking the same arguments as <code>func</code>
@@ -2641,19 +2641,19 @@ returning the cost as a float.</p></td>
       </tr>
       <tr>
         <td><code>left</code></td>
-        <td><code>&#39;Optional[float]&#39;</code></td>
+        <td><code>float | None</code></td>
         <td><p>Value to return for <code>x &lt; xp[0]</code>, default is <code>fp[0]</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>right</code></td>
-        <td><code>&#39;Optional[float]&#39;</code></td>
+        <td><code>float | None</code></td>
         <td><p>Value to return for <code>x &gt; xp[-1]</code>, default is <code>fp[-1]</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>period</code></td>
-        <td><code>&#39;Optional[float]&#39;</code></td>
+        <td><code>float | None</code></td>
         <td><p>A period for the x-coordinates. This parameter allows the
 proper interpolation of angular x-coordinates. Parameters
 <code>left</code> and <code>right</code> are ignored if <code>period</code> is specified.</p></td>
@@ -2678,18 +2678,18 @@ proper interpolation of angular x-coordinates. Parameters
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore_extend.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_interpolation_source</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-arguments</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_interpolation_source</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">xcoord</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">ycoord</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">input_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">output_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
-    <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">left</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">right</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">period</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">left</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">right</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Add data source to triplestore, such that it can be used to</span>
 <span class="sd">    transparently transform other data.</span>
@@ -2728,7 +2728,7 @@ proper interpolation of angular x-coordinates. Parameters
 
 <span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
     <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="s2">"Triplestore.add_interpolation_source() requires numpy.</span><span class="se">\n</span><span class="s2">"</span>
@@ -2807,7 +2807,7 @@ to a data source.</p></td>
       </tr>
       <tr>
         <td><code>unit</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>return the result in the given unit.
 Implies <code>magnitude=True</code>.</p></td>
         <td><code>None</code></td>
@@ -2821,7 +2821,7 @@ value (with no unit).</p></td>
       </tr>
       <tr>
         <td><code>quantity</code></td>
-        <td><code>&#39;Optional[Any]&#39;</code></td>
+        <td><code>Any | None</code></td>
         <td><p>Quantity class to use for evaluation.  Defaults to pint.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -2843,7 +2843,7 @@ value (with no unit).</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;Value&#39;</code></td>
+      <td><code>Value</code></td>
       <td><p>The value of the individual.</p></td>
     </tr>
   </tbody>
@@ -2854,11 +2854,11 @@ value (with no unit).</p></td>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">,</span>
     <span class="n">routeno</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">unit</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">magnitude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">quantity</span><span class="p">:</span> <span class="s2">"Optional[Any]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Value"</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Value</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return the value of an individual.</span>
 
 <span class="sd">    Parameters:</span>
@@ -2878,7 +2878,7 @@ value (with no unit).</p></td>
 <span class="sd">    Returns:</span>
 <span class="sd">        The value of the individual.</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.mappings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.mappings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
         <span class="n">Value</span><span class="p">,</span>
         <span class="n">mapping_routes</span><span class="p">,</span>
     <span class="p">)</span>
@@ -2906,7 +2906,7 @@ value (with no unit).</p></td>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">hasAccessFunction</span><span class="p">):</span>  <span class="c1"># callable</span>
             <span class="n">func_iri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">hasAccessFunction</span><span class="p">)</span>
             <span class="n">func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">[</span><span class="n">func_iri</span><span class="p">]</span>
-            <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>  <span class="c1"># nosec</span>
+            <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>  <span class="c1"># noqa: S101</span>
             <span class="n">retval</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">Value</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">retval</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>

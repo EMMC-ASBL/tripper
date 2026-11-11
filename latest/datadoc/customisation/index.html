@@ -2050,14 +2050,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2430,22 +2430,26 @@ It is therefore advisable to only use one source of truth, namely the ontology.<
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Triplestore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_keywords</span>
 
-<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s1">'rdflib'</span><span class="p">)</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">"rdflib"</span><span class="p">)</span>
 
 <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-    <span class="s1">'https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/ontologies/family.ttl'</span><span class="p">,</span>
-    <span class="nb">format</span><span class="o">=</span><span class="s1">'turtle'</span><span class="p">,</span>
+    <span class="s2">"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/ontologies/family.ttl"</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">kw</span> <span class="o">=</span>  <span class="n">get_keywords</span><span class="p">()</span> <span class="c1"># create an Keywords instance populated with the default keywords (ddoc:datadoc)</span>
+<span class="n">kw</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">()</span>  <span class="c1"># create an Keywords instance populated with the default keywords (ddoc:datadoc)</span>
 <span class="c1"># Before loading the keywords file it is required that all namespaces have a prefix.</span>
 <span class="c1"># The family namespace does not have prefix by defualt and it must be added:</span>
-<span class="n">kw</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="s1">'fam'</span><span class="p">,</span> <span class="s1">'http://onto-ns.com/ontologies/examples/family#'</span><span class="p">)</span>
+<span class="n">kw</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="s2">"fam"</span><span class="p">,</span> <span class="s2">"http://onto-ns.com/ontologies/examples/family#"</span><span class="p">)</span>
 
 <span class="c1"># We can now load the ontology into the keywords</span>
-<span class="n">kw</span><span class="o">.</span><span class="n">load_rdf</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">'skip'</span><span class="p">)</span> <span class="c1"># keywords that are already defined are skipped</span>
+<span class="n">kw</span><span class="o">.</span><span class="n">load_rdf</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s2">"skip"</span>
+<span class="p">)</span>  <span class="c1"># keywords that are already defined are skipped</span>
 <span class="c1"># or</span>
-<span class="n">lw</span><span class="o">.</span><span class="n">load_rdf</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">'allow'</span><span class="p">)</span> <span class="c1"># keywords that are already defined are redefined</span>
+<span class="n">lw</span><span class="o">.</span><span class="n">load_rdf</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s2">"allow"</span>
+<span class="p">)</span>  <span class="c1"># keywords that are already defined are redefined</span>
 </code></pre></div>
 <p>Note that there are a few considerations when generating a context from an ontology:</p>
 <p>First of all, labels that are the same as predefined keywords must be handled with care.
@@ -2598,14 +2602,18 @@ When two tables are parsed independently (even with the same <code>context</code
 <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">"rdflib"</span><span class="p">)</span>
 
 <span class="c1"># 1. Parse and store the table that defines classes</span>
-<span class="n">classes_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">"classes.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+<span class="n">classes_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span>
+    <span class="s2">"classes.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
+<span class="p">)</span>
 <span class="n">classes_doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
 
 <span class="c1"># 2. Register the newly-parsed classes in the shared context</span>
 <span class="n">update_context</span><span class="p">(</span><span class="n">classes_doc</span><span class="o">.</span><span class="n">asdicts</span><span class="p">(),</span> <span class="n">context</span><span class="p">)</span>
 
 <span class="c1"># 3. Now parse tables and store that reference those classes — restrictions will be inferred correctly</span>
-<span class="n">resources_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">"resources.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+<span class="n">resources_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span>
+    <span class="s2">"resources.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
+<span class="p">)</span>
 <span class="n">resources_doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
 </code></pre></div>
 <p>This pattern applies whenever:</p>
@@ -2624,10 +2632,14 @@ When two tables are parsed independently (even with the same <code>context</code
 <span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"myns"</span><span class="p">:</span> <span class="s2">"https://example.org/myns/"</span><span class="p">}</span>
 
 <span class="c1"># 1. Parse the table that defines classes</span>
-<span class="n">classes_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">"classes.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+<span class="n">classes_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span>
+    <span class="s2">"classes.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
+<span class="p">)</span>
 
 <span class="c1"># 2. Parse the table that defines resources that reference those classes</span>
-<span class="n">resources_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">"resources.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+<span class="n">resources_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span>
+    <span class="s2">"resources.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
+<span class="p">)</span>
 
 <span class="c1"># 3. Create one big dict with all resources from all tables</span>
 <span class="n">dicts</span> <span class="o">=</span> <span class="n">classes_doc</span><span class="o">.</span><span class="n">asdicts</span><span class="p">()</span> <span class="o">+</span> <span class="n">resources_doc</span><span class="o">.</span><span class="n">asdicts</span><span class="p">()</span>

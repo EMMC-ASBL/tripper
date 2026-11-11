@@ -1874,14 +1874,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2068,7 +2068,7 @@ package.</p>
       </tr>
       <tr>
         <td><code>distributions</code></td>
-        <td><code>&#39;Optional[Union[str, Sequence[str]]]&#39;</code></td>
+        <td><code>str | Sequence[str] | None</code></td>
         <td><p>Name or sequence of names of distribution(s) to
 try in case the dataset has multiple distributions.  The
 default is to try all documented distributions.</p></td>
@@ -2076,7 +2076,7 @@ default is to try all documented distributions.</p></td>
       </tr>
       <tr>
         <td><code>use_sparql</code></td>
-        <td><code>&#39;Optional[bool]&#39;</code></td>
+        <td><code>bool | None</code></td>
         <td><p>Whether to access the triplestore with SPARQL.
 Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
@@ -2115,8 +2115,8 @@ The default is to only make one attempt to access the dataset.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">distributions</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">"Optional[bool]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_sparql</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Load dataset with given IRI from its source.</span>
@@ -2139,7 +2139,6 @@ The default is to only make one attempt to access the dataset.</p></td>
 <span class="sd">    Note:</span>
 <span class="sd">        For now this requires DLite.</span>
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
     <span class="c1"># Use the Protocol plugin system from DLite.  Should we move it to tripper?</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">dlite</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">dlite.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
@@ -2178,21 +2177,19 @@ The default is to only make one attempt to access the dataset.</p></td>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">with</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="p">)</span> <span class="k">as</span> <span class="n">pr</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">pr</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-                    <span class="c1"># pylint: disable=no-member</span>
                 <span class="k">except</span> <span class="p">(</span><span class="n">dlite</span><span class="o">.</span><span class="n">DLiteProtocolError</span><span class="p">,</span> <span class="n">dlite</span><span class="o">.</span><span class="n">DLiteIOError</span><span class="p">):</span>
                     <span class="k">pass</span>
-                <span class="c1"># pylint: disable=broad-exception-caught</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+                        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s2">"cannot access dataset '</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">' using "</span>
                             <span class="sa">f</span><span class="s2">"scheme=</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">, location=</span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2"> "</span>
                             <span class="sa">f</span><span class="s2">"and options='</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="si">}</span><span class="s2">'"</span>
                         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
-    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot access dataset: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot access dataset: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2240,7 +2237,7 @@ The default is to only make one attempt to access the dataset.</p></td>
       </tr>
       <tr>
         <td><code>class_iri</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>IRI of a class in the ontology (e.g. an <code>emmo:Dataset</code>
 subclass) that describes the dataset that is saved.
 Is used to select the <code>distribution</code> if that is not given.
@@ -2251,7 +2248,7 @@ added to <code>class_iri</code></p></td>
       </tr>
       <tr>
         <td><code>dataset</code></td>
-        <td><code>&#39;Optional[Union[str, dict]]&#39;</code></td>
+        <td><code>str | dict | None</code></td>
         <td><p>Either the IRI of the dataset individual standing for
 the data to be saved or or a dict that in addition to the IRI
 ('@id' keyword) can provide with additional documentation of
@@ -2261,7 +2258,7 @@ If <code>dataset</code> is None, a new blank node IRI will be created.</p></td>
       </tr>
       <tr>
         <td><code>distribution</code></td>
-        <td><code>&#39;Optional[Union[str, dict]]&#39;</code></td>
+        <td><code>str | dict | None</code></td>
         <td><p>Either the IRI of distribution for the data to be saved
 or a dict additional documentation of the distribution,
 like media type, parsers, generators etc...
@@ -2272,21 +2269,21 @@ to the dataset.</p></td>
       </tr>
       <tr>
         <td><code>generator</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Name of generator to use in case the distribution has
 several generators.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>prefixes</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>Dict with prefixes in addition to those included in the
 JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>use_sparql</code></td>
-        <td><code>&#39;Optional[bool]&#39;</code></td>
+        <td><code>bool | None</code></td>
         <td><p>Whether to access the triplestore with SPARQL.
 Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
@@ -2328,12 +2325,12 @@ with the same id as <code>source</code>. Possible values are:
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
-    <span class="n">class_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">dataset</span><span class="p">:</span> <span class="s2">"Optional[Union[str, dict]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">distribution</span><span class="p">:</span> <span class="s2">"Optional[Union[str, dict]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">generator</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">"Optional[bool]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">class_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">generator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_sparql</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Saves data to a dataresource and document it in the triplestore.</span>
@@ -2379,10 +2376,8 @@ with the same id as <code>source</code>. Possible values are:
 <span class="sd">        IRI of the dataset.</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=too-many-locals,too-many-branches,too-many-statements</span>
-    <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
     <span class="c1"># Use the Protocol plugin system from DLite.  Should we move it to tripper?</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">dlite.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>  <span class="c1"># pylint: disable=import-error</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dlite.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
 
     <span class="n">triples</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">save_dataset</span> <span class="o">=</span> <span class="n">save_distribution</span> <span class="o">=</span> <span class="kc">False</span>

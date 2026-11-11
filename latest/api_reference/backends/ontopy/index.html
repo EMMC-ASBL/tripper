@@ -1946,14 +1946,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2252,7 +2252,6 @@ ontology with the given <code>base_iri</code>.</p></td>
         <span class="n">load</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="c1"># pylint: disable=unused-argument</span>
         <span class="k">if</span> <span class="n">onto</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">base_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">base_iri</span> <span class="o">=</span> <span class="s2">"http://example.com/onto#"</span>
@@ -2298,7 +2297,7 @@ ontology with the given <code>base_iri</code>.</p></td>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">"Sequence[Triple]"</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Add a sequence of triples."""</span>
         <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="n">datatype</span><span class="p">:</span> <span class="s2">"Union[int, str]"</span>
+            <span class="n">datatype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">lang</span><span class="p">:</span>
@@ -2342,7 +2341,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
@@ -2388,7 +2387,7 @@ ontology with the given <code>base_iri</code>.</p></td>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[None, str]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Serialise to destination.</span>
@@ -2412,7 +2411,7 @@ ontology with the given <code>base_iri</code>.</p></td>
                 <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
                     <span class="n">filename</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">name</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"rt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">handle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
@@ -2421,7 +2420,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List, Result]"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[list, Result]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
@@ -2434,7 +2433,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="n">res</span><span class="p">:</span> <span class="s2">"Union[List, Result]"</span>
+            <span class="n">res</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">Result</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">native</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">sparql</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
@@ -2498,7 +2497,7 @@ ontology with the given <code>base_iri</code>.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">"Sequence[Triple]"</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Add a sequence of triples."""</span>
     <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="n">datatype</span><span class="p">:</span> <span class="s2">"Union[int, str]"</span>
+        <span class="n">datatype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">lang</span><span class="p">:</span>
@@ -2598,7 +2597,7 @@ ontology with the given <code>base_iri</code>.</p></td>
     <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
@@ -2703,7 +2702,7 @@ ontology with the given <code>base_iri</code>.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>Union[List, Result]</code></td>
+      <td><code>Union[list, Result]</code></td>
       <td><p>SPARQL query results.</p></td>
     </tr>
   </tbody>
@@ -2712,7 +2711,7 @@ ontology with the given <code>base_iri</code>.</p></td>
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List, Result]"</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[list, Result]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
@@ -2725,7 +2724,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="n">res</span><span class="p">:</span> <span class="s2">"Union[List, Result]"</span>
+        <span class="n">res</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">Result</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">native</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">sparql</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
@@ -2848,7 +2847,7 @@ the backend.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[None, str]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Serialise to destination.</span>
@@ -2872,7 +2871,7 @@ the backend.</p></td>
             <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
                 <span class="n">filename</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">name</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"rt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">handle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>

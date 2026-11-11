@@ -2116,14 +2116,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2506,7 +2506,8 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
 <li><code>read_datadoc()</code>: Read documentation from YAML file and return it as dict.</li>
 <li><code>store()</code>: Store documentation to the triplestore.</li>
 <li><code>acquire()</code>: Load documentation from the triplestore.</li>
-<li><code>told()</code>: Extend documention to valid JSON-LD (represented as a Python dict)</li>
+<li><code>told()</code>: Extend documention to valid JSON-LD (represented as a Python
+    dict)</li>
 <li><code>delete_iri()</code>: Remove documentation of resource with given IRI.</li>
 <li><code>delete()</code>: Remove documentation of matching resources.</li>
 </ul>
@@ -2566,14 +2567,14 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
       </tr>
       <tr>
         <td><code>use_sparql</code></td>
-        <td><code>&#39;Optional[bool]&#39;</code></td>
+        <td><code>bool | None</code></td>
         <td><p>Whether to access the triplestore with SPARQL.
 Defaults to the value of <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>context</code></td>
-        <td><code>&#39;Optional[ContextType]&#39;</code></td>
+        <td><code>ContextType | None</code></td>
         <td><p>Context object defining keywords in addition to those defined
 in the default [JSON-LD context].</p></td>
         <td><code>None</code></td>
@@ -2600,8 +2601,8 @@ in the default [JSON-LD context].</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">acquire</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">"Optional[bool]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[ContextType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_sparql</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">ContextType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Load description of a resource from the triplestore.</span>
 
@@ -2664,20 +2665,24 @@ in the default [JSON-LD context].</p></td>
 
     <div class="doc doc-contents ">
 
-      <p>Delete matching resources. See <code>search()</code> for a description of arguments.</p>
+      <p>Delete matching resources.</p>
+<p>See <code>search()</code> for a description of arguments.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">criterias</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
-    <span class="n">criteria</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># new preferred name</span>
-    <span class="n">regex</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">flags</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[Keywords]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">criterias</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
+    <span class="n">criteria</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># new preferred name</span>
+    <span class="n">regex</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">flags</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="n">Keywords</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Delete matching resources. See `search()` for a description of arguments."""</span>
+<span class="w">    </span><span class="sd">"""Delete matching resources.</span>
+
+<span class="sd">    See `search()` for a description of arguments.</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">criterias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -2778,7 +2783,7 @@ common vocabularies and ontologies.</p>
   <tbody>
       <tr>
         <td><code>context</code></td>
-        <td><code>&#39;Optional[Union[str, dict, Sequence[Union[str, dict]]]]&#39;</code></td>
+        <td><code>str | dict | Sequence[str | dict] | None</code></td>
         <td><p>Additional user-defined context that should be returned
 on top of the default context.  It may be a string with an URL
 to the user-defined context, a dict with the user-defined context
@@ -2802,7 +2807,7 @@ or a sequence of strings and dicts.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_jsonld_context</span><span class="p">(</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Union[str, dict, Sequence[Union[str, dict]]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
     <span class="n">fromfile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -2831,7 +2836,7 @@ or a sequence of strings and dicts.</p></td>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">fromfile</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CONTEXT_PATH</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CONTEXT_PATH</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">ctx</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">"@context"</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CONTEXT_URL</span><span class="p">,</span> <span class="n">allow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
@@ -2909,13 +2914,13 @@ or a sequence of strings and dicts.</p></td>
       </tr>
       <tr>
         <td><code>context</code></td>
-        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><code>Context | None</code></td>
         <td><p>Context object.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>parser</code></td>
-        <td><code>&#39;Optional[Union[bool, str]]&#39;</code></td>
+        <td><code>bool | str | None</code></td>
         <td><p>Whether to return a datasource partial pipeline.
 Should be True or an IRI of parser to use in case the
 distribution has multiple parsers.  By default the first
@@ -2924,7 +2929,7 @@ parser will be selected.</p></td>
       </tr>
       <tr>
         <td><code>generator</code></td>
-        <td><code>&#39;Optional[Union[bool, str]]&#39;</code></td>
+        <td><code>bool | str | None</code></td>
         <td><p>Whether to return a datasink partial pipeline.
 Should be True or an IRI of generator to use in case the
 distribution has multiple generators.  By default the first
@@ -2933,7 +2938,7 @@ generator will be selected.</p></td>
       </tr>
       <tr>
         <td><code>distribution</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>IRI of distribution to use in case the dataset
 dataset has multiple distributions.  By default any of
 the distributions will be picked.</p></td>
@@ -2941,7 +2946,7 @@ the distributions will be picked.</p></td>
       </tr>
       <tr>
         <td><code>use_sparql</code></td>
-        <td><code>&#39;Optional[bool]&#39;</code></td>
+        <td><code>bool | None</code></td>
         <td><p>Whether to access the triplestore with SPARQL.
 Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
@@ -2969,11 +2974,11 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">client</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Context]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">parser</span><span class="p">:</span> <span class="s2">"Optional[Union[bool, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">generator</span><span class="p">:</span> <span class="s2">"Optional[Union[bool, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">distribution</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">"Optional[bool]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">Context</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">parser</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">generator</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_sparql</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Returns a OTELib partial pipeline.</span>
 
@@ -3001,7 +3006,6 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 <span class="sd">    Returns:</span>
 <span class="sd">        OTELib partial pipeline.</span>
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=too-many-branches,too-many-locals</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s2">"ddoc:datadoc"</span><span class="p">)</span>
 
     <span class="n">dct</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
@@ -3126,7 +3130,7 @@ their namespace URL.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_prefixes</span><span class="p">(</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Union[str, dict, Sequence[Union[str, dict]]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
     <span class="n">fromfile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -3181,7 +3185,7 @@ short names defined in the context.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_shortnames</span><span class="p">(</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Union[str, dict, Sequence[Union[str, dict]]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
     <span class="n">fromfile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -3239,9 +3243,7 @@ nested manner.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_values</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="s2">"Union[dict, list]"</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">extend</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_values</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">extend</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Parse `data` recursively and return a list with the values</span>
 <span class="sd">    corresponding to the given key.</span>
 
@@ -3314,13 +3316,13 @@ update_restrictions().</p>
   <tbody>
       <tr>
         <td><code>source</code></td>
-        <td><code>&#39;Union[dict, list]&#39;</code></td>
+        <td><code>dict | list</code></td>
         <td><p>JSON-LD dict or list of JSON-LD dicts to analyse.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>context</code></td>
-        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><code>Context | None</code></td>
         <td><p>Optional JSON-LD context object used for providing
 hints about classes and relation types.</p></td>
         <td><code>None</code></td>
@@ -3365,8 +3367,8 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">infer_restriction_types</span><span class="p">(</span>
-    <span class="n">source</span><span class="p">:</span> <span class="s2">"Union[dict, list]"</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Context]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">Context</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return a dict that describes default restriction types used by</span>
 <span class="sd">    update_restrictions().</span>
@@ -3417,7 +3419,6 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
 <span class="sd">        https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=unused-argument</span>
 
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"@context"</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
@@ -3425,7 +3426,7 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
         <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">"@context"</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s2">"@graph"</span><span class="p">]</span> <span class="k">if</span> <span class="s2">"@graph"</span> <span class="ow">in</span> <span class="n">source</span> <span class="k">else</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"@graph"</span><span class="p">,</span> <span class="p">[</span><span class="n">source</span><span class="p">])</span>
 
     <span class="n">ignored</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">"rdfs:subClassOf"</span><span class="p">,</span>
@@ -3440,7 +3441,7 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
 
     <span class="n">restrictions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="s2">"@id"</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"@id"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">iri</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">src</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]</span>
@@ -3505,7 +3506,7 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_dict</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">"Optional[bool]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_sparql</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""This function is deprecated. Use acquire() instead."""</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -3578,13 +3579,13 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_query</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">criterias</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
-    <span class="n">criteria</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># new preferred name</span>
-    <span class="n">regex</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">flags</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[Keywords]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">query_type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="s2">"SELECT DISTINCT"</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"str"</span><span class="p">:</span>
+    <span class="n">criterias</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
+    <span class="n">criteria</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># new preferred name</span>
+    <span class="n">regex</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">flags</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="n">Keywords</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">query_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">"SELECT DISTINCT"</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Help function for creating a SPARQL query.</span>
 
 <span class="sd">    See search() for description of arguments.</span>
@@ -3592,7 +3593,6 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
 <span class="sd">    The `query_type` argument is typically one of "SELECT DISTINCT"</span>
 <span class="sd">    "SELECT", or "DELETE".</span>
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=too-many-statements,too-many-branches,too-many-locals</span>
 
     <span class="k">if</span> <span class="n">criterias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -3606,8 +3606,8 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
 
     <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
-    <span class="n">context</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>  <span class="c1"># pylint: disable=protected-access</span>
-    <span class="n">expanded</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">_expanded</span>  <span class="c1"># pylint: disable=protected-access</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>
+    <span class="n">expanded</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">_expanded</span>
 
     <span class="c1"># Add prefixes to triplestore</span>
     <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">keywords</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">())</span>
@@ -3733,7 +3733,7 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_datadoc</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="s2">"Union[str, Path]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_datadoc</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Read YAML data documentation and return it as a dict.</span>
 
 <span class="sd">    The filename may also be an URL to a file accessible with HTTP GET.</span>
@@ -3785,7 +3785,7 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
       </tr>
       <tr>
         <td><code>file_or_dict</code></td>
-        <td><code>&#39;Union[str, Path, dict]&#39;</code></td>
+        <td><code>str | Path | dict</code></td>
         <td><p>Data documentation dict or name of a YAML file to read
 the data documentation from.  It may also be an URL to a file
 accessible with HTTP GET.</p></td>
@@ -3793,7 +3793,7 @@ accessible with HTTP GET.</p></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
-        <td><code>&#39;Optional[Keywords]&#39;</code></td>
+        <td><code>Keywords | None</code></td>
         <td><p>Optional Keywords object with keywords definitions.
 The default is to infer the keywords from the <code>theme</code> or
 <code>keywordfile</code> keys in the YAML file.</p></td>
@@ -3801,14 +3801,14 @@ The default is to infer the keywords from the <code>theme</code> or
       </tr>
       <tr>
         <td><code>context</code></td>
-        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><code>Context | None</code></td>
         <td><p>Optional Context object with mappings. By default it is
 inferred from <code>keywords</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>baseiri</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>If given, it will be used as a base iri to
 resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <td><code>None</code></td>
@@ -3834,10 +3834,10 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_datadoc</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
-    <span class="n">file_or_dict</span><span class="p">:</span> <span class="s2">"Union[str, Path, dict]"</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[Keywords]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Context]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">file_or_dict</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="n">Keywords</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">Context</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">baseiri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">unknown_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Populate triplestore with data documentation.</span>
@@ -3906,17 +3906,17 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_dict</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
-    <span class="n">source</span><span class="p">:</span> <span class="s2">"Union[dict, list]"</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Context]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[Keywords]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">Context</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="n">Keywords</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"merge"</span><span class="p">,</span>
     <span class="n">unknown_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
     <span class="c1"># The unnecessary strictness of the "build documentation" CI enforces us</span>
     <span class="c1"># to add a `restrictions` argument to save_dict(), although this argument</span>
     <span class="c1"># came after that save_dict() was renamed.</span>
-    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">restrictions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""This function is deprecated. Use store() instead."""</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -4052,7 +4052,7 @@ or the IRI of a class to limit the search to.</p></td>
       </tr>
       <tr>
         <td><code>criteria</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>Exact match criteria. A dict of IRI, value pairs, where the
 IRIs refer to data properties on the resource match. The IRIs
 may use any prefix defined in <code>ts</code>. E.g. if the prefix <code>dcterms</code>
@@ -4062,14 +4062,14 @@ is correctly parsed.</p></td>
       </tr>
       <tr>
         <td><code>regex</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>Like <code>criteria</code> but the values in the provided dict are regular
 expressions used for the matching.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>flags</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Flags passed to regular expressions.
 - <code>s</code>: Dot-all mode. The . matches any character.  The default
   doesn't match newline or carriage return.
@@ -4081,14 +4081,14 @@ expressions used for the matching.</p></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
-        <td><code>&#39;Optional[Keywords]&#39;</code></td>
+        <td><code>Keywords | None</code></td>
         <td><p>Keywords instance defining the resource types used with
 the <code>type</code> argument.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>skipblanks</code></td>
-        <td><code>&#39;bool&#39;</code></td>
+        <td><code>bool</code></td>
         <td><p>Whether to skip blank nodes.</p></td>
         <td><code>True</code></td>
       </tr>
@@ -4104,7 +4104,7 @@ the <code>type</code> argument.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;List[str]&#39;</code></td>
+      <td><code>list[str]</code></td>
       <td><p>List of IRIs for matching resources.</p></td>
     </tr>
   </tbody>
@@ -4145,13 +4145,13 @@ measured on a given sample:</p>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">criterias</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
-    <span class="n">criteria</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># new preferred name</span>
-    <span class="n">regex</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">flags</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[Keywords]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">skipblanks</span><span class="p">:</span> <span class="s2">"bool"</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[str]"</span><span class="p">:</span>
+    <span class="n">criterias</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
+    <span class="n">criteria</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># new preferred name</span>
+    <span class="n">regex</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">flags</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="n">Keywords</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skipblanks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Return a list of IRIs for all matching resources.</span>
 
 <span class="sd">    Arguments:</span>
@@ -4240,7 +4240,9 @@ measured on a given sample:</p>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">skipblanks</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_:"</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_:"</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
 </code></pre></div>
@@ -4270,12 +4272,12 @@ measured on a given sample:</p>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search_iris</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">criterias</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">regex</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">flags</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[Keywords]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">skipblanks</span><span class="p">:</span> <span class="s2">"bool"</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[str]"</span><span class="p">:</span>
+    <span class="n">criterias</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">regex</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">flags</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="n">Keywords</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skipblanks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""This function is deprecated. Use search() instead."""</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
         <span class="s2">"tripper.datadoc.search_iris() is deprecated. "</span>
@@ -4326,7 +4328,7 @@ measured on a given sample:</p>
         <span class="n">d</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">obj</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">))</span>  <span class="c1"># noqa: T201</span>
 </code></pre></div>
         </details>
     </div>
@@ -4368,33 +4370,33 @@ measured on a given sample:</p>
       </tr>
       <tr>
         <td><code>source</code></td>
-        <td><code>&#39;Union[dict, list]&#39;</code></td>
+        <td><code>dict | list</code></td>
         <td><p>Dict or list with the resource documentation to store.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>type</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Type of documented resource.  Should be one of the resource types
 defined in <code>keywords</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>theme</code></td>
-        <td><code>&#39;Optional[Union[str, Sequence[str]]]&#39;</code></td>
+        <td><code>str | Sequence[str] | None</code></td>
         <td><p>IRI of one or more themes to load keywords for.</p></td>
         <td><code>&#39;ddoc:datadoc&#39;</code></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
-        <td><code>&#39;Optional[Keywords]&#39;</code></td>
+        <td><code>Keywords | None</code></td>
         <td><p>Keywords object with additional keywords definitions.
 If not provided, only default keywords are considered.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>context</code></td>
-        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><code>Context | None</code></td>
         <td><p>Context object defining keywords in addition to those defined
 in the default [JSON-LD context].
 Complementing the <code>keywords</code> argument.</p></td>
@@ -4402,7 +4404,7 @@ Complementing the <code>keywords</code> argument.</p></td>
       </tr>
       <tr>
         <td><code>prefixes</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>Dict with prefixes in addition to those included in the
 JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <td><code>None</code></td>
@@ -4436,7 +4438,7 @@ with the same id as <code>source</code>. Possible values are:
       </tr>
       <tr>
         <td><code>restrictions</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>A dict describing how properties of classes in
 <code>source</code> should be mapped to restrictions.  The default is
 to call <code>infer_restriction_types()</code>.</p></td>
@@ -4444,7 +4446,7 @@ to call <code>infer_restriction_types()</code>.</p></td>
       </tr>
       <tr>
         <td><code>baseiri</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>If given, it will be used as a base iri to
 resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <td><code>None</code></td>
@@ -4474,20 +4476,19 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">store</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-arguments</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">store</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
-    <span class="n">source</span><span class="p">:</span> <span class="s2">"Union[dict, list]"</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">theme</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence[str]]]"</span> <span class="o">=</span> <span class="s2">"ddoc:datadoc"</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[Keywords]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Context]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">theme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">"ddoc:datadoc"</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="n">Keywords</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">Context</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
-    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">restrictions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">baseiri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">unknown_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="c1"># pylint: disable=line-too-long,too-many-branches</span>
 <span class="w">    </span><span class="sd">"""Store documentation of a resource to a triplestore.</span>
 
 <span class="sd">    Arguments:</span>
@@ -4636,35 +4637,35 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
   <tbody>
       <tr>
         <td><code>descr</code></td>
-        <td><code>&#39;Union[dict, list]&#39;</code></td>
+        <td><code>dict | list</code></td>
         <td><p>Documenting of one or several resources to be represented as
 JSON-LD.  Supports both single- and multi-resource dicts.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>type</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Type of data to save.  Should be one of the resource types
 defined in <code>keywords</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
-        <td><code>&#39;Optional[Keywords]&#39;</code></td>
+        <td><code>Keywords | None</code></td>
         <td><p>Keywords object with keywords definitions.  If not provided,
 only default keywords are considered.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>context</code></td>
-        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><code>Context | None</code></td>
         <td><p>Optional context object. It will be updated from the input
 data documentation <code>descr</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>prefixes</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>Dict with prefixes in addition to those known in keywords
 or included in the JSON-LD context.</p></td>
         <td><code>None</code></td>
@@ -4681,7 +4682,7 @@ or included in the JSON-LD context.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;AttrDict&#39;</code></td>
+      <td><code>AttrDict</code></td>
       <td><p>Dict with an updated copy of <code>descr</code> as valid JSON-LD.</p></td>
     </tr>
   </tbody>
@@ -4689,13 +4690,13 @@ or included in the JSON-LD context.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">told</span><span class="p">(</span>
-    <span class="n">descr</span><span class="p">:</span> <span class="s2">"Union[dict, list]"</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">theme</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence[str]]]"</span> <span class="o">=</span> <span class="s2">"ddoc:datadoc"</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[Keywords]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Context]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AttrDict"</span><span class="p">:</span>
+    <span class="n">descr</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">theme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">"ddoc:datadoc"</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="n">Keywords</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">Context</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AttrDict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return an updated copy of data description `descr` as valid JSON-LD.</span>
 
 <span class="sd">    The following transformations are performed:</span>
@@ -4721,7 +4722,6 @@ or included in the JSON-LD context.</p></td>
 <span class="sd">        Dict with an updated copy of `descr` as valid JSON-LD.</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=too-many-statements</span>
 
     <span class="n">single</span> <span class="o">=</span> <span class="s2">"@id"</span><span class="p">,</span> <span class="s2">"@type"</span><span class="p">,</span> <span class="s2">"@graph"</span>
     <span class="n">multi</span> <span class="o">=</span> <span class="s2">"keywordfile"</span><span class="p">,</span> <span class="s2">"prefixes"</span><span class="p">,</span> <span class="s2">"base"</span>
@@ -4841,9 +4841,9 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_context</span><span class="p">(</span>
-    <span class="n">source</span><span class="p">:</span> <span class="s2">"Union[dict, list]"</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Context"</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Context"</span><span class="p">:</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">Context</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Context</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Update `context` with information from `source`.</span>
 
 <span class="sd">    Currently this only adds classes defined in `source` to `context`.</span>
@@ -4861,9 +4861,7 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
         <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">"@context"</span><span class="p">])</span>
 
     <span class="n">sources</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">source</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-        <span class="k">else</span> <span class="n">source</span><span class="p">[</span><span class="s2">"@graph"</span><span class="p">]</span> <span class="k">if</span> <span class="s2">"@graph"</span> <span class="ow">in</span> <span class="n">source</span> <span class="k">else</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
+        <span class="n">source</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"@graph"</span><span class="p">,</span> <span class="p">[</span><span class="n">source</span><span class="p">])</span>
     <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
@@ -4933,7 +4931,7 @@ are correctly represented as restrictions in OWL.</p>
   <tbody>
       <tr>
         <td><code>source</code></td>
-        <td><code>&#39;Union[dict, list]&#39;</code></td>
+        <td><code>dict | list</code></td>
         <td><p>Input documentation of one or more resources. This dict
 will be updated in-place. It is typically a dict returned by
 <code>told()</code>.</p></td>
@@ -4941,13 +4939,13 @@ will be updated in-place. It is typically a dict returned by
       </tr>
       <tr>
         <td><code>context</code></td>
-        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><code>Context | None</code></td>
         <td><p>Context object defining the keywords.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>restrictions</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>An optional dict describing how properties in
 <code>source</code> should be mapped to restrictions.  The default is
 to call <code>infer_restriction_types()</code>.</p></td>
@@ -4965,7 +4963,7 @@ to call <code>infer_restriction_types()</code>.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;Union[dict, list]&#39;</code></td>
+      <td><code>dict | list</code></td>
       <td><p>The updated version of <code>source</code>.</p></td>
     </tr>
   </tbody>
@@ -4973,10 +4971,10 @@ to call <code>infer_restriction_types()</code>.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_restrictions</span><span class="p">(</span>
-    <span class="n">source</span><span class="p">:</span> <span class="s2">"Union[dict, list]"</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Context]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[dict, list]"</span><span class="p">:</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">Context</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">restrictions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Update `source`, ensuring that relations on and to classes</span>
 <span class="sd">    are correctly represented as restrictions in OWL.</span>
 
@@ -4993,7 +4991,6 @@ to call <code>infer_restriction_types()</code>.</p></td>
 <span class="sd">        The updated version of `source`.</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=too-many-statements</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">asiri</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return `v` as prefixed IRI(s)."""</span>
@@ -5005,7 +5002,6 @@ to call <code>infer_restriction_types()</code>.</p></td>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">addrestriction</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Add restriction to `source`."""</span>
-        <span class="c1"># pylint: disable=no-else-return</span>
 
         <span class="n">iri</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">])</span> <span class="k">if</span> <span class="s2">"@id"</span> <span class="ow">in</span> <span class="n">source</span> <span class="k">else</span> <span class="s2">"*"</span>
         <span class="n">propiri</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
@@ -5149,11 +5145,11 @@ to call <code>infer_restriction_types()</code>.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-statements</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span>
     <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[Context]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[Keywords]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">Context</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="n">Keywords</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Validates single-resource dict `dct`.</span>
 
@@ -5171,17 +5167,15 @@ to call <code>infer_restriction_types()</code>.</p></td>
     <span class="k">if</span> <span class="n">context</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
 
-    <span class="n">effective_type</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence[str]]]"</span> <span class="o">=</span> <span class="nb">type</span>
+    <span class="n">effective_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="nb">type</span>
 
     <span class="k">if</span> <span class="n">effective_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">"@type"</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
         <span class="n">detected_type</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">detected_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">effective_type</span> <span class="o">=</span> <span class="n">detected_type</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">NoSuchTypeError</span><span class="p">):</span>
                 <span class="n">effective_type</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">typename</span><span class="p">(</span><span class="n">detected_type</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">NoSuchTypeError</span><span class="p">:</span>
-                <span class="k">pass</span>
 
     <span class="c1"># Resolve datatypes using prefixes from the active context only.</span>
     <span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -5241,7 +5235,7 @@ to call <code>infer_restriction_types()</code>.</p></td>
         <span class="n">_check_keywords</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">effective_type</span><span class="p">:</span>
-        <span class="n">keyword_check_type</span><span class="p">:</span> <span class="s2">"Union[str, Sequence[str]]"</span>
+        <span class="n">keyword_check_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">effective_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">typename</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">effective_type</span><span class="p">:</span>
@@ -5272,12 +5266,15 @@ to call <code>infer_restriction_types()</code>.</p></td>
                     <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">kr</span><span class="p">,</span> <span class="n">vr</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">[</span><span class="n">typename</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="s2">"conformance"</span> <span class="ow">in</span> <span class="n">vr</span> <span class="ow">and</span> <span class="n">vr</span><span class="o">.</span><span class="n">conformance</span> <span class="o">==</span> <span class="s2">"mandatory"</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">kr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">ValidateError</span><span class="p">(</span>
-                        <span class="s2">"missing mandatory keyword "</span>
-                        <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">kr</span><span class="si">}</span><span class="s2">' for type: '</span><span class="si">{</span><span class="n">effective_type</span><span class="si">}</span><span class="s2">'"</span>
-                    <span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="s2">"conformance"</span> <span class="ow">in</span> <span class="n">vr</span>
+                <span class="ow">and</span> <span class="n">vr</span><span class="o">.</span><span class="n">conformance</span> <span class="o">==</span> <span class="s2">"mandatory"</span>
+                <span class="ow">and</span> <span class="n">kr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ValidateError</span><span class="p">(</span>
+                    <span class="s2">"missing mandatory keyword "</span>
+                    <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">kr</span><span class="si">}</span><span class="s2">' for type: '</span><span class="si">{</span><span class="n">effective_type</span><span class="si">}</span><span class="s2">'"</span>
+                <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>

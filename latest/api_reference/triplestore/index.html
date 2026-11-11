@@ -2241,14 +2241,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2788,8 +2788,6 @@ Triplestore        </code>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Triplestore</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Provides a common frontend to a range of triplestore backends."""</span>
 
-    <span class="c1"># pylint: disable=too-many-instance-attributes</span>
-
     <span class="n">default_namespaces</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">"xml"</span><span class="p">:</span> <span class="n">XML</span><span class="p">,</span>
         <span class="s2">"rdf"</span><span class="p">:</span> <span class="n">RDF</span><span class="p">,</span>
@@ -2809,10 +2807,10 @@ Triplestore        </code>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">database</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">package</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">check_url</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">database</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">check_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Initialise triplestore using the backend with the given name.</span>
@@ -2878,7 +2876,7 @@ Triplestore        </code>
         <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">backend_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">Strategy"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_iri</span> <span class="o">=</span> <span class="n">base_iri</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span> <span class="s2">"Dict[str, Namespace]"</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
@@ -2895,7 +2893,7 @@ Triplestore        </code>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
         <span class="c1"># Cache functions in the triplestore for fast access</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">:</span> <span class="s2">"Dict[str, Union[float, Callable, None]]"</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
@@ -2904,7 +2902,7 @@ Triplestore        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_load_backend</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_backend</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Load and return backend module.  The arguments has the same meaning</span>
 <span class="sd">        as corresponding arguments to __init__().</span>
 
@@ -2941,13 +2939,13 @@ Triplestore        </code>
 
     <span class="c1"># Methods implemented by backend</span>
     <span class="c1"># ------------------------------</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">subject</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Triple]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">predicate</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">object</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Literal]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">triple</span><span class="p">:</span> <span class="s2">"Optional[Triple]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[Triple, None, None]"</span><span class="p">:</span>
+        <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Triple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">object</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Literal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">triple</span><span class="p">:</span> <span class="n">Triple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Triple</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Returns a generator over matching triples.</span>
 
 <span class="sd">        Arguments:</span>
@@ -2976,7 +2974,7 @@ Triplestore        </code>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">"Iterable[Triple]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Triple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Add a sequence of triples.</span>
 
 <span class="sd">        Arguments:</span>
@@ -2985,12 +2983,12 @@ Triplestore        </code>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">subject</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Triple]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">predicate</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">object</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Literal]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">triple</span><span class="p">:</span> <span class="s2">"Optional[Triple]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Triple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">object</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Literal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">triple</span><span class="p">:</span> <span class="n">Triple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Remove all matching triples from the backend.</span>
 
@@ -3037,7 +3035,7 @@ Triplestore        </code>
         <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">fallback_backend</span><span class="o">=</span><span class="s2">"rdflib"</span><span class="p">,</span>
         <span class="n">fallback_backend_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Parse source and add the resulting triples to triplestore.</span>
 
@@ -3074,11 +3072,11 @@ Triplestore        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>
         <span class="n">fallback_backend</span><span class="o">=</span><span class="s2">"rdflib"</span><span class="p">,</span>
         <span class="n">fallback_backend_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[None, str]"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Serialise triplestore.</span>
 
 <span class="sd">        Arguments:</span>
@@ -3112,10 +3110,10 @@ Triplestore        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">iris</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">literals</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">iris</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">literals</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Any"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">        The `query` argument may contain variables for IRIs and literals,</span>
@@ -3179,8 +3177,8 @@ Triplestore        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">iris</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">literals</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">iris</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">literals</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Update triplestore with SPARQL.</span>
@@ -3212,9 +3210,9 @@ Triplestore        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">namespace</span><span class="p">:</span> <span class="s2">"Union[str, Namespace, Triplestore]"</span><span class="p">,</span>
+        <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Namespace</span> <span class="o">|</span> <span class="n">Triplestore</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Namespace"</span><span class="p">:</span> <span class="o">...</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span>
@@ -3227,9 +3225,9 @@ Triplestore        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">namespace</span><span class="p">:</span> <span class="s2">"Union[str, Namespace, Triplestore, None]"</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Namespace</span> <span class="o">|</span> <span class="n">Triplestore</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[Namespace, None]"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Bind prefix to namespace and return the new Namespace object.</span>
 
 <span class="sd">        Arguments:</span>
@@ -3255,7 +3253,6 @@ Triplestore        </code>
                 <span class="p">)</span>
             <span class="n">ns</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="n">namespace</span><span class="o">.</span><span class="n">base_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">):</span>
-            <span class="c1"># pylint: disable=protected-access</span>
             <span class="n">ns</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="n">namespace</span><span class="o">.</span><span class="n">_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">namespace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span>
@@ -3267,7 +3264,8 @@ Triplestore        </code>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="s2">"bind"</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
-                <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">_iri</span>  <span class="c1"># pylint: disable=protected-access</span>
+                <span class="n">prefix</span><span class="p">,</span>
+                <span class="n">ns</span><span class="o">.</span><span class="n">_iri</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">ns</span>
@@ -3381,7 +3379,7 @@ Triplestore        </code>
             <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_backend</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_backend</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Returns the class implementing the given backend."""</span>
         <span class="n">module</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_load_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="n">package</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">backend</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">Strategy"</span><span class="p">)</span>
@@ -3390,11 +3388,11 @@ Triplestore        </code>
 <span class="w">        </span><span class="sd">"""Check that backend implements the given method."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_backend_method</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="n">Triple</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Add `triple` to triplestore."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_triples</span><span class="p">([</span><span class="n">triple</span><span class="p">])</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3402,7 +3400,7 @@ Triplestore        </code>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="nb">any</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[str, Literal]"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the value for a pair of two criteria.</span>
 
 <span class="sd">        Useful if one knows that there may only be one value.</span>
@@ -3441,8 +3439,7 @@ Triplestore        </code>
             <span class="n">triples</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">t</span>
                 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triples</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">Literal</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">t</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">lang</span> <span class="o">==</span> <span class="n">lang</span>  <span class="c1"># type: ignore</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">Literal</span><span class="p">)</span> <span class="ow">and</span> <span class="n">t</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">lang</span> <span class="o">==</span> <span class="n">lang</span>  <span class="c1"># type: ignore</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">any</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -3470,14 +3467,18 @@ Triplestore        </code>
             <span class="k">yield</span> <span class="n">o</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">predicates</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Returns a generator of predicates for given subject and object."""</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">):</span>
             <span class="k">yield</span> <span class="n">p</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">subjects</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Returns a generator of subjects for given predicate and object."""</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">):</span>
@@ -3495,17 +3496,13 @@ Triplestore        </code>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">predicate</span><span class="p">):</span>
             <span class="k">yield</span> <span class="n">s</span><span class="p">,</span> <span class="n">o</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">subject_predicates</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">):</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subject_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Returns a generator of (subject, predicate) tuples for given</span>
 <span class="sd">        object."""</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">):</span>
             <span class="k">yield</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">has</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">):</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Returns true if the triplestore has any triple matching</span>
 <span class="sd">        the give subject, predicate and/or object."""</span>
         <span class="n">triple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span>
@@ -3560,7 +3557,6 @@ Triplestore        </code>
         <span class="k">return</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">prefix_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">require_prefixed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">        </span><span class="sd">"""Return prefixed IRI.</span>
 
 <span class="sd">        This is the reverse of expand_iri().</span>
@@ -3602,13 +3598,13 @@ Triplestore        </code>
         <span class="s2">"value"</span><span class="p">:</span> <span class="p">(</span><span class="n">OWL</span><span class="o">.</span><span class="n">hasValue</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
     <span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_restriction</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_restriction</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="bp">cls</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="nb">property</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">value</span><span class="p">:</span> <span class="s2">"Union[str, Literal]"</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">"RestrictionType"</span><span class="p">,</span>
-        <span class="n">cardinality</span><span class="p">:</span> <span class="s2">"Optional[int]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="n">RestrictionType</span><span class="p">,</span>
+        <span class="n">cardinality</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">hashlength</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Add a restriction to a class in the triplestore.</span>
@@ -3664,16 +3660,15 @@ Triplestore        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">iri</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">restrictions</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">restrictions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="bp">cls</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">property</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">value</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Literal]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[RestrictionType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">cardinality</span><span class="p">:</span> <span class="s2">"Optional[int]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">property</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Literal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="n">RestrictionType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cardinality</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">asdict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[dict, None, None]"</span><span class="p">:</span>
-        <span class="c1"># pylint: disable=too-many-boolean-expressions</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Returns a generator over matching restrictions.</span>
 
 <span class="sd">        Arguments:</span>
@@ -3823,7 +3818,7 @@ Triplestore        </code>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">target_cost</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Add 'mapsTo' relation to the triplestore.</span>
@@ -3852,8 +3847,8 @@ Triplestore        </code>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">property_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">property_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">target_cost</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Add 'mapsTo' relation to triplestore.</span>
@@ -3932,12 +3927,12 @@ Triplestore        </code>
             <span class="c1"># package and try to import the module again</span>
             <span class="n">pypi_package</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasPypiPackageName</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">pypi_package</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">CannotGetFunctionError</span><span class="p">(</span>  <span class="c1"># pylint: disable=raise-missing-from</span>
+                <span class="k">raise</span> <span class="n">CannotGetFunctionError</span><span class="p">(</span>  <span class="c1"># noqa: B904</span>
                     <span class="sa">f</span><span class="s2">"PyPI package not documented for function: </span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>  <span class="c1"># nosec</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>  <span class="c1"># noqa: S603</span>
                     <span class="n">args</span><span class="o">=</span><span class="p">[</span>
                         <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
                         <span class="s2">"-m"</span><span class="p">,</span>
@@ -3967,7 +3962,7 @@ Triplestore        </code>
 
         <span class="k">return</span> <span class="n">func</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">eval_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_iri</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Any"</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eval_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_iri</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Evaluate mapping function and return the result.</span>
 
 <span class="sd">        Arguments:</span>
@@ -3994,18 +3989,17 @@ Triplestore        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_function</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">func</span><span class="p">:</span> <span class="s2">"Union[Callable, str]"</span><span class="p">,</span>
-        <span class="n">expects</span><span class="p">:</span> <span class="s2">"Union[str, Sequence, Mapping]"</span> <span class="o">=</span> <span class="p">(),</span>
-        <span class="n">returns</span><span class="p">:</span> <span class="s2">"Union[str, Sequence]"</span> <span class="o">=</span> <span class="p">(),</span>
-        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">expects</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span> <span class="o">|</span> <span class="n">Mapping</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">returns</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">func_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">module_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">package_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">pypi_package_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">package_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pypi_package_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="c1"># pylint: disable=too-many-branches,too-many-arguments</span>
 <span class="w">        </span><span class="sd">"""Inspect function and add triples describing it to the triplestore.</span>
 
 <span class="sd">        Arguments:</span>
@@ -4069,12 +4063,12 @@ Triplestore        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_function_doc</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">func_iri</span><span class="p">:</span> <span class="s2">"str"</span><span class="p">,</span>
-        <span class="n">func</span><span class="p">:</span> <span class="s2">"Optional[Callable]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">func_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">module_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">package_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">pypi_package_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">func_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">package_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pypi_package_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Add standard-independent documentation of how to access the</span>
 <span class="sd">        function.</span>
@@ -4151,7 +4145,7 @@ Triplestore        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_cost</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">"Union[float, Callable]"</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">,</span>
         <span class="n">dest_iri</span><span class="p">,</span>
         <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">pypi_package_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -4202,7 +4196,6 @@ Triplestore        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_function_fno</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">expects</span><span class="p">,</span> <span class="n">returns</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Implementing add_function() for FnO."""</span>
-        <span class="c1"># pylint: disable=too-many-locals,too-many-statements</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"fno"</span><span class="p">,</span> <span class="n">FNO</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"dcterms"</span><span class="p">,</span> <span class="n">DCTERMS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"map"</span><span class="p">,</span> <span class="n">MAP</span><span class="p">)</span>
@@ -4247,8 +4240,8 @@ Triplestore        </code>
 
         <span class="n">lst</span> <span class="o">=</span> <span class="n">parlist</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">parname</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pars</span><span class="p">):</span>
-            <span class="n">lst_next</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">parlist</span><span class="si">}{</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pars</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span>
-            <span class="n">par</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">_parameter</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">parname</span><span class="si">}</span><span class="s2">"</span>
+            <span class="n">lst_next</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">parlist</span><span class="si">}{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pars</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span>
+            <span class="n">par</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">_parameter</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">parname</span><span class="si">}</span><span class="s2">"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">par</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">FNO</span><span class="o">.</span><span class="n">Parameter</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">par</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="n">parname</span><span class="p">)))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">par</span><span class="p">,</span> <span class="n">MAP</span><span class="o">.</span><span class="n">mapsTo</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
@@ -4258,8 +4251,8 @@ Triplestore        </code>
 
         <span class="n">lst</span> <span class="o">=</span> <span class="n">outlist</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">iri</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">returns</span><span class="p">):</span>
-            <span class="n">lst_next</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">outlist</span><span class="si">}{</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">returns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">_output</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>
+            <span class="n">lst_next</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">outlist</span><span class="si">}{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">returns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">_output</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">val</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">FNO</span><span class="o">.</span><span class="n">Output</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">val</span><span class="p">,</span> <span class="n">MAP</span><span class="o">.</span><span class="n">mapsTo</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">lst</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
@@ -4270,7 +4263,6 @@ Triplestore        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_function_emmo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">expects</span><span class="p">,</span> <span class="n">returns</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Implementing add_function() method for the "emmo" standard."""</span>
-        <span class="c1"># pylint: disable=too-many-locals</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"emmo"</span><span class="p">,</span> <span class="n">EMMO</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"dcterms"</span><span class="p">,</span> <span class="n">DCTERMS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"map"</span><span class="p">,</span> <span class="n">MAP</span><span class="p">)</span>
@@ -4408,28 +4400,28 @@ https://github.com/EMMC-ASBL/tripper#available-backends</p></td>
       </tr>
       <tr>
         <td><code>base_iri</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Base IRI used by the add_function() method when adding
 new triples. May also be used by the backend.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>database</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Name of database to connect to (for backends that
 supports it).</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>package</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Required when <code>backend</code> is a relative module.  In that
 case, it is relative to <code>package</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>check_url</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Deprecated. A URL for checking whether the backend
 is available. Use the optional keyword argument <code>check_iri</code>
 instead. Defaults to <code>base_iri</code>.</p></td>
@@ -4504,10 +4496,10 @@ context manager exits.</p>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">database</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">package</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">check_url</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
+    <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">database</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">check_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Initialise triplestore using the backend with the given name.</span>
@@ -4573,7 +4565,7 @@ context manager exits.</p>
     <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
     <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">backend_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">Strategy"</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">base_iri</span> <span class="o">=</span> <span class="n">base_iri</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span> <span class="s2">"Dict[str, Namespace]"</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend_name</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
@@ -4590,7 +4582,7 @@ context manager exits.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
     <span class="c1"># Cache functions in the triplestore for fast access</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">:</span> <span class="s2">"Dict[str, Union[float, Callable, None]]"</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 </code></pre></div>
         </details>
     </div>
@@ -4615,7 +4607,7 @@ context manager exits.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">):</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="n">Triple</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Add `triple` to triplestore."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">add_triples</span><span class="p">([</span><span class="n">triple</span><span class="p">])</span>
 </code></pre></div>
@@ -4653,14 +4645,14 @@ context manager exits.</p>
   <tbody>
       <tr>
         <td><code>func</code></td>
-        <td><code>&#39;Union[Callable, str]&#39;</code></td>
+        <td><code>Callable | str</code></td>
         <td><p>Function to describe.  Should either be a callable or a
 string with a unique function IRI.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>expects</code></td>
-        <td><code>&#39;Union[str, Sequence, Mapping]&#39;</code></td>
+        <td><code>str | Sequence | Mapping</code></td>
         <td><p>Sequence of IRIs to ontological concepts corresponding
 to positional arguments of <code>func</code>.  May also be given as a
 dict mapping argument names to corresponding ontological IRIs.</p></td>
@@ -4668,14 +4660,14 @@ dict mapping argument names to corresponding ontological IRIs.</p></td>
       </tr>
       <tr>
         <td><code>returns</code></td>
-        <td><code>&#39;Union[str, Sequence]&#39;</code></td>
+        <td><code>str | Sequence</code></td>
         <td><p>IRI of return value.  May also be given as a sequence
 of IRIs, if multiple values are returned.</p></td>
         <td><code>()</code></td>
       </tr>
       <tr>
         <td><code>base_iri</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Base of the IRI representing the function in the
 knowledge base.  Defaults to the base IRI of the triplestore.</p></td>
         <td><code>None</code></td>
@@ -4691,7 +4683,7 @@ Valid values are:
       </tr>
       <tr>
         <td><code>cost</code></td>
-        <td><code>&#39;Optional[Union[float, Callable]]&#39;</code></td>
+        <td><code>float | Callable | None</code></td>
         <td><p>User-defined cost of following this mapping relation
 represented as a float.  It may be given either as a
 float or as a callable taking three arguments</p>
@@ -4702,13 +4694,13 @@ float or as a callable taking three arguments</p>
       </tr>
       <tr>
         <td><code>func_name</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Function name.  Needed if <code>func</code> is given as an IRI.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>module_name</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Fully qualified name of Python module implementing
 this function.  Default is to infer from <code>func</code>.
 implementing the function.</p></td>
@@ -4716,7 +4708,7 @@ implementing the function.</p></td>
       </tr>
       <tr>
         <td><code>package_name</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Name of Python package implementing this function.
 Default is inferred from either the module or first part of
 <code>module_name</code>.</p></td>
@@ -4724,7 +4716,7 @@ Default is inferred from either the module or first part of
       </tr>
       <tr>
         <td><code>pypi_package_name</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Name and version of PyPI package implementing
 this mapping function (specified as in requirements.txt).
 Defaults to <code>package_name</code>.</p></td>
@@ -4751,18 +4743,17 @@ Defaults to <code>package_name</code>.</p></td>
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_function</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">func</span><span class="p">:</span> <span class="s2">"Union[Callable, str]"</span><span class="p">,</span>
-    <span class="n">expects</span><span class="p">:</span> <span class="s2">"Union[str, Sequence, Mapping]"</span> <span class="o">=</span> <span class="p">(),</span>
-    <span class="n">returns</span><span class="p">:</span> <span class="s2">"Union[str, Sequence]"</span> <span class="o">=</span> <span class="p">(),</span>
-    <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">expects</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span> <span class="o">|</span> <span class="n">Mapping</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="n">returns</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
-    <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">func_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">module_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">package_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">pypi_package_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">package_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">pypi_package_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="c1"># pylint: disable=too-many-branches,too-many-arguments</span>
 <span class="w">    </span><span class="sd">"""Inspect function and add triples describing it to the triplestore.</span>
 
 <span class="sd">    Arguments:</span>
@@ -4870,14 +4861,14 @@ Defaults to <code>package_name</code>.</p></td>
       </tr>
       <tr>
         <td><code>property_name</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>Name of property if <code>source</code> is an entity or
 an entity IRI.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>cost</code></td>
-        <td><code>&#39;Optional[Union[float, Callable]]&#39;</code></td>
+        <td><code>float | Callable | None</code></td>
         <td><p>User-defined cost of following this mapping relation
 represented as a float.  It may be given either as a
 float or as a callable taking three arguments</p>
@@ -4906,8 +4897,8 @@ two first arguments and adds the <code>property_name</code> argument.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">property_name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">property_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">target_cost</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Add 'mapsTo' relation to triplestore.</span>
@@ -4994,13 +4985,13 @@ two first arguments and adds the <code>property_name</code> argument.</p>
       </tr>
       <tr>
         <td><code>value</code></td>
-        <td><code>&#39;Union[str, Literal]&#39;</code></td>
+        <td><code>str | Literal</code></td>
         <td><p>The IRI or literal value of the restriction target.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>type</code></td>
-        <td><code>&#39;RestrictionType&#39;</code></td>
+        <td><code>RestrictionType</code></td>
         <td><p>The type of the restriction.  Should be one of:
 - some: existential restriction (value is a class IRI)
 - only: universal restriction (value is a class IRI)
@@ -5013,7 +5004,7 @@ two first arguments and adds the <code>property_name</code> argument.</p>
       </tr>
       <tr>
         <td><code>cardinality</code></td>
-        <td><code>&#39;Optional[int]&#39;</code></td>
+        <td><code>int | None</code></td>
         <td><p>the cardinality value for cardinality restrictions.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -5042,13 +5033,13 @@ two first arguments and adds the <code>property_name</code> argument.</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_restriction</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_restriction</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="bp">cls</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="nb">property</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">value</span><span class="p">:</span> <span class="s2">"Union[str, Literal]"</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">"RestrictionType"</span><span class="p">,</span>
-    <span class="n">cardinality</span><span class="p">:</span> <span class="s2">"Optional[int]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">RestrictionType</span><span class="p">,</span>
+    <span class="n">cardinality</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">hashlength</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Add a restriction to a class in the triplestore.</span>
@@ -5138,7 +5129,7 @@ two first arguments and adds the <code>property_name</code> argument.</p>
   <tbody>
       <tr>
         <td><code>triples</code></td>
-        <td><code>&#39;Iterable[Triple]&#39;</code></td>
+        <td><code>Iterable[Triple]</code></td>
         <td><p>A sequence of <code>(s, p, o)</code> tuples to add to the
 triplestore.</p></td>
         <td><em>required</em></td>
@@ -5147,7 +5138,7 @@ triplestore.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">"Iterable[Triple]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Triple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Add a sequence of triples.</span>
 
 <span class="sd">    Arguments:</span>
@@ -5290,7 +5281,7 @@ otherwise false is returned.</p></td>
       </tr>
       <tr>
         <td><code>namespace</code></td>
-        <td><code>&#39;Union[str, Namespace, Triplestore, None]&#39;</code></td>
+        <td><code>str | Namespace | Triplestore | None</code></td>
         <td><p>Namespace to bind to.  The default is to bind to the
 <code>base_iri</code> of the current triplestore.
 If <code>namespace</code> is None, the corresponding prefix is removed.</p></td>
@@ -5315,7 +5306,7 @@ constructor.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;Union[Namespace, None]&#39;</code></td>
+      <td><code>Namespace | None</code></td>
       <td><p>New Namespace object or None if namespace is removed.</p></td>
     </tr>
   </tbody>
@@ -5325,9 +5316,9 @@ constructor.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">namespace</span><span class="p">:</span> <span class="s2">"Union[str, Namespace, Triplestore, None]"</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Namespace</span> <span class="o">|</span> <span class="n">Triplestore</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[Namespace, None]"</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Bind prefix to namespace and return the new Namespace object.</span>
 
 <span class="sd">    Arguments:</span>
@@ -5353,7 +5344,6 @@ constructor.</p></td>
             <span class="p">)</span>
         <span class="n">ns</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="n">namespace</span><span class="o">.</span><span class="n">base_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">):</span>
-        <span class="c1"># pylint: disable=protected-access</span>
         <span class="n">ns</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="n">namespace</span><span class="o">.</span><span class="n">_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">namespace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span>
@@ -5365,7 +5355,8 @@ constructor.</p></td>
 
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="s2">"bind"</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
-            <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">_iri</span>  <span class="c1"># pylint: disable=protected-access</span>
+            <span class="n">prefix</span><span class="p">,</span>
+            <span class="n">ns</span><span class="o">.</span><span class="n">_iri</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">ns</span>
@@ -5548,7 +5539,7 @@ triplestore without connecting to it.</p>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;Any&#39;</code></td>
+      <td><code>Any</code></td>
       <td><p>The return value of the function.</p></td>
     </tr>
   </tbody>
@@ -5561,7 +5552,7 @@ This may be improved in the future.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">eval_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_iri</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Any"</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">eval_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_iri</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Evaluate mapping function and return the result.</span>
 
 <span class="sd">    Arguments:</span>
@@ -5684,9 +5675,7 @@ the give subject, predicate and/or object.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">has</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>
-<span class="p">):</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Returns true if the triplestore has any triple matching</span>
 <span class="sd">    the give subject, predicate and/or object."""</span>
     <span class="n">triple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span>
@@ -5901,7 +5890,7 @@ triplestore without connecting to it.</p>
       </tr>
       <tr>
         <td><code>cost</code></td>
-        <td><code>&#39;Optional[Union[float, Callable]]&#39;</code></td>
+        <td><code>float | Callable | None</code></td>
         <td><p>User-defined cost of following this mapping relation
 represented as a float.  It may be given either as a
 float or as a callable taking three arguments</p>
@@ -5925,7 +5914,7 @@ that have <code>target</code> as output.</p></td>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">target_cost</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Add 'mapsTo' relation to the triplestore.</span>
@@ -6055,7 +6044,7 @@ data to be parsed) arguments.</p></td>
     <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">fallback_backend</span><span class="o">=</span><span class="s2">"rdflib"</span><span class="p">,</span>
     <span class="n">fallback_backend_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Parse source and add the resulting triples to triplestore.</span>
 
@@ -6143,7 +6132,9 @@ subject.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">predicates</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Returns a generator of predicates for given subject and object."""</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">):</span>
@@ -6195,7 +6186,6 @@ if no prefix can be found.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prefix_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">require_prefixed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-    <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">    </span><span class="sd">"""Return prefixed IRI.</span>
 
 <span class="sd">    This is the reverse of expand_iri().</span>
@@ -6275,7 +6265,7 @@ attacks.</p>
       </tr>
       <tr>
         <td><code>iris</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>Dict used for query substitutions that maps IRI variables
 to IRIs. The IRIs may be provided as fully expanded or
 prefixed with a prefix registered in the triplestore namespace.</p></td>
@@ -6283,7 +6273,7 @@ prefixed with a prefix registered in the triplestore namespace.</p></td>
       </tr>
       <tr>
         <td><code>literals</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>Dict used for query substitutions that maps literal
 variables to literals.</p></td>
         <td><code>None</code></td>
@@ -6346,10 +6336,10 @@ DELETE queries.</p>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">iris</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">literals</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">iris</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">literals</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Any"</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">    The `query` argument may contain variables for IRIs and literals,</span>
@@ -6444,7 +6434,7 @@ DELETE queries.</p>
   <tbody>
       <tr>
         <td><code>subject</code></td>
-        <td><code>&#39;Optional[Union[str, Triple]]&#39;</code></td>
+        <td><code>str | Triple | None</code></td>
         <td><p>If given, match triples with this subject.
 For backward compatibility <code>subject</code> may also be an
 <code>(s, p, o)</code> triple.</p></td>
@@ -6452,19 +6442,19 @@ For backward compatibility <code>subject</code> may also be an
       </tr>
       <tr>
         <td><code>predicate</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>If given, match triples with this predicate.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>object</code></td>
-        <td><code>&#39;Optional[Union[str, Literal]]&#39;</code></td>
+        <td><code>str | Literal | None</code></td>
         <td><p>If given, match triples with this object.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>triple</code></td>
-        <td><code>&#39;Optional[Triple]&#39;</code></td>
+        <td><code>Triple | None</code></td>
         <td><p>Deprecated. A <code>(s, p, o)</code> tuple where <code>s</code>, <code>p</code> and <code>o</code>
 should either be None (matching anything) or an exact IRI
 to match.</p></td>
@@ -6474,12 +6464,12 @@ to match.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">subject</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Triple]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">predicate</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">object</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Literal]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">triple</span><span class="p">:</span> <span class="s2">"Optional[Triple]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Triple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">object</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Literal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">triple</span><span class="p">:</span> <span class="n">Triple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Remove all matching triples from the backend.</span>
 
@@ -6623,25 +6613,25 @@ triplestore without connecting to it.</p>
   <tbody>
       <tr>
         <td><code>cls</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>IRI of class to which the restriction applies.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>property</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>IRI of restriction property.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>value</code></td>
-        <td><code>&#39;Optional[Union[str, Literal]]&#39;</code></td>
+        <td><code>str | Literal | None</code></td>
         <td><p>The IRI or literal value of the restriction target.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>type</code></td>
-        <td><code>&#39;Optional[RestrictionType]&#39;</code></td>
+        <td><code>RestrictionType | None</code></td>
         <td><p>The type of the restriction.  Should be one of:
 - some: existential restriction (value is a class IRI)
 - only: universal restriction (value is a class IRI)
@@ -6654,7 +6644,7 @@ triplestore without connecting to it.</p>
       </tr>
       <tr>
         <td><code>cardinality</code></td>
-        <td><code>&#39;Optional[int]&#39;</code></td>
+        <td><code>int | None</code></td>
         <td><p>the cardinality value for cardinality restrictions.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -6678,7 +6668,7 @@ over blank node IRIs.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;Generator[dict, None, None]&#39;</code></td>
+      <td><code>Generator[dict, None, None]</code></td>
       <td><p>A generator over matching restrictions.  See <code>asdict</code> argument
 for types iterated over.</p></td>
     </tr>
@@ -6686,16 +6676,15 @@ for types iterated over.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">restrictions</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">restrictions</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">property</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">value</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Literal]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[RestrictionType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">cardinality</span><span class="p">:</span> <span class="s2">"Optional[int]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">property</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Literal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">RestrictionType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cardinality</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">asdict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[dict, None, None]"</span><span class="p">:</span>
-    <span class="c1"># pylint: disable=too-many-boolean-expressions</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Returns a generator over matching restrictions.</span>
 
 <span class="sd">    Arguments:</span>
@@ -6856,7 +6845,7 @@ for initialising <code>fallback_backend</code>.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;Union[None, str]&#39;</code></td>
+      <td><code>None | str</code></td>
       <td><p>Serialized string if <code>destination</code> is None.</p></td>
     </tr>
   </tbody>
@@ -6866,11 +6855,11 @@ for initialising <code>fallback_backend</code>.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>
     <span class="n">fallback_backend</span><span class="o">=</span><span class="s2">"rdflib"</span><span class="p">,</span>
     <span class="n">fallback_backend_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[None, str]"</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Serialise triplestore.</span>
 
 <span class="sd">    Arguments:</span>
@@ -6990,9 +6979,7 @@ object.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">subject_predicates</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>
-<span class="p">):</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">subject_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Returns a generator of (subject, predicate) tuples for given</span>
 <span class="sd">    object."""</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">):</span>
@@ -7022,7 +7009,9 @@ object.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">subjects</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Returns a generator of subjects for given predicate and object."""</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">):</span>
@@ -7062,25 +7051,25 @@ object.</p>
   <tbody>
       <tr>
         <td><code>subject</code></td>
-        <td><code>&#39;Optional[Union[str, Triple]]&#39;</code></td>
+        <td><code>str | Triple | None</code></td>
         <td><p>If given, match triples with this subject.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>predicate</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str | None</code></td>
         <td><p>If given, match triples with this predicate.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>object</code></td>
-        <td><code>&#39;Optional[Union[str, Literal]]&#39;</code></td>
+        <td><code>str | Literal | None</code></td>
         <td><p>If given, match triples with this object.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>triple</code></td>
-        <td><code>&#39;Optional[Triple]&#39;</code></td>
+        <td><code>Triple | None</code></td>
         <td><p>Deprecated. A <code>(s, p, o)</code> tuple where <code>s</code>, <code>p</code> and <code>o</code>
 should either be None (matching anything) or an exact IRI
 to match.</p></td>
@@ -7098,20 +7087,20 @@ to match.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;Generator[Triple, None, None]&#39;</code></td>
+      <td><code>Generator[Triple, None, None]</code></td>
       <td><p>Generator over all matching triples.</p></td>
     </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">subject</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Triple]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">predicate</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">object</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Literal]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">triple</span><span class="p">:</span> <span class="s2">"Optional[Triple]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[Triple, None, None]"</span><span class="p">:</span>
+    <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Triple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">object</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Literal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">triple</span><span class="p">:</span> <span class="n">Triple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Triple</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Returns a generator over matching triples.</span>
 
 <span class="sd">    Arguments:</span>
@@ -7180,7 +7169,7 @@ to match.</p></td>
       </tr>
       <tr>
         <td><code>iris</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>Dict used for query substitutions that maps IRI variables
 to IRIs. The IRIs may be provided as fully expanded or
 prefixed with a prefix registered in the triplestore namespace.</p></td>
@@ -7188,7 +7177,7 @@ prefixed with a prefix registered in the triplestore namespace.</p></td>
       </tr>
       <tr>
         <td><code>literals</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><code>dict | None</code></td>
         <td><p>Dict used for query substitutions that maps literal
 variables to literals.</p></td>
         <td><code>None</code></td>
@@ -7213,8 +7202,8 @@ the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.</p>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">iris</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">literals</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">iris</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">literals</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Update triplestore with SPARQL.</span>
@@ -7329,7 +7318,7 @@ literal with the given language code.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;Union[str, Literal]&#39;</code></td>
+      <td><code>str | Literal</code></td>
       <td><p>The value of the <code>subject</code>, <code>predicate</code> or <code>object</code> that is
 None.</p></td>
     </tr>
@@ -7337,7 +7326,7 @@ None.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -7345,7 +7334,7 @@ None.</p></td>
     <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="nb">any</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[str, Literal]"</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return the value for a pair of two criteria.</span>
 
 <span class="sd">    Useful if one knows that there may only be one value.</span>
@@ -7384,8 +7373,7 @@ None.</p></td>
         <span class="n">triples</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">t</span>
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triples</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">Literal</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="n">t</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">lang</span> <span class="o">==</span> <span class="n">lang</span>  <span class="c1"># type: ignore</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">Literal</span><span class="p">)</span> <span class="ow">and</span> <span class="n">t</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">lang</span> <span class="o">==</span> <span class="n">lang</span>  <span class="c1"># type: ignore</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">any</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

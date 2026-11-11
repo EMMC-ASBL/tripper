@@ -2166,14 +2166,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2651,7 +2651,6 @@ Context        </code>
 <span class="sd">            timeout: Timeout when accessing remote files.</span>
 
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=import-outside-toplevel</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.keywords</span><span class="w"> </span><span class="kn">import</span> <span class="n">Keywords</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ld</span> <span class="o">=</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdProcessor</span><span class="p">()</span>
@@ -2702,7 +2701,6 @@ Context        </code>
 <span class="w">        </span><span class="sd">"""Return a copy of this context."""</span>
         <span class="n">copy</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">copy</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span>  <span class="c1"># frozendict - no need to copy</span>
-        <span class="c1"># pylint: disable=protected-access</span>
         <span class="n">copy</span><span class="o">.</span><span class="n">_namespace_prefixes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namespace_prefixes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">copy</span>
 
@@ -2775,7 +2773,7 @@ Context        </code>
             <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">process_context</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="n">rec</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="p">{}</span>
             <span class="p">)</span>
-        <span class="k">except</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdError</span><span class="p">:</span>  <span class="c1"># pylint: disable=try-except-raise</span>
+        <span class="k">except</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdError</span><span class="p">:</span>
             <span class="c1"># TODO: convert error message to something more readable</span>
             <span class="k">raise</span>
 
@@ -3213,7 +3211,7 @@ Context        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"@type"</span>
         <span class="c1"># Build a reverse map: IRI -&gt; all prefixed aliases (e.g. both</span>
         <span class="c1"># "dcterms:license" and "term:license" when two prefixes share an IRI)</span>
-        <span class="n">aliases</span><span class="p">:</span> <span class="s2">"dict[str, list[str]]"</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">aliases</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">pfx</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">expanded</span> <span class="ow">in</span> <span class="n">mappings</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">expanded</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
@@ -3417,7 +3415,6 @@ via the <code>tripper.keywords</code> entry-point group.</p></td>
 <span class="sd">        timeout: Timeout when accessing remote files.</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=import-outside-toplevel</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.keywords</span><span class="w"> </span><span class="kn">import</span> <span class="n">Keywords</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">ld</span> <span class="o">=</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdProcessor</span><span class="p">()</span>
@@ -3521,7 +3518,7 @@ via the <code>tripper.keywords</code> entry-point group.</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">process_context</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="n">rec</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="p">{}</span>
         <span class="p">)</span>
-    <span class="k">except</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdError</span><span class="p">:</span>  <span class="c1"># pylint: disable=try-except-raise</span>
+    <span class="k">except</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdError</span><span class="p">:</span>
         <span class="c1"># TODO: convert error message to something more readable</span>
         <span class="k">raise</span>
 
@@ -3621,7 +3618,6 @@ via the <code>tripper.keywords</code> entry-point group.</p></td>
 <span class="w">    </span><span class="sd">"""Return a copy of this context."""</span>
     <span class="n">copy</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">copy</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span>  <span class="c1"># frozendict - no need to copy</span>
-    <span class="c1"># pylint: disable=protected-access</span>
     <span class="n">copy</span><span class="o">.</span><span class="n">_namespace_prefixes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namespace_prefixes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">copy</span>
 </code></pre></div>
@@ -4724,7 +4720,7 @@ for.  Built-in themes:
         <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="c1"># if keywords or theme:</span>
-        <span class="c1">#    # pylint: disable=import-outside-toplevel</span>
+        <span class="c1">#</span>
         <span class="c1">#    from tripper.datadoc.keywords import get_keywords</span>
         <span class="c1">#</span>
         <span class="c1">#    kw = get_keywords(keywords=keywords, theme=theme)</span>

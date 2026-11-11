@@ -1902,14 +1902,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2141,7 +2141,6 @@ triplestore from.</p></td>
         <span class="n">database</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">collection</span><span class="p">:</span> <span class="s2">"Optional[Union[dlite.Collection, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="c1"># pylint: disable=unused-argument,import-outside-toplevel,import-error</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">dlite</span>
 
         <span class="k">if</span> <span class="n">collection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2180,7 +2179,9 @@ triplestore from.</p></td>
             <span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="kc">None</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span>
+                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span>
+                <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">add_relation</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 
@@ -2192,7 +2193,9 @@ triplestore from.</p></td>
         <span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
             <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span>
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span>
+            <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">remove_relations</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 </code></pre></div>
@@ -2238,7 +2241,9 @@ triplestore from.</p></td>
         <span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
             <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span>
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span>
+            <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">add_relation</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 </code></pre></div>
@@ -2273,7 +2278,9 @@ triplestore from.</p></td>
     <span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
         <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-        <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
+        <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span>
+        <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">remove_relations</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 </code></pre></div>

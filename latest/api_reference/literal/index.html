@@ -1933,14 +1933,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2319,8 +2319,6 @@ inferred from <code>value</code>.  Should not be combined with
 
 <span class="sd">    """</span>
 
-    <span class="c1"># pylint: disable=too-many-nested-blocks</span>
-
     <span class="c1"># Note that the order of datatypes matters - it is used by</span>
     <span class="c1"># utils.parse_literal() when inferring the datatype of a literal.</span>
     <span class="n">datatypes</span> <span class="o">=</span> <span class="p">{</span>
@@ -2388,7 +2386,6 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="n">lang</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">datatype</span><span class="p">:</span> <span class="s2">"Optional[Union[str, type]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="c1"># pylint: disable=too-many-branches,too-many-statements</span>
         <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2420,7 +2417,7 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SIQuantityDatatype</span>
         <span class="k">elif</span> <span class="n">datatype</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># nosec</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># noqa: S101</span>
             <span class="c1"># Create canonical representation of value for given datatype</span>
             <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">typ</span><span class="p">,</span> <span class="n">names</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -2432,8 +2429,8 @@ inferred from <code>value</code>.  Should not be combined with
                             <span class="k">else</span><span class="p">:</span>
                                 <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                             <span class="k">break</span>
-                        <span class="k">except</span><span class="p">:</span>  <span class="c1"># pylint: disable=bare-except</span>
-                            <span class="k">pass</span>  <span class="c1"># nosec</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: S110</span>
+                            <span class="k">pass</span>
                     <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
                         <span class="k">break</span>
             <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2489,13 +2486,11 @@ inferred from <code>value</code>.  Should not be combined with
 
         <span class="c1"># Some consistency checking</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonPositiveInteger</span>
-            <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonPositiveInteger</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not a xsd:nonPositiveInteger: '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span>
-            <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not a xsd:nonNegativeInteger: '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -2524,7 +2519,7 @@ inferred from <code>value</code>.  Should not be combined with
     <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-return-statements</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">lang</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -2544,9 +2539,7 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="n">strings</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="kc">None</span><span class="p">,))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">strings</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">strings</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">strings</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
@@ -2582,7 +2575,6 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">SIQuantityDatatype</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">Quantity</span><span class="p">:</span>
-                <span class="c1"># pylint: disable=import-outside-toplevel,cyclic-import</span>
                 <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ureg</span>
 
                 <span class="n">ureg</span> <span class="o">=</span> <span class="n">get_ureg</span><span class="p">()</span>
@@ -2598,7 +2590,7 @@ inferred from <code>value</code>.  Should not be combined with
 
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">n3</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n3</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Returns a representation in n3 format."""</span>
 
         <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'"'</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"</span><span class="se">\"</span><span class="s2">"</span><span class="p">)</span>
@@ -2650,6 +2642,7 @@ inferred from <code>value</code>.  Should not be combined with
 
 
 
+
   <div class="doc doc-object doc-method">
 
 
@@ -2680,7 +2673,6 @@ inferred from <code>value</code>.  Should not be combined with
     <span class="n">lang</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">datatype</span><span class="p">:</span> <span class="s2">"Optional[Union[str, type]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="c1"># pylint: disable=too-many-branches,too-many-statements</span>
     <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
     <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2712,7 +2704,7 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SIQuantityDatatype</span>
     <span class="k">elif</span> <span class="n">datatype</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># nosec</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># noqa: S101</span>
         <span class="c1"># Create canonical representation of value for given datatype</span>
         <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">typ</span><span class="p">,</span> <span class="n">names</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -2724,8 +2716,8 @@ inferred from <code>value</code>.  Should not be combined with
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                         <span class="k">break</span>
-                    <span class="k">except</span><span class="p">:</span>  <span class="c1"># pylint: disable=bare-except</span>
-                        <span class="k">pass</span>  <span class="c1"># nosec</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: S110</span>
+                        <span class="k">pass</span>
                 <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
                     <span class="k">break</span>
         <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2781,13 +2773,11 @@ inferred from <code>value</code>.  Should not be combined with
 
     <span class="c1"># Some consistency checking</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonPositiveInteger</span>
-        <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonPositiveInteger</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not a xsd:nonPositiveInteger: '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span>
-        <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not a xsd:nonNegativeInteger: '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span>
@@ -2837,7 +2827,7 @@ inferred from <code>value</code>.  Should not be combined with
 
         <details class="quote">
           <summary>Source code in <code>tripper/literal.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">n3</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">n3</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Returns a representation in n3 format."""</span>
 
     <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'"'</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"</span><span class="se">\"</span><span class="s2">"</span><span class="p">)</span>
@@ -2893,7 +2883,6 @@ literal.</p>
         <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">SIQuantityDatatype</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">Quantity</span><span class="p">:</span>
-            <span class="c1"># pylint: disable=import-outside-toplevel,cyclic-import</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ureg</span>
 
             <span class="n">ureg</span> <span class="o">=</span> <span class="n">get_ureg</span><span class="p">()</span>

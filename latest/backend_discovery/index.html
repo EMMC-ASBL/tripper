@@ -1898,14 +1898,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2079,6 +2079,7 @@ ts = Triplestore(backend="backends.mybackend", package="mypackage")
 <h3 id="append-to-tripperbackend_packages">Append to <code>tripper.backend_packages</code><a class="headerlink" href="#append-to-tripperbackend_packages" title="Permanent link">&para;</a></h3>
 <p>Finally you can insert/append the sub-package with your backend to the <code>tripper.backend_packages</code> list module variable:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">tripper</span>
+
 <span class="n">tripper</span><span class="o">.</span><span class="n">backend_packages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"mypackage.backends"</span><span class="p">)</span>
 <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"mybackend"</span><span class="p">)</span>
 </code></pre></div>

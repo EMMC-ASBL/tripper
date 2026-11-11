@@ -1959,14 +1959,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2448,6 +2448,7 @@ The purpose of the [<code>map()</code>] method, is to map a data models and its 
 <p>Lets assume that you have a data model identified by the IRI <code>http://onto-ns.com/meta/ex/0.1/MyDataModel</code>, which has a property (structural element) called <em>velocity</em>.
 A namespace object for this data model can be created with</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Namespace</span>
+
 <span class="n">DM</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="s2">"http://onto-ns.com/meta/ex/0.1/MyDataModel#"</span><span class="p">)</span>
 </code></pre></div>
 <p>and use to map the data model property <code>velocity</code> to the concept <code>ONTO.Velocity</code> in the ontology</p>
@@ -2456,6 +2457,7 @@ A namespace object for this data model can be created with</p>
 <p>One can also work directly with DLite and SOFT7 data models.
 Here we repeat the above with DLite:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">dlite</span>
+
 <span class="n">mymodel</span> <span class="o">=</span> <span class="n">dlite</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s2">"http://onto-ns.com/meta/ex/0.1/MyDataModel"</span><span class="p">)</span>
 <span class="n">ts</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">mymodel</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span> <span class="n">ONTO</span><span class="o">.</span><span class="n">Velocity</span><span class="p">)</span>
 </code></pre></div>
@@ -2464,7 +2466,8 @@ Currently, it supports both <a href="https://emmc.eu/emmo/">EMMO</a> and the <a 
 <p>For example, to semantically document the general function <code>mean()</code> applied to the special context of arm lengths, one can do</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Returns the mean value of `x` and `y`."""</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
 
 <span class="n">ts</span><span class="o">.</span><span class="n">add_function</span><span class="p">(</span>
     <span class="n">mean</span><span class="p">,</span>

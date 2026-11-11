@@ -1802,6 +1802,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.units.units.Dimension.__replace__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __replace__()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.units.units.Dimension.__repr__" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2444,14 +2455,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CHANGELOG/" class="md-nav__link">
+      <a href="https://github.com/EMMC-ASBL/tripper/releases" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Release notes
   
 
     
@@ -2556,6 +2567,17 @@
     <span class="md-ellipsis">
       
         __new__()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.units.units.Dimension.__replace__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __replace__()
       
     </span>
   </a>
@@ -3247,6 +3269,38 @@ Dimension            (<span title="tuple">tuple</span>)
 
 
 
+<h3 id="tripper.units.units.Dimension.__replace__" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">__replace__</span><span class="p">(</span><span class="o">/</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#tripper.units.units.Dimension.__replace__" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a new Dimension object replacing specified fields with new values</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/units/units.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make</span><span class="p">(</span><span class="n">_map</span><span class="p">(</span><span class="n">kwds</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span> <span class="n">field_names</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">kwds</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Got unexpected field names: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">kwds</span><span class="p">)</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
 <h3 id="tripper.units.units.Dimension.__repr__" class="doc doc-heading">
 <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
 
@@ -3518,7 +3572,6 @@ Quantity            (<span title="pint.registry.Quantity">Quantity</span>)
 <span class="sd">               magnitude of the quantity when expressed in SI base units.</span>
 
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=protected-access</span>
         <span class="n">ureg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -3692,7 +3745,6 @@ units with compatible physical dimensionality in the ontology.</p>
 <span class="sd">           magnitude of the quantity when expressed in SI base units.</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=protected-access</span>
     <span class="n">ureg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -4000,7 +4052,7 @@ from ontologies.</p>
         <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="s2">"Any"</span><span class="p">,</span>
         <span class="n">ts</span><span class="p">:</span> <span class="s2">"Optional[Triplestore]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">url</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Path]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">formalisation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
         <span class="n">include_prefixed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -4077,9 +4129,7 @@ from ontologies.</p>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_units</span><span class="p">(</span>  <span class="c1"># pylint: disable=arguments-differ</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Parses a unit expression string and returns a UnitContainer object</span>
 <span class="sd">        with canonical unit names."""</span>
         <span class="k">try</span><span class="p">:</span>
@@ -4182,7 +4232,6 @@ from ontologies.</p>
 <span class="sd">            value: Value of the quantity value in units of SI base units.</span>
 
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=too-many-branches</span>
         <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tripper_units</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">quantities</span><span class="p">:</span>
@@ -4238,7 +4287,7 @@ from ontologies.</p>
         <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
         <span class="n">q</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span>
         <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tbox</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">si_datatype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">annotations</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4290,7 +4339,7 @@ from ontologies.</p>
 <span class="sd">        This unit registry can then be accessed with `get_ureg()`.</span>
 
 <span class="sd">        Returns the previous default unit registry."""</span>
-        <span class="k">global</span> <span class="n">_unit_reg</span>  <span class="c1"># pylint: disable=global-statement</span>
+        <span class="k">global</span> <span class="n">_unit_reg</span>
         <span class="n">old</span> <span class="o">=</span> <span class="n">_unit_reg</span>
         <span class="n">_unit_reg</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">return</span> <span class="n">old</span>
@@ -4377,7 +4426,6 @@ Quantity            (<span title="pint.registry.Quantity">Quantity</span>)
 <span class="sd">               magnitude of the quantity when expressed in SI base units.</span>
 
 <span class="sd">        """</span>
-        <span class="c1"># pylint: disable=protected-access</span>
         <span class="n">ureg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -4551,7 +4599,6 @@ units with compatible physical dimensionality in the ontology.</p>
 <span class="sd">           magnitude of the quantity when expressed in SI base units.</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=protected-access</span>
     <span class="n">ureg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -4795,6 +4842,7 @@ Unit            (<span title="pint.registry.Unit">Unit</span>)
 
 
 
+
   <div class="doc doc-object doc-method">
 
 
@@ -4913,7 +4961,7 @@ supported.</p></td>
     <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="s2">"Any"</span><span class="p">,</span>
     <span class="n">ts</span><span class="p">:</span> <span class="s2">"Optional[Triplestore]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">url</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Path]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">formalisation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
     <span class="n">include_prefixed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -5111,7 +5159,6 @@ OM or IUPAC.</p></td>
 <span class="sd">        value: Value of the quantity value in units of SI base units.</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># pylint: disable=too-many-branches</span>
     <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tripper_units</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">quantities</span><span class="p">:</span>
@@ -5490,9 +5537,7 @@ with canonical unit names.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/units/units.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_units</span><span class="p">(</span>  <span class="c1"># pylint: disable=arguments-differ</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">):</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Parses a unit expression string and returns a UnitContainer object</span>
 <span class="sd">    with canonical unit names."""</span>
     <span class="k">try</span><span class="p">:</span>
@@ -5588,7 +5633,7 @@ Use Literal() for literal annotations.</p></td>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">q</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tbox</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">si_datatype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">annotations</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5649,7 +5694,7 @@ Use Literal() for literal annotations.</p></td>
 <span class="sd">    This unit registry can then be accessed with `get_ureg()`.</span>
 
 <span class="sd">    Returns the previous default unit registry."""</span>
-    <span class="k">global</span> <span class="n">_unit_reg</span>  <span class="c1"># pylint: disable=global-statement</span>
+    <span class="k">global</span> <span class="n">_unit_reg</span>
     <span class="n">old</span> <span class="o">=</span> <span class="n">_unit_reg</span>
     <span class="n">_unit_reg</span> <span class="o">=</span> <span class="bp">self</span>
     <span class="k">return</span> <span class="n">old</span>
@@ -5692,13 +5737,11 @@ Units        </code>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Units</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""A class representing all units in an ontology."""</span>
 
-    <span class="c1"># pylint: disable=too-many-instance-attributes</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ts</span><span class="p">:</span> <span class="s2">"Optional[Triplestore]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">url</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Path]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">formalisation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
         <span class="n">include_prefixed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -5735,7 +5778,7 @@ Units        </code>
             <span class="p">)</span>
 
         <span class="c1"># Created on demand by _get_dimension_maps()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_maps</span><span class="p">:</span> <span class="s2">"Optional[tuple[dict, dict, dict]]"</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_maps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ns</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span>
             <span class="n">iri</span><span class="o">=</span><span class="s2">"https://w3id.org/emmo#"</span><span class="p">,</span>
@@ -5750,28 +5793,28 @@ Units        </code>
         <span class="n">cachefile</span> <span class="o">=</span> <span class="n">cachedir</span> <span class="o">/</span> <span class="n">fname</span>
         <span class="k">if</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">d</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># nosec</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># noqa: S301</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"units"</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"quantities"</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"constants"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"* caching units... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"* caching units... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_units</span><span class="p">(</span><span class="n">include_prefixed</span><span class="o">=</span><span class="n">include_prefixed</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span>
+            <span class="nb">print</span><span class="p">(</span>  <span class="c1"># noqa: T201</span>
                 <span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching quantities... "</span><span class="p">,</span>
                 <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
                 <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span>
+            <span class="nb">print</span><span class="p">(</span>  <span class="c1"># noqa: T201</span>
                 <span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching constants... "</span><span class="p">,</span>
                 <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
                 <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
 
             <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
@@ -5779,9 +5822,8 @@ Units        </code>
                     <span class="s2">"quantities"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span><span class="p">,</span>
                     <span class="s2">"constants"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">constants</span><span class="p">,</span>
                 <span class="p">}</span>
-                <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">cachefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">cachefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -5813,7 +5855,7 @@ Units        </code>
 <span class="s2">        </span><span class="se">}}</span>
 <span class="s2">        """</span>
         <span class="c1"># Bug in mupy... seems to be fixed in master</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">iri</span> <span class="k">for</span> <span class="n">iri</span><span class="p">,</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">iri</span> <span class="k">for</span> <span class="p">(</span><span class="n">iri</span><span class="p">,)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_emmo_quantity_iris</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a list with the IRIs of all EMMO quantities.</span>
@@ -5846,7 +5888,7 @@ Units        </code>
 <span class="s2">        </span><span class="se">}}</span>
 <span class="s2">        """</span>
         <span class="c1"># Bug in mupy... seems to be fixed in master</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">iri</span> <span class="k">for</span> <span class="n">iri</span><span class="p">,</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">iri</span> <span class="k">for</span> <span class="p">(</span><span class="n">iri</span><span class="p">,)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_unit_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a list with unit symbols for unit with the given IRI.</span>
@@ -5885,7 +5927,7 @@ Units        </code>
 <span class="sd">        """</span>
         <span class="n">maps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_maps</span>
         <span class="k">if</span> <span class="n">maps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">parents</span><span class="p">:</span> <span class="s2">"dict[str, list]"</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">parents</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">):</span>
                 <span class="n">parents</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">superclasses</span> <span class="ow">in</span> <span class="n">parents</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -5958,7 +6000,7 @@ Units        </code>
             <span class="k">return</span> <span class="n">Dimension</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()])</span>
         <span class="k">raise</span> <span class="n">InvalidDimensionStringError</span><span class="p">(</span><span class="n">dimstr</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_unitname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unitname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Tuple[float, dict]"</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_unitname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unitname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"tuple[float, dict]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Parse CamelCase unit name and return a multiplication factor (from</span>
 <span class="sd">        prefixes) and a dict mapping each unit component to its power.</span>
 
@@ -6203,7 +6245,6 @@ Units        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">write_pint_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="s2">"Union[str, Path]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Write Pint units definition to `filename`."""</span>
-        <span class="c1"># pylint: disable=too-many-branches</span>
 
         <span class="c1"># For now, include prefixes and base units...</span>
         <span class="c1"># TODO: infer from ontology</span>
@@ -6304,7 +6345,7 @@ Units        </code>
                 <span class="k">elif</span> <span class="n">unit</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span>
                     <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">unit</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">baseexpr</span><span class="si">}</span><span class="s2">; offset: </span><span class="si">{</span><span class="o">-</span><span class="n">unit</span><span class="o">.</span><span class="n">offset</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"should never happen"</span>  <span class="c1"># nosec</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"should never happen"</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">baseexpr</span> <span class="o">==</span> <span class="s2">"1"</span><span class="p">:</span>
                 <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">unit</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = []"</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
@@ -6374,7 +6415,7 @@ Units        </code>
             <span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">content</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">clear_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -6488,7 +6529,7 @@ supported.</p></td>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">ts</span><span class="p">:</span> <span class="s2">"Optional[Triplestore]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">url</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Path]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">formalisation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
     <span class="n">include_prefixed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -6525,7 +6566,7 @@ supported.</p></td>
         <span class="p">)</span>
 
     <span class="c1"># Created on demand by _get_dimension_maps()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_maps</span><span class="p">:</span> <span class="s2">"Optional[tuple[dict, dict, dict]]"</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_maps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">ns</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span>
         <span class="n">iri</span><span class="o">=</span><span class="s2">"https://w3id.org/emmo#"</span><span class="p">,</span>
@@ -6540,28 +6581,28 @@ supported.</p></td>
     <span class="n">cachefile</span> <span class="o">=</span> <span class="n">cachedir</span> <span class="o">/</span> <span class="n">fname</span>
     <span class="k">if</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># nosec</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># noqa: S301</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"units"</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"quantities"</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"constants"</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"* caching units... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"* caching units... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_units</span><span class="p">(</span><span class="n">include_prefixed</span><span class="o">=</span><span class="n">include_prefixed</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span>
+        <span class="nb">print</span><span class="p">(</span>  <span class="c1"># noqa: T201</span>
             <span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching quantities... "</span><span class="p">,</span>
             <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
             <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span>
+        <span class="nb">print</span><span class="p">(</span>  <span class="c1"># noqa: T201</span>
             <span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching constants... "</span><span class="p">,</span>
             <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
             <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
 
         <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
@@ -6569,9 +6610,8 @@ supported.</p></td>
                 <span class="s2">"quantities"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span><span class="p">,</span>
                 <span class="s2">"constants"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">constants</span><span class="p">,</span>
             <span class="p">}</span>
-            <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">cachefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">cachefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -6805,7 +6845,6 @@ has the following keys:</p>
           <summary>Source code in <code>tripper/units/units.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_pint_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="s2">"Union[str, Path]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Write Pint units definition to `filename`."""</span>
-    <span class="c1"># pylint: disable=too-many-branches</span>
 
     <span class="c1"># For now, include prefixes and base units...</span>
     <span class="c1"># TODO: infer from ontology</span>
@@ -6906,7 +6945,7 @@ has the following keys:</p>
             <span class="k">elif</span> <span class="n">unit</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span>
                 <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">unit</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">baseexpr</span><span class="si">}</span><span class="s2">; offset: </span><span class="si">{</span><span class="o">-</span><span class="n">unit</span><span class="o">.</span><span class="n">offset</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"should never happen"</span>  <span class="c1"># nosec</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"should never happen"</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">baseexpr</span> <span class="o">==</span> <span class="s2">"1"</span><span class="p">:</span>
             <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">unit</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = []"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -6976,7 +7015,7 @@ has the following keys:</p>
         <span class="p">]</span>
     <span class="p">)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">content</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -7098,7 +7137,7 @@ Ex: "emmo-1.0.0".</p></td>
           <summary>Source code in <code>tripper/units/units.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_unit_triplestore</span><span class="p">(</span>
     <span class="n">url</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Path]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">cache</span><span class="p">:</span> <span class="s2">"Union[bool, None]"</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Triplestore</span><span class="p">:</span>
@@ -7116,7 +7155,7 @@ Ex: "emmo-1.0.0".</p></td>
 <span class="sd">            - None: Don't use cache.</span>
 
 <span class="sd">    """</span>
-    <span class="k">global</span> <span class="n">_unit_ts</span>  <span class="c1"># pylint: disable=global-statement</span>
+    <span class="k">global</span> <span class="n">_unit_ts</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_unit_ts</span><span class="p">:</span>
         <span class="n">_unit_ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">"rdflib"</span><span class="p">)</span>
         <span class="n">url</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">_default_url_name</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
@@ -7125,14 +7164,14 @@ Ex: "emmo-1.0.0".</p></td>
         <span class="k">if</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">_unit_ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"ntriples"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
+            <span class="nb">print</span><span class="p">(</span>  <span class="c1"># noqa: T201</span>
                 <span class="s2">"* caching units triplestore... "</span><span class="p">,</span>
                 <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
                 <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">_unit_ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>  <span class="c1"># noqa: T201</span>
             <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">cachefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
@@ -7187,7 +7226,7 @@ arguments.</p>
 <span class="sd">    arguments.</span>
 
 <span class="sd">    """</span>
-    <span class="k">global</span> <span class="n">_unit_reg</span>  <span class="c1"># pylint: disable=global-statement</span>
+    <span class="k">global</span> <span class="n">_unit_reg</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_unit_reg</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">nocreate</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NoDefaultUnitRegistryError</span><span class="p">(</span><span class="s2">"No default unit registry"</span><span class="p">)</span>
@@ -7220,7 +7259,7 @@ arguments.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/units/units.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_emmo_quantity</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Tuple[float, str]"</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_emmo_quantity</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"tuple[float, str]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return value and unit for EMMO quantity with given `iri`."""</span>
     <span class="n">isclass</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ASK </span><span class="se">{{</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&gt; a owl:Class</span><span class="se">}}</span><span class="s2">"</span><span class="p">)</span>
 
@@ -7362,7 +7401,7 @@ Use Literal() for literal annotations.</p></td>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">q</span><span class="p">:</span> <span class="s2">"Quantity"</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tbox</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">si_datatype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">annotations</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
