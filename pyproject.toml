@@ -114,9 +114,9 @@ select = ["E", "F", "I", "UP", "B", "SIM", "S", "T20"]
 ignore = ["B028"]
 
 [tool.ruff.lint.per-file-ignores]
-# Tests use assert, and expressions evaluated only for their side
-# effects, e.g. to check that they raise an exception
-"tests/**" = ["S101", "B018", "T201"]
+# Tests use assert, fake passwords and expressions evaluated only for
+# their side effects, e.g. to check that they raise an exception
+"tests/**" = ["S101", "S105", "S106", "B018", "T201"]
 # Names imported in __init__.py files are re-exported as the public API
 "__init__.py" = ["F401"]
 # Printing is intended in examples and command-line tools
