@@ -1146,13 +1146,15 @@ def test_pipeline():
     pipeline.get()
 
 
+# Uses the shared Fuseki "test_repo" dataset, see test_backends_sparql.py
+@pytest.mark.xdist_group("triplestore")
 def test_fuseki():
     """Test save and load dataset with Fuseki."""
     from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper import Session
     from tripper.datadoc import acquire, delete, store
-    from tripper.utils import service_responds
+    from tripper.testutils import service_responds
 
     session = Session(indir / "session.yaml")
     if not service_responds("http://localhost:3030"):
