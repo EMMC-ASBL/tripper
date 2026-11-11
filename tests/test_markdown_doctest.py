@@ -34,23 +34,28 @@ markdown_files = sorted(
 )
 
 
+def _marks(relpath: str) -> list:
+    """Return pytest marks for markdown file `relpath`."""
+    marks = []
+    if relpath in network_files:
+        marks.append(pytest.mark.network)
+    if Path(relpath).name in fuseki_files:
+        # Uses the shared Fuseki "test_repo" dataset, see
+        # test_backends_sparql.py
+        marks.append(pytest.mark.xdist_group("triplestore"))
+    return marks
+
+
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 @pytest.mark.parametrize(
     "relpath",
-    [
-        pytest.param(
-            f,
-            id=f,
-            marks=[pytest.mark.network] if f in network_files else [],
-        )
-        for f in markdown_files
-    ],
+    [pytest.param(f, id=f, marks=_marks(f)) for f in markdown_files],
 )
 def test_markdown_doctest(relpath):
     """Runs doctest on a markdown file in the docs/ folder."""
     import doctest
 
-    from tripper.utils import service_responds
+    from tripper.testutils import service_responds
 
     path = docsdir / relpath
 

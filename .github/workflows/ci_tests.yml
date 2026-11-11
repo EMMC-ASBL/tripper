@@ -212,21 +212,32 @@ jobs:
 
     # The tripper cache holds e.g. the units table generated from EMMO,
     # which otherwise is downloaded and rebuilt in every job.
-    # Not used on Python 3.11, which measures coverage, since the code
+    # Not used on Python 3.14, which measures coverage, since the code
     # that creates the cache would otherwise not be covered.
     - name: Cache tripper data
-      if: matrix.python-version != '3.11'
+      if: matrix.python-version != '3.14'
       uses: actions/cache@v6
       with:
         path: ~/.cache/tripper
         key: tripper-cache-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('tripper/units/**', 'tripper/context/**', 'pyproject.toml') }}
 
-    # Only measure coverage on the version that uploads to Codecov
+    # Create the tripper cache once, instead of in every pytest-xdist
+    # worker.  Fast if the cache was restored.  On the coverage job, run
+    # it with coverage, which pytest appends to with --cov-append.
+    - name: Warm up tripper cache
+      env:
+        COVERAGE_CORE: sysmon
+      run: ${{ matrix.python-version == '3.14' && 'coverage run --source=tripper' || 'python' }} tests/warm_cache.py
+
+    # Only measure coverage on the version that uploads to Codecov.
+    # COVERAGE_CORE=sysmon uses the much faster sys.monitoring API (3.12+).
     - name: Test with pytest
-      run: pytest -vvv --durations=20 ${{ matrix.python-version == '3.11' && '--cov-report=xml' || '--no-cov' }}
+      env:
+        COVERAGE_CORE: sysmon
+      run: pytest -vvv -n auto --durations=20 ${{ matrix.python-version == '3.14' && '--cov-append --cov-report=xml' || '--no-cov' }}
 
     - name: Upload coverage to Codecov
-      if: matrix.python-version == '3.11' && github.repository == 'EMMC-ASBL/tripper'
+      if: matrix.python-version == '3.14' && github.repository == 'EMMC-ASBL/tripper'
       uses: codecov/codecov-action@v7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
@@ -266,4 +277,4 @@ jobs:
       run: uv pip install --system -e .[testing-core]
 
     - name: Test with pytest, but without other extra dependencies
-      run: pytest -vvv --durations=20 --no-cov tests/
+      run: pytest -vvv -n auto --durations=20 --no-cov tests/
