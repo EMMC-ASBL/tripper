@@ -3,10 +3,8 @@
 Pint is used for programatic unit conversions.
 """
 
-# pylint: disable=too-few-public-methods,too-many-lines
-
 import math
-import pickle  # nosec
+import pickle
 import re
 import sys
 import warnings
@@ -32,12 +30,10 @@ from tripper.namespace import atomic_write, get_cachedir
 from tripper.utils import AttrDict, bnode_iri
 
 if TYPE_CHECKING:  # pragma: no cover
-    from pathlib import Path, PurePath
+    from pathlib import Path
     from typing import (
         Any,
         Generator,
-        Iterable,
-        Mapping,
         Optional,
         Tuple,
         Union,
@@ -102,7 +98,7 @@ def get_ureg(*args, nocreate=False, **kwargs) -> "UnitRegistry":
     arguments.
 
     """
-    global _unit_reg  # pylint: disable=global-statement
+    global _unit_reg
     if not _unit_reg:
         if nocreate:
             raise NoDefaultUnitRegistryError("No default unit registry")
@@ -126,7 +122,7 @@ def _default_url_name(url, name) -> tuple:
 
 def get_unit_triplestore(
     url: "Optional[Union[str, Path]]" = None,
-    format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+    format: "Optional[str]" = None,
     name: "Optional[str]" = None,
     cache: "Union[bool, None]" = True,
 ) -> Triplestore:
@@ -144,7 +140,7 @@ def get_unit_triplestore(
             - None: Don't use cache.
 
     """
-    global _unit_ts  # pylint: disable=global-statement
+    global _unit_ts
     if not _unit_ts:
         _unit_ts = Triplestore("rdflib")
         url, name = _default_url_name(url, name)
@@ -153,14 +149,14 @@ def get_unit_triplestore(
         if cache and cachefile.exists():
             _unit_ts.parse(cachefile, format="ntriples")
         else:
-            print(
+            print(  # noqa: T201
                 "* caching units triplestore... ",
                 end="",
                 flush=True,
                 file=sys.stderr,
             )
             _unit_ts.parse(url, format=format)
-            print("done", file=sys.stderr)
+            print("done", file=sys.stderr)  # noqa: T201
             if cache is not None:
                 try:
                     with atomic_write(cachefile) as tmp:
@@ -256,7 +252,7 @@ def save_emmo_quantity(
     ts: Triplestore,
     q: "Quantity",
     iri: str,
-    type: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+    type: "Optional[str]" = None,
     tbox: bool = False,
     si_datatype: bool = True,
     annotations: "Optional[dict]" = None,
@@ -341,13 +337,11 @@ def save_emmo_quantity(
 class Units:
     """A class representing all units in an ontology."""
 
-    # pylint: disable=too-many-instance-attributes
-
     def __init__(
         self,
         ts: "Optional[Triplestore]" = None,
         url: "Optional[Union[str, Path]]" = None,
-        format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        format: "Optional[str]" = None,
         name: "Optional[str]" = None,
         formalisation: str = "emmo",
         include_prefixed: bool = False,
@@ -399,28 +393,28 @@ class Units:
         cachefile = cachedir / fname
         if cache and cachefile.exists():
             with open(cachefile, "rb") as f:
-                d = pickle.load(f)  # nosec
+                d = pickle.load(f)  # noqa: S301
                 self.units = d["units"]
                 self.quantities = d["quantities"]
                 self.constants = d["constants"]
         else:
-            print("* caching units... ", end="", flush=True, file=sys.stderr)
+            print("* caching units... ", end="", flush=True, file=sys.stderr)  # noqa: T201
             self.units = self._parse_units(include_prefixed=include_prefixed)
-            print(
+            print(  # noqa: T201
                 "done\n* caching quantities... ",
                 end="",
                 flush=True,
                 file=sys.stderr,
             )
             self.quantities = self._parse_quantities(constants=False)
-            print(
+            print(  # noqa: T201
                 "done\n* caching constants... ",
                 end="",
                 flush=True,
                 file=sys.stderr,
             )
             self.constants = self._parse_quantities(constants=True)
-            print("done", file=sys.stderr)
+            print("done", file=sys.stderr)  # noqa: T201
 
             if cache is not None:
                 d = {
@@ -428,9 +422,8 @@ class Units:
                     "quantities": self.quantities,
                     "constants": self.constants,
                 }
-                with atomic_write(cachefile) as tmp:
-                    with open(tmp, "wb") as f:
-                        pickle.dump(d, f)
+                with atomic_write(cachefile) as tmp, open(tmp, "wb") as f:
+                    pickle.dump(d, f)
 
         self.url = url
         self.name = name
@@ -462,7 +455,7 @@ class Units:
         }}
         """
         # Bug in mupy... seems to be fixed in master
-        return [iri for iri, in self.ts.query(query)]  # type: ignore
+        return [iri for (iri,) in self.ts.query(query)]  # type: ignore
 
     def _emmo_quantity_iris(self, constants: bool = False) -> list:
         """Return a list with the IRIs of all EMMO quantities.
@@ -495,7 +488,7 @@ class Units:
         }}
         """
         # Bug in mupy... seems to be fixed in master
-        return [iri for iri, in self.ts.query(query)]  # type: ignore
+        return [iri for (iri,) in self.ts.query(query)]  # type: ignore
 
     def _get_unit_symbols(self, iri: str) -> list:
         """Return a list with unit symbols for unit with the given IRI.
@@ -852,7 +845,6 @@ class Units:
 
     def write_pint_units(self, filename: "Union[str, Path]") -> None:
         """Write Pint units definition to `filename`."""
-        # pylint: disable=too-many-branches
 
         # For now, include prefixes and base units...
         # TODO: infer from ontology
@@ -953,7 +945,7 @@ class Units:
                 elif unit.offset:
                     s = [f"{unit.name} = {baseexpr}; offset: {-unit.offset}"]
                 else:
-                    assert False, "should never happen"  # nosec
+                    raise AssertionError("should never happen")
             elif baseexpr == "1":
                 s = [f"{unit.name} = []"]
             else:
@@ -1037,7 +1029,6 @@ class Units:
             tsfile.unlink()
 
 
-# pylint: disable=too-many-ancestors
 class Unit(pint.Unit):
     """A subclass of pint.Unit with additional methods and properties."""
 
@@ -1123,7 +1114,6 @@ class Quantity(pint.Quantity):
                magnitude of the quantity when expressed in SI base units.
 
         """
-        # pylint: disable=protected-access
         ureg = self._REGISTRY
 
         try:
@@ -1181,7 +1171,7 @@ class UnitRegistry(pint.UnitRegistry):
         *args: "Any",
         ts: "Optional[Triplestore]" = None,
         url: "Optional[Union[str, Path]]" = None,
-        format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        format: "Optional[str]" = None,
         name: "Optional[str]" = None,
         formalisation: str = "emmo",
         include_prefixed: bool = False,
@@ -1258,9 +1248,7 @@ class UnitRegistry(pint.UnitRegistry):
 
         super().__init__(*args, **kwargs)
 
-    def parse_units(  # pylint: disable=arguments-differ
-        self, units, *args, **kwargs
-    ):
+    def parse_units(self, units, *args, **kwargs):
         """Parses a unit expression string and returns a UnitContainer object
         with canonical unit names."""
         try:
@@ -1363,7 +1351,6 @@ class UnitRegistry(pint.UnitRegistry):
             value: Value of the quantity value in units of SI base units.
 
         """
-        # pylint: disable=too-many-branches
         units = self._get_tripper_units()
         if name:
             if name not in units.quantities:
@@ -1419,7 +1406,7 @@ class UnitRegistry(pint.UnitRegistry):
         ts: Triplestore,
         q: Quantity,
         iri: str,
-        type: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        type: "Optional[str]" = None,
         tbox: bool = False,
         si_datatype: bool = True,
         annotations: "Optional[dict]" = None,
@@ -1471,7 +1458,7 @@ class UnitRegistry(pint.UnitRegistry):
         This unit registry can then be accessed with `get_ureg()`.
 
         Returns the previous default unit registry."""
-        global _unit_reg  # pylint: disable=global-statement
+        global _unit_reg
         old = _unit_reg
         _unit_reg = self
         return old

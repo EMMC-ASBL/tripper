@@ -1,4 +1,3 @@
-# pylint: disable=line-too-long, too-many-lines
 """Module for documenting datasets with Tripper.
 
 The dataset documentation follows the [DCAT] structure and is exposed
@@ -18,7 +17,8 @@ Functions for working with the dict-representation:
   - `read_datadoc()`: Read documentation from YAML file and return it as dict.
   - `store()`: Store documentation to the triplestore.
   - `acquire()`: Load documentation from the triplestore.
-  - `told()`: Extend documention to valid JSON-LD (represented as a Python dict)
+  - `told()`: Extend documention to valid JSON-LD (represented as a Python
+    dict)
   - `delete_iri()`: Remove documentation of resource with given IRI.
   - `delete()`: Remove documentation of matching resources.
 
@@ -31,9 +31,7 @@ Functions for working with the dict-representation:
 
 from __future__ import annotations
 
-# pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
-# pylint: disable=too-many-branches
-# pylint: disable=logging-not-lazy,logging-fstring-interpolation
+import contextlib
 import json
 import logging
 import re
@@ -72,19 +70,13 @@ from tripper.utils import (
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import (
-        Any,
-        Collection,
-        Iterable,
         List,
-        Mapping,
         Optional,
         Sequence,
         Union,
     )
 
     from tripper.datadoc.context import ContextType
-    from tripper.datadoc.keywords import FileLoc
-    from tripper.utils import Triple
 
 
 # Local path (for fast loading) and URL to the JSON-LD context
@@ -124,7 +116,7 @@ def show(obj, indent=2) -> None:
         d = obj.get_context_dict()
     else:
         d = obj
-    print(json.dumps(d, indent=indent))
+    print(json.dumps(d, indent=indent))  # noqa: T201
 
 
 def told(
@@ -160,7 +152,6 @@ def told(
         Dict with an updated copy of `descr` as valid JSON-LD.
 
     """
-    # pylint: disable=too-many-statements
 
     single = "@id", "@type", "@graph"
     multi = "keywordfile", "prefixes", "base"
@@ -258,7 +249,6 @@ def _told(
     hasid: bool = True,  # whether description has an @id
 ):
     """Recursive help function for told()."""
-    # pylint: disable=too-many-statements
 
     def torange(kw):
         return keywords[kw].range if kw in keywords else None
@@ -276,7 +266,6 @@ def _told(
                 add(d, "@type", prefixed)
             if missing:
                 # Using logging.info() here, since warnings is too verbose
-                # pylint: disable=logging-fstring-interpolation
                 logging.info(
                     f"Class not in keywords: {', '.join(missing)}",
                 )
@@ -293,12 +282,13 @@ def _told(
         uniq = {}
         for t in get(d, "@type"):
             expanded = context.expand(t) if isinstance(t, str) else t
-            if expanded not in uniq:
-                uniq[expanded] = t
-            elif isinstance(t, str) and isinstance(uniq[expanded], str):
+            if expanded not in uniq or (
+                isinstance(t, str)
+                and isinstance(uniq[expanded], str)
                 # Prefer shorter lexical forms (typically prefixed IRIs).
-                if len(t) < len(uniq[expanded]):
-                    uniq[expanded] = t
+                and len(t) < len(uniq[expanded])
+            ):
+                uniq[expanded] = t
 
         values = list(uniq.values())
         d["@type"] = values[0] if len(values) == 1 else values
@@ -331,12 +321,11 @@ def _told(
         addsuperclasses(d, descr["@type"])
     if type:
         addsuperclasses(d, type)
-    elif not "@type" in descr and not "@graph" in descr:
+    elif "@type" not in descr and "@graph" not in descr:
         d["@type"] = "owl:NamedIndividual"
 
     for k, v in descr.items():
         if not k.startswith("@") and k not in keywords:
-            # pylint: disable=logging-fstring-interpolation
             logging.info(f"Property not in keywords: {k}")
 
         if k == "subClassOf":
@@ -388,7 +377,7 @@ def _told(
     return d
 
 
-def store(  # pylint: disable=too-many-arguments
+def store(
     ts: Triplestore,
     source: "Union[dict, list]",
     type: "Optional[str]" = None,
@@ -401,7 +390,6 @@ def store(  # pylint: disable=too-many-arguments
     baseiri: "Optional[str]" = None,
     unknown_key: str = "raise",
 ) -> dict:
-    # pylint: disable=line-too-long,too-many-branches
     """Store documentation of a resource to a triplestore.
 
     Arguments:
@@ -555,11 +543,13 @@ def _isclassdoc(d):
 
 
 def _isclass(d, context):
-    """Help function. Return true if `d` documents a class or is a class IRI."""
+    """Help function. Return true if `d` is or documents a class."""
     return (
         context.is_class(d)
         if isinstance(d, str)
-        else _isclassdoc(d) if isinstance(d, dict) else False
+        else _isclassdoc(d)
+        if isinstance(d, dict)
+        else False
     )
 
 
@@ -584,9 +574,7 @@ def update_context(
         context.add_context(source["@context"])
 
     sources = (
-        source
-        if isinstance(source, list)
-        else source["@graph"] if "@graph" in source else [source]
+        source if isinstance(source, list) else source.get("@graph", [source])
     )
 
     for d in sources:
@@ -675,7 +663,6 @@ def infer_restriction_types(
         https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows
 
     """
-    # pylint: disable=unused-argument
 
     context = get_context(context=context)
     if isinstance(source, dict) and "@context" in source:
@@ -683,7 +670,7 @@ def infer_restriction_types(
         context.add_context(source["@context"])
 
     if isinstance(source, dict):
-        source = source["@graph"] if "@graph" in source else [source]
+        source = source.get("@graph", [source])
 
     ignored = (
         "rdfs:subClassOf",
@@ -698,7 +685,7 @@ def infer_restriction_types(
 
     restrictions: dict = {}
     for src in source:
-        if not "@id" in src:
+        if "@id" not in src:
             continue
         iri = (
             src["@id"]
@@ -759,7 +746,6 @@ def update_restrictions(
         The updated version of `source`.
 
     """
-    # pylint: disable=too-many-statements
 
     def asiri(v, strict=False):
         """Return `v` as prefixed IRI(s)."""
@@ -771,7 +757,6 @@ def update_restrictions(
 
     def addrestriction(source, prop, value):
         """Add restriction to `source`."""
-        # pylint: disable=no-else-return
 
         iri = context.expand(source["@id"]) if "@id" in source else "*"
         propiri = context.expand(prop)
@@ -1291,7 +1276,7 @@ def _handle_unknown_keywords(
     recurse(source)
 
 
-def validate(  # pylint: disable=too-many-statements
+def validate(
     dct: dict,
     type: "Optional[str]" = None,
     context: "Optional[Context]" = None,
@@ -1320,10 +1305,8 @@ def validate(  # pylint: disable=too-many-statements
         if isinstance(detected_type, list):
             effective_type = detected_type
         else:
-            try:
+            with contextlib.suppress(NoSuchTypeError):
                 effective_type = keywords.typename(detected_type)
-            except NoSuchTypeError:
-                pass
 
     # Resolve datatypes using prefixes from the active context only.
     prefixes = {k: str(v) for k, v in context.get_prefixes().items()}
@@ -1414,12 +1397,15 @@ def validate(  # pylint: disable=too-many-statements
                     )
 
         for kr, vr in resources[typename].items():
-            if "conformance" in vr and vr.conformance == "mandatory":
-                if kr not in dct:
-                    raise ValidateError(
-                        "missing mandatory keyword "
-                        f"'{kr}' for type: '{effective_type}'"
-                    )
+            if (
+                "conformance" in vr
+                and vr.conformance == "mandatory"
+                and kr not in dct
+            ):
+                raise ValidateError(
+                    "missing mandatory keyword "
+                    f"'{kr}' for type: '{effective_type}'"
+                )
 
 
 def get_partial_pipeline(
@@ -1458,7 +1444,6 @@ def get_partial_pipeline(
     Returns:
         OTELib partial pipeline.
     """
-    # pylint: disable=too-many-branches,too-many-locals
     context = get_context(context=context, theme="ddoc:datadoc")
 
     dct = acquire(ts, iri, use_sparql=use_sparql)
@@ -1590,7 +1575,6 @@ def make_query(
     The `query_type` argument is typically one of "SELECT DISTINCT"
     "SELECT", or "DELETE".
     """
-    # pylint: disable=too-many-statements,too-many-branches,too-many-locals
 
     if criterias is not None:
         warnings.warn(
@@ -1604,8 +1588,8 @@ def make_query(
 
     keywords = get_keywords(keywords=keywords)
     context = get_context(keywords=keywords)
-    context._create_caches()  # pylint: disable=protected-access
-    expanded = context._expanded  # pylint: disable=protected-access
+    context._create_caches()
+    expanded = context._expanded
 
     # Add prefixes to triplestore
     ts.namespaces.update(keywords.get_prefixes())
@@ -1806,7 +1790,9 @@ def search(
     )
     if skipblanks:
         return [
-            r[0] for r in ts.query(query) if not r[0].startswith("_:")  # type: ignore
+            r[0]
+            for r in ts.query(query)
+            if not r[0].startswith("_:")  # type: ignore
         ]
     return [r[0] for r in ts.query(query)]  # type: ignore
 
@@ -1847,7 +1833,10 @@ def delete(
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
 ) -> None:
-    """Delete matching resources. See `search()` for a description of arguments."""
+    """Delete matching resources.
+
+    See `search()` for a description of arguments.
+    """
 
     if criterias is not None:
         warnings.warn(

@@ -4,20 +4,17 @@ If backend is given, only that backend will be tested.  Otherwise all
 installed backends are tested one by one.
 """
 
-# pylint: disable=duplicate-code,comparison-with-callable,invalid-name
-# pylint: disable=import-outside-toplevel
 from typing import TYPE_CHECKING
 
 import pytest
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any, Callable
 
 
 # @pytest.mark.parametrize("backend", ["rdflib", "ontopy", "collection"])
 @pytest.mark.parametrize("backend", ["rdflib", "collection"])
-def test_triplestore(  # pylint: disable=too-many-locals
+def test_triplestore(
     backend: str,
     example_function: "Callable[[Any, Any], Any]",
     expected_function_triplestore: str,
@@ -52,10 +49,8 @@ def test_triplestore(  # pylint: disable=too-many-locals
     with pytest.raises(NamespaceError):
         ts.prefix_iri("http://example.com#MyConcept", require_prefixed=True)
 
-    EX = ts.bind(
-        "ex", "http://example.com/onto#"
-    )  # pylint: disable=invalid-name
-    BASE = ts.bind("", "http://example.com#")  # pylint: disable=invalid-name
+    EX = ts.bind("ex", "http://example.com/onto#")
+    BASE = ts.bind("", "http://example.com#")
 
     assert ts.expand_iri(":MyConcept") == BASE.MyConcept
     assert ts.prefix_iri(BASE.MyConcept) == ":MyConcept"
@@ -121,7 +116,7 @@ def test_triplestore(  # pylint: disable=too-many-locals
 
 
 # if True:
-def test_restriction() -> None:  # pylint: disable=too-many-statements
+def test_restriction() -> None:
     """Test add_restriction() method."""
     pytest.importorskip("rdflib")
 

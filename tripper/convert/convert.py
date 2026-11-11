@@ -1,4 +1,3 @@
-# pylint: disable=line-too-long
 """Tripper module for converting between RDF and other repetations.
 
 Example use:
@@ -25,9 +24,8 @@ ValueError: Unrecognised predicate 'http://purl.org/dc/terms/title' in dict: :da
 
 ```
 
-"""
+"""  # noqa: E501
 
-# pylint: disable=invalid-name,redefined-builtin
 import warnings
 from typing import TYPE_CHECKING, Mapping, Sequence
 from uuid import uuid4
@@ -137,7 +135,7 @@ def from_container(
         return obj_iri
 
     if isinstance(container, Sequence):
-        assert not isinstance(container, str)  # nosec
+        assert not isinstance(container, str)  # noqa: S101
         if not container:
             raise ValueError("empty sequence is not supported")
 
@@ -253,7 +251,6 @@ def load_container(
     Returns:
         A Python container object corresponding to `iri`.
     """
-    # pylint: disable=too-many-branches
     if iri == RDF.nil:
         return []
 

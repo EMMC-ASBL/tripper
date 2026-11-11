@@ -19,12 +19,12 @@ import pytest
 class _Handler(BaseHTTPRequestHandler):
     """Responds with 200 on "/" and 404 on any other path."""
 
-    def do_GET(self):  # pylint: disable=invalid-name
+    def do_GET(self):
         """Handle GET request."""
         self.send_response(200 if self.path == "/" else 404)
         self.end_headers()
 
-    def log_message(self, format, *args):  # pylint: disable=redefined-builtin
+    def log_message(self, format, *args):
         """Silence logging."""
 
 
@@ -90,7 +90,7 @@ def test_service_responds_without_requests():
     installed."""
     from tripper.testutils import service_responds
 
-    with _http_server() as url:
+    with _http_server() as url:  # noqa: SIM117
         with mock.patch.dict(sys.modules, {"requests": None}):
             assert not service_responds(url)
 
@@ -129,22 +129,24 @@ def test_service_config():
 
     with _env(
         TRIPPER_TEST_FUSEKI_PORT="3031",
-        TRIPPER_TEST_FUSEKI_PASSWORD="secret",
+        TRIPPER_TEST_FUSEKI_PASSWORD="secret",  # noqa: S106
         TRIPPER_TEST_GRAPHDB_HOST="graphdb.example.com",
     ):
         fuseki = service_config("fuseki")
         assert fuseki["port"] == 3031
         assert isinstance(fuseki["port"], int)  # converted to default type
-        assert fuseki["password"] == "secret"  # nosec B105
+        assert fuseki["password"] == "secret"  # noqa: S105
         assert fuseki["host"] == TEST_SERVICES["fuseki"]["host"]
 
         graphdb = service_config("graphdb")
         assert graphdb["host"] == "graphdb.example.com"
         assert graphdb["port"] == TEST_SERVICES["graphdb"]["port"]
 
-    with _env(TRIPPER_TEST_FUSEKI_PORT="not-a-port"):
-        with pytest.raises(ValueError):
-            service_config("fuseki")
+    with (
+        _env(TRIPPER_TEST_FUSEKI_PORT="not-a-port"),
+        pytest.raises(ValueError),
+    ):
+        service_config("fuseki")
 
     with pytest.raises(KeyError):
         service_config("unknown-service")
@@ -154,12 +156,14 @@ def test_service_available():
     """Test service_available()."""
     from tripper.testutils import service_available
 
-    with _listening_socket() as port:
-        with _env(
+    with (
+        _listening_socket() as port,
+        _env(
             TRIPPER_TEST_FUSEKI_HOST="localhost",
             TRIPPER_TEST_FUSEKI_PORT=str(port),
-        ):
-            assert service_available("fuseki", timeout=0.5)
+        ),
+    ):
+        assert service_available("fuseki", timeout=0.5)
 
     with _env(
         TRIPPER_TEST_FUSEKI_HOST="localhost",
@@ -172,15 +176,17 @@ def test_serviceskip():
     """Test serviceskip()."""
     from tripper.testutils import serviceskip
 
-    with _listening_socket() as port:
-        with _env(
+    with (
+        _listening_socket() as port,
+        _env(
             TRIPPER_TEST_GRAPHDB_HOST="localhost",
             TRIPPER_TEST_GRAPHDB_PORT=str(port),
-        ):
-            config = serviceskip("graphdb", timeout=0.5)
-            assert config["host"] == "localhost"
-            assert config["port"] == port
-            assert config["repository"] == "test_repo"
+        ),
+    ):
+        config = serviceskip("graphdb", timeout=0.5)
+        assert config["host"] == "localhost"
+        assert config["port"] == port
+        assert config["repository"] == "test_repo"
 
     with _env(
         TRIPPER_TEST_GRAPHDB_HOST="localhost",

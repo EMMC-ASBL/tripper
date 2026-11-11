@@ -1,8 +1,14 @@
-"""Test SPARQLwrapper backend."""
+"""Test ontopy backend."""
+
+from typing import TYPE_CHECKING
 
 import pytest
 
 from tripper import Namespace, Triplestore
+
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Callable
+    from pathlib import Path
 
 
 @pytest.mark.filterwarnings("ignore:adding new IRI to ontology:UserWarning")
@@ -17,7 +23,7 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
     pytest.importorskip("ontopy")
     ontopath_food = get_ontology_path("food")
 
-    FOOD = Namespace(  # pylint: disable=invalid-name
+    FOOD = Namespace(
         "http://onto-ns.com/ontologies/examples/food#",
         label_annotations=True,
         check=True,

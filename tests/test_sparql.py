@@ -1,7 +1,5 @@
 """Test using SPARQL via Tripper."""
 
-# pylint: disable=invalid-name,import-outside-toplevel
-
 import pytest
 
 

@@ -25,8 +25,6 @@ class Session:
 
     """
 
-    # pylint: disable=too-few-public-methods
-
     def __init__(self, config: "Optional[Union[Path, str]]" = None):
         """Initialises a session.
 
@@ -41,7 +39,7 @@ class Session:
         - Darwin: $HOME/Library/Config/tripper/session.yaml
 
         """
-        import yaml  # pylint: disable=import-outside-toplevel,import-error
+        import yaml
 
         if config is None:
             config = get_configdir() / "session.yaml"
@@ -59,8 +57,8 @@ class Session:
         if "password" in conf:
             if password:
                 conf["password"] = password
-            elif "username" in conf and conf["password"] == "KEYRING":
-                import keyring  # pylint: disable=import-outside-toplevel,import-error
+            elif "username" in conf and conf["password"] == "KEYRING":  # noqa: S105
+                import keyring
 
                 conf["password"] = keyring.get_password(name, conf["username"])
 

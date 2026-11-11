@@ -13,7 +13,6 @@ ci:
   autoupdate_branch: 'master'
   autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
   autoupdate_schedule: 'weekly'
-  skip: [pylint, pylint-tests]
   submodules: false
 
 # hooks
@@ -31,28 +30,6 @@ repos:
     - id: trailing-whitespace
       args: [--markdown-linebreak-ext=md]
 
-  - repo: https://github.com/PyCQA/isort
-    rev: 10.0.0b2
-    hooks:
-    - id: isort
-      args:
-      - --profile=black
-      - --filter-files
-      - --skip-gitignore
-
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.10.1
-    hooks:
-    - id: black
-      args: [--line-length=79]
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.9.4
-    hooks:
-    - id: bandit
-      args: ["-r"]
-      files: ^tripper/.*$
-
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v2.4.1
     hooks:
@@ -62,6 +39,17 @@ repos:
         - "types-requests"
         - "types-pyyaml"
         - "pydantic"
+
+  # Ruff replaces isort, black, bandit and pylint.  It is configured in
+  # pyproject.toml.  Keep the version in sync with the pre-commit extra.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.3
+    hooks:
+    # Run the linter (with auto-fix)
+    - id: ruff-check
+      args: [--fix]
+    # Run the formatter
+    - id: ruff-format
 
   - repo: https://github.com/SINTEF/ci-cd
     rev: v2.10.0
@@ -92,25 +80,3 @@ repos:
     #   language: script
     #   pass_filenames: false
     #   stages: ["pre-commit"]
-
-    - id: pylint
-      name: pylint
-      entry: pylint
-      args:
-      - --rcfile=pyproject.toml
-      language: python
-      types: [python]
-      require_serial: true
-      files: ^.*$
-      exclude: ^tests/.*$
-
-    - id: pylint-tests
-      name: pylint - tests
-      entry: pylint
-      args:
-      - "--rcfile=pyproject.toml"
-      - "--disable=import-outside-toplevel,redefined-outer-name"
-      language: python
-      types: [python]
-      require_serial: true
-      files: ^tests/.*$

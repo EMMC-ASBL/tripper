@@ -30,9 +30,8 @@ session = Session(config=indir / "session.yaml")
 #    sessionName = "RdflibTest"
 #    sessionName = "GraphDBTest"
 #    sessionName = "FusekiTest"
-def populate_and_search(sessionName):  # pylint: disable=too-many-statements
+def populate_and_search(sessionName):
     """Do the test on the desried backend."""
-    # pylint: disable=too-many-locals
 
     from tripper import Literal
     from tripper.datadoc import acquire, save_datadoc, search

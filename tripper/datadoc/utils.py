@@ -7,7 +7,7 @@ from tripper.datadoc.errors import InvalidDatadocError
 from tripper.namespace import RDFS, SKOS
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Iterable, Optional, Union
+    from typing import Any, Optional, Union
 
     MergeType = Optional[Union[str, Sequence]]
 
@@ -39,7 +39,6 @@ def merge(a: "MergeType", b: "MergeType") -> "MergeType":
     ['a', 'd', 'c', 'b']
 
     """
-    # pylint: disable=too-many-return-statements
     if a is None and b is None:
         return None
     if a is None:
@@ -110,7 +109,6 @@ def addnested(
         {'a': {'b': {'c': 'val'}}}
 
     """
-    # pylint: disable=too-many-branches
     if cls is None:
         cls = type(d) if isinstance(d, Mapping) else dict
 
@@ -182,7 +180,9 @@ def get(
         return (
             value
             if isinstance(value, list)
-            else [] if value is None else [value]
+            else []
+            if value is None
+            else [value]
         )
     return value
 

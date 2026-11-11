@@ -79,7 +79,7 @@ docs = [
 ]
 pre-commit = [
     "pre-commit==4.0.1",
-    "pylint==3.3.4",
+    "ruff==0.17.3",
 ]
 dev = [
     "tripper[pre-commit,docs]",
@@ -98,11 +98,38 @@ Package = "https://pypi.org/project/tripper"
 datadoc = "tripper.datadoc.clitool:main"
 keywords = "tripper.datadoc.keywords:main"
 
-[tool.isort]
-line_length = 79  # PEP8
-
-[tool.black]
+[tool.ruff]
 line-length = 79
+
+[tool.ruff.lint]
+# E/F = standard syntax errors/style (defaults)
+# I = import sorting (isort replacement)
+# B = common design flaws, code smells, and subtle bugs
+# SIM = simplification opportunities
+# S = security (bandit replacement)
+# T20 = debugging statement checks (debug-statements replacement)
+# TODO: Add UP (modern Python syntax upgrades) in a separate PR
+select = ["E", "F", "I", "B", "SIM", "S", "T20"]
+# TODO: Enable B028 (no explicit stacklevel in warnings.warn()) in a
+# separate PR, since it changes the location reported by the warnings
+ignore = ["B028"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use assert, and expressions evaluated only for their side
+# effects, e.g. to check that they raise an exception
+"tests/**" = ["S101", "B018", "T201"]
+# Names imported in __init__.py files are re-exported as the public API
+"__init__.py" = ["F401"]
+# Printing is intended in examples and command-line tools
+"examples/**" = ["T201"]
+"tripper/datadoc/clitool.py" = ["T201"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint.isort]
+known-first-party = ["tripper"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -113,29 +140,6 @@ show_error_codes = true
 allow_redefinition = true
 #explicit-package-bases = true
 
-
-[tool.pylint]
-max-line-length = 80
-max-args = 10
-max-public-methods = 25
-max-locals = 20
-disable = [
-    "fixme",
-    "invalid-name",
-    "too-many-positional-arguments",
-]
-good-names = [
-    # Default
-    "i", "j", "k", "ex", "Run", "_",
-    # Triplestore instance
-    "ts",
-    # Triple components: subject, predicate, object
-    "s", "p", "o",
-    # Namespaces
-    "EX",
-    # dict, value, file, keyword...
-    "d", "v", "f", "kw",
-]
 
 [tool.pytest.ini_options]
 minversion = "7.0"

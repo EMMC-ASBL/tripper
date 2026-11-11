@@ -13,12 +13,11 @@ parts of an RDF Triple: subject, predicate, and object.
 
 """
 
-# pylint: disable=invalid-name,too-many-public-methods,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import importlib
 import inspect
-import subprocess  # nosec
+import subprocess
 import sys
 import warnings
 from collections.abc import Sequence
@@ -65,10 +64,8 @@ if TYPE_CHECKING:  # pragma: no cover
         Dict,
         Generator,
         Iterable,
-        List,
         Mapping,
         Optional,
-        Tuple,
         Union,
     )
 
@@ -83,8 +80,7 @@ if TYPE_CHECKING:  # pragma: no cover
     # For now we do it simple.
     RestrictionType = str
 
-    from tripper.mappings import Value
-    from tripper.utils import OptionalTriple, Triple
+    from tripper.utils import Triple
 
 
 # Default packages in which to look for tripper backends
@@ -109,8 +105,6 @@ hasCost = DM.hasCost
 
 class Triplestore:
     """Provides a common frontend to a range of triplestore backends."""
-
-    # pylint: disable=too-many-instance-attributes
 
     default_namespaces = {
         "xml": XML,
@@ -263,7 +257,7 @@ class Triplestore:
 
     # Methods implemented by backend
     # ------------------------------
-    def triples(  # pylint: disable=redefined-builtin
+    def triples(
         self,
         subject: "Optional[Union[str, Triple]]" = None,
         predicate: "Optional[str]" = None,
@@ -307,7 +301,7 @@ class Triplestore:
         """
         self.backend.add_triples(triples)
 
-    def remove(  # pylint: disable=redefined-builtin
+    def remove(
         self,
         subject: "Optional[Union[str, Triple]]" = None,
         predicate: "Optional[str]" = None,
@@ -359,7 +353,7 @@ class Triplestore:
         format=None,
         fallback_backend="rdflib",
         fallback_backend_kwargs=None,
-        **kwargs,  # pylint: disable=redefined-builtin
+        **kwargs,
     ) -> None:
         """Parse source and add the resulting triples to triplestore.
 
@@ -396,7 +390,7 @@ class Triplestore:
     def serialize(
         self,
         destination=None,
-        format="turtle",  # pylint: disable=redefined-builtin
+        format="turtle",
         fallback_backend="rdflib",
         fallback_backend_kwargs=None,
         **kwargs,
@@ -577,7 +571,6 @@ class Triplestore:
                 )
             ns = Namespace(namespace.base_iri, **kwargs)
         elif isinstance(namespace, Namespace):
-            # pylint: disable=protected-access
             ns = Namespace(namespace._iri, **kwargs)
         elif namespace is None:
             del self.namespaces[prefix]
@@ -589,7 +582,8 @@ class Triplestore:
 
         if hasattr(self.backend, "bind"):
             self.backend.bind(
-                prefix, ns._iri  # pylint: disable=protected-access
+                prefix,
+                ns._iri,
             )
 
         self.namespaces[prefix] = ns
@@ -716,7 +710,7 @@ class Triplestore:
         """Add `triple` to triplestore."""
         self.add_triples([triple])
 
-    def value(  # pylint: disable=redefined-builtin
+    def value(
         self,
         subject=None,
         predicate=None,
@@ -763,8 +757,7 @@ class Triplestore:
             triples = (
                 t
                 for t in triples
-                if isinstance(t[idx], Literal)
-                and t[idx].lang == lang  # type: ignore
+                if isinstance(t[idx], Literal) and t[idx].lang == lang  # type: ignore
             )
 
         if any is None:
@@ -792,14 +785,18 @@ class Triplestore:
             yield o
 
     def predicates(
-        self, subject=None, object=None  # pylint: disable=redefined-builtin
+        self,
+        subject=None,
+        object=None,
     ):
         """Returns a generator of predicates for given subject and object."""
         for _, p, _ in self.triples(subject=subject, object=object):
             yield p
 
     def subjects(
-        self, predicate=None, object=None  # pylint: disable=redefined-builtin
+        self,
+        predicate=None,
+        object=None,
     ):
         """Returns a generator of subjects for given predicate and object."""
         for s, _, _ in self.triples(predicate=predicate, object=object):
@@ -817,17 +814,13 @@ class Triplestore:
         for s, _, o in self.triples(predicate=predicate):
             yield s, o
 
-    def subject_predicates(
-        self, object=None
-    ):  # pylint: disable=redefined-builtin
+    def subject_predicates(self, object=None):
         """Returns a generator of (subject, predicate) tuples for given
         object."""
         for s, p, _ in self.triples(object=object):
             yield s, p
 
-    def has(
-        self, subject=None, predicate=None, object=None
-    ):  # pylint: disable=redefined-builtin
+    def has(self, subject=None, predicate=None, object=None):
         """Returns true if the triplestore has any triple matching
         the give subject, predicate and/or object."""
         triple = self.triples(
@@ -882,7 +875,6 @@ class Triplestore:
         return expand_iri(iri, self.namespaces, strict=strict)
 
     def prefix_iri(self, iri: str, require_prefixed: bool = False):
-        # pylint: disable=line-too-long
         """Return prefixed IRI.
 
         This is the reverse of expand_iri().
@@ -924,7 +916,7 @@ class Triplestore:
         "value": (OWL.hasValue, None),
     }
 
-    def add_restriction(  # pylint: disable=redefined-builtin
+    def add_restriction(
         self,
         cls: str,
         property: str,
@@ -986,7 +978,7 @@ class Triplestore:
         self.add_triples(triples)
         return iri
 
-    def restrictions(  # pylint: disable=redefined-builtin
+    def restrictions(
         self,
         cls: "Optional[str]" = None,
         property: "Optional[str]" = None,
@@ -995,7 +987,6 @@ class Triplestore:
         cardinality: "Optional[int]" = None,
         asdict: bool = True,
     ) -> "Generator[dict, None, None]":
-        # pylint: disable=too-many-boolean-expressions
         """Returns a generator over matching restrictions.
 
         Arguments:
@@ -1254,12 +1245,12 @@ class Triplestore:
             # package and try to import the module again
             pypi_package = self.value(func_iri, OTEIO.hasPypiPackageName)
             if not pypi_package:
-                raise CannotGetFunctionError(  # pylint: disable=raise-missing-from
+                raise CannotGetFunctionError(  # noqa: B904
                     f"PyPI package not documented for function: {func_iri}"
                 )
 
             try:
-                subprocess.run(  # nosec
+                subprocess.run(  # noqa: S603
                     args=[
                         sys.executable,
                         "-m",
@@ -1327,7 +1318,6 @@ class Triplestore:
         package_name: "Optional[str]" = None,
         pypi_package_name: "Optional[str]" = None,
     ):
-        # pylint: disable=too-many-branches,too-many-arguments
         """Inspect function and add triples describing it to the triplestore.
 
         Arguments:
@@ -1524,7 +1514,6 @@ class Triplestore:
 
     def _add_function_fno(self, func, expects, returns, base_iri):
         """Implementing add_function() for FnO."""
-        # pylint: disable=too-many-locals,too-many-statements
         self.bind("fno", FNO)
         self.bind("dcterms", DCTERMS)
         self.bind("map", MAP)
@@ -1569,8 +1558,8 @@ class Triplestore:
 
         lst = parlist
         for i, (iri, parname) in enumerate(pars):
-            lst_next = f"{parlist}{i+2}" if i < len(pars) - 1 else RDF.nil
-            par = f"{func_iri}_parameter{i+1}_{parname}"
+            lst_next = f"{parlist}{i + 2}" if i < len(pars) - 1 else RDF.nil
+            par = f"{func_iri}_parameter{i + 1}_{parname}"
             self.add((par, RDF.type, FNO.Parameter))
             self.add((par, RDFS.label, en(parname)))
             self.add((par, MAP.mapsTo, iri))
@@ -1580,8 +1569,8 @@ class Triplestore:
 
         lst = outlist
         for i, iri in enumerate(returns):
-            lst_next = f"{outlist}{i+2}" if i < len(returns) - 1 else RDF.nil
-            val = f"{func_iri}_output{i+1}"
+            lst_next = f"{outlist}{i + 2}" if i < len(returns) - 1 else RDF.nil
+            val = f"{func_iri}_output{i + 1}"
             self.add((val, RDF.type, FNO.Output))
             self.add((val, MAP.mapsTo, iri))
             self.add((lst, RDF.first, val))
@@ -1592,7 +1581,6 @@ class Triplestore:
 
     def _add_function_emmo(self, func, expects, returns, base_iri):
         """Implementing add_function() method for the "emmo" standard."""
-        # pylint: disable=too-many-locals
         self.bind("emmo", EMMO)
         self.bind("dcterms", DCTERMS)
         self.bind("map", MAP)
