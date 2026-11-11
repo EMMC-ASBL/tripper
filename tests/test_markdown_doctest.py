@@ -55,7 +55,7 @@ def test_markdown_doctest(relpath):
     """Runs doctest on a markdown file in the docs/ folder."""
     import doctest
 
-    from tripper.utils import service_responds
+    from tripper.testutils import service_responds
 
     path = docsdir / relpath
 

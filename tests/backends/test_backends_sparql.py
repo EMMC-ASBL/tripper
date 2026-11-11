@@ -175,7 +175,7 @@ INSERT DATA {
 
 def test_graphdb():
     """Test the sparqlwrapper backend using GraphDB."""
-    from tripper.utils import service_responds
+    from tripper.testutils import service_responds
 
     if not service_responds(
         "http://localhost:7200/rest/repositories/test_repo"
@@ -187,7 +187,7 @@ def test_graphdb():
 
 def test_fuseki():
     """Test the sparqlwrapper backend using Fuseki."""
-    from tripper.utils import service_responds
+    from tripper.testutils import service_responds
 
     if not service_responds("http://localhost:3030"):
         pytest.skip("Fuseki service not available; skipping test.")
