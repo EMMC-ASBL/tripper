@@ -58,6 +58,7 @@ backends = [
 testing-core = [
     "pytest==9.1.1",
     "pytest-cov==6.0.0",
+    "pytest-xdist==3.8.0",
 ]
 testing = [
     "tripper[datadoc,backends,testing-core]",
@@ -141,7 +142,7 @@ minversion = "7.0"
 # Tips: set --cov-report to "term-missing" to list missing coverage
 addopts = """-rs --cov=tripper --cov-report=term \
     --doctest-modules --doctest-ignore-import-errors \
-    --ignore-glob=**/old/
+    --ignore-glob=**/old/ --dist=loadgroup
     """
 markers = [
     "network: needs internet access (deselect with '-m \"not network\"')",
