@@ -43,7 +43,9 @@ def service_responds(url: str, timeout: float = 1.0) -> bool:
         return False
 
 
-def serverskip(server, port, timeout=2, exitcode=44):
+def serverskip(
+    server: str, port: int, timeout: float = 2, exitcode: int = 44
+) -> None:
     """Ping a remote server and calls `sys.exit()` with given exitcode if it
     doesn't respond within the timeout."""
     try:
@@ -80,7 +82,7 @@ TEST_SERVICES = {
 }
 
 
-def service_config(service):
+def service_config(service: str) -> dict:
     """Return a dict with the configuration of the given test service.
 
     Arguments:
@@ -95,11 +97,11 @@ def service_config(service):
     prefix = f"TRIPPER_TEST_{service.upper()}_"
     for key, default in TEST_SERVICES[service].items():
         value = os.environ.get(prefix + key.upper(), default)
-        config[key] = type(default)(value)
+        config[key] = type(default)(value)  # type: ignore [call-arg]
     return config
 
 
-def service_available(service, timeout=2):
+def service_available(service: str, timeout: float = 2) -> bool:
     """Return true if the given test service can be contacted, otherwise
     false."""
     config = service_config(service)
@@ -113,7 +115,7 @@ def service_available(service, timeout=2):
     return True
 
 
-def serviceskip(service, timeout=2, exitcode=44):
+def serviceskip(service: str, timeout: float = 2, exitcode: int = 44) -> dict:
     """Call `sys.exit()` with the given exit code if the given test
     service cannot be contacted.  Otherwise return its configuration
     (see `service_config()`)."""
