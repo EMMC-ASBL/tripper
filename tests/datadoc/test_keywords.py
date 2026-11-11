@@ -478,8 +478,17 @@ def test_fromdicts_pref_label_fallback_order():
     )
 
 
+def _default_keywords_turtle() -> str:
+    """Return the default keywords serialised as Turtle."""
+    from tripper import Triplestore
+
+    ts = Triplestore(backend="rdflib")
+    keywords.save_rdf(ts)
+    return ts.serialize(format="turtle")
+
+
 def test_save_rdf():
-    """Test missing_keywords() method.  VERY SLOW!"""
+    """Test save_rdf() method."""
     from dataset_paths import outdir  # pylint: disable=import-error
 
     from tripper import Triplestore
@@ -495,14 +504,11 @@ def test_save_rdf():
     assert descr["@type"] == "owl:AnnotationProperty"
     assert descr["rdfs:range"] == "rdf:langString"
 
-    # Create input to test_load_rdf()
     ts.serialize(outdir / "default-keywords.ttl")
 
 
 def test_missing_keywords():
     """Test missing_keywords() method."""
-    from dataset_paths import outdir  # pylint: disable=import-error
-
     from tripper import Triplestore
 
     pytest.importorskip("rdflib")
@@ -516,7 +522,7 @@ def test_missing_keywords():
         len(keywords.keywordnames()) + len(keywords.classnames())
     )
 
-    ts.parse(outdir / "default-keywords.ttl")
+    ts.parse(data=_default_keywords_turtle(), format="turtle")
 
     missing3 = keywords.missing_keywords(ts, include_classes=True)
     assert len(missing3) == 0
@@ -528,8 +534,6 @@ def test_missing_keywords():
 
 def test_load_rdf():
     """Test load_rdf() method."""
-    from dataset_paths import outdir  # pylint: disable=import-error
-
     from tripper import Triplestore
 
     # from tripper.datadoc import acquire
@@ -537,7 +541,7 @@ def test_load_rdf():
 
     ts = Triplestore(backend="rdflib")
     load_datadoc_schema(ts)
-    ts.parse(outdir / "default-keywords.ttl")
+    ts.parse(data=_default_keywords_turtle(), format="turtle")
     ts.bind("eli", "http://data.europa.eu/eli/ontology#")
 
     kw = Keywords(theme=None)
