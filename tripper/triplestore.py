@@ -1043,10 +1043,23 @@ class Triplestore:
         if cardinality:
             lcard = Literal(cardinality, datatype=XSD.nonNegativeInteger)
 
-        for iri in self.subjects(predicate=OWL.onProperty, object=property):
+        if cls:
+            # Much faster than looping over all restrictions on `property`
+            # when the class is given, since a class typically only has
+            # a few direct superclasses
+            candidates = (
+                iri
+                for iri in self.objects(subject=cls, predicate=RDFS.subClassOf)
+                if self.has(iri, OWL.onProperty, property)
+            )
+        else:
+            candidates = self.subjects(
+                predicate=OWL.onProperty, object=property
+            )
+
+        for iri in candidates:
             if (
                 self.has(iri, RDF.type, OWL.Restriction)
-                and (not cls or self.has(cls, RDFS.subClassOf, iri))
                 and any(self.has(iri, p, value) for p in pred)
                 and (
                     not card
