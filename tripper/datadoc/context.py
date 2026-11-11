@@ -4,8 +4,9 @@ import json
 import os
 import re
 import warnings
+from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
 
 from pyld import jsonld
 
@@ -681,7 +682,7 @@ class Context:
         self._shortnamed["@type"] = "@type"
         # Build a reverse map: IRI -> all prefixed aliases (e.g. both
         # "dcterms:license" and "term:license" when two prefixes share an IRI)
-        aliases: "dict[str, list[str]]" = {}
+        aliases: dict[str, list[str]] = {}
         for pfx, ns in prefixes.items():
             for expanded in mappings.values():
                 if expanded.startswith(str(ns)):

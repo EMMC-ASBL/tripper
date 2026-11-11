@@ -115,7 +115,7 @@ def subcommand_find(ts, args):
         raise ValueError(f"Unknown format: {fmt}")
 
     if args.output:
-        with open(args.output, "wt", encoding="utf-8") as f:
+        with open(args.output, "w", encoding="utf-8") as f:
             f.write(s + os.linesep)
     else:
         print(s)

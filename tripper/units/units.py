@@ -30,12 +30,11 @@ from tripper.namespace import atomic_write, get_cachedir
 from tripper.utils import AttrDict, bnode_iri
 
 if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Generator
     from pathlib import Path
     from typing import (
         Any,
-        Generator,
         Optional,
-        Tuple,
         Union,
     )
 
@@ -190,7 +189,7 @@ def base_unit_expression(dimension: Dimension) -> str:
     return " * ".join(expr) if expr else "1"
 
 
-def load_emmo_quantity(ts: Triplestore, iri: str) -> "Tuple[float, str]":
+def load_emmo_quantity(ts: Triplestore, iri: str) -> "tuple[float, str]":
     """Return value and unit for EMMO quantity with given `iri`."""
     isclass = ts.query(f"ASK {{<{iri}> a owl:Class}}")
 
@@ -378,7 +377,7 @@ class Units:
             )
 
         # Created on demand by _get_dimension_maps()
-        self._dimension_maps: "Optional[tuple[dict, dict, dict]]" = None
+        self._dimension_maps: Optional[tuple[dict, dict, dict]] = None
 
         self.ns = Namespace(
             iri="https://w3id.org/emmo#",
@@ -527,7 +526,7 @@ class Units:
         """
         maps = self._dimension_maps
         if maps is None:
-            parents: "dict[str, list]" = {}
+            parents: dict[str, list] = {}
             for s, _, o in self.ts.triples(predicate=RDFS.subClassOf):
                 parents.setdefault(s, []).append(o)
             for superclasses in parents.values():
@@ -600,7 +599,7 @@ class Units:
             return Dimension(*[int(d) for d in m.groups()])
         raise InvalidDimensionStringError(dimstr)
 
-    def _parse_unitname(self, unitname: str) -> "Tuple[float, dict]":
+    def _parse_unitname(self, unitname: str) -> "tuple[float, dict]":
         """Parse CamelCase unit name and return a multiplication factor (from
         prefixes) and a dict mapping each unit component to its power.
 
@@ -1015,7 +1014,7 @@ class Units:
             ]
         )
 
-        with open(filename, "wt", encoding="utf-8") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write("\n".join(content) + "\n")
 
     def clear_cache(self) -> None:

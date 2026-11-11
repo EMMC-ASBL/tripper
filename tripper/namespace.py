@@ -18,7 +18,8 @@ from tripper.errors import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Generator, Optional, Sequence, Union
+    from collections.abc import Generator, Sequence
+    from typing import Optional, Union
 
     from tripper.triplestore import Triplestore
 
@@ -105,8 +106,8 @@ class Namespace:
             tuple(label_annotations) if label_annotations else ()
         )
         self._check = bool(check)
-        self._iris: "Optional[dict]" = {} if need_triplestore else None
-        self._reviris: "dict" = {}
+        self._iris: Optional[dict] = {} if need_triplestore else None
+        self._reviris: dict = {}
         self._reload = reload
         self._triplestore = triplestore
         self._format = format

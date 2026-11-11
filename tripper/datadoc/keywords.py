@@ -4,13 +4,14 @@ import json
 import logging
 import os
 import warnings
+from collections.abc import Sequence
 from copy import deepcopy
 from importlib import import_module
 from io import IOBase
 
 # from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
 
 import yaml
 from rdflib.util import SUFFIX_FORMAT_MAP as RDFLIB_SUFFIX_FORMAT_MAP
@@ -44,7 +45,8 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import IO, Iterable, List, Optional, Set, Tuple, Union
+    from collections.abc import Iterable
+    from typing import IO, Optional, Union
 
     from tripper.datadoc.context import ContextType
 
@@ -223,7 +225,7 @@ class Keywords:
         self.keywords = AttrDict()
 
         # Themes and files that has been parsed
-        self.parsed: "set" = set()
+        self.parsed: set = set()
 
         # Used for parsing dicts. Maps any of the elements in the
         # value to the key (with highest precedence first).
@@ -780,7 +782,7 @@ class Keywords:
         recursive_update(data, {}, cls=dict)
         data["resources"] = resources
 
-        with open(yamlfile, "wt", encoding="utf-8") as f:
+        with open(yamlfile, "w", encoding="utf-8") as f:
             yaml.safe_dump(data, f, sort_keys=False)
 
     def load_table(
@@ -789,7 +791,7 @@ class Keywords:
         format: "Optional[str]" = None,
         prefixes: "Optional[dict]" = None,
         theme: "Optional[str]" = None,
-        basedOn: "Optional[Union[str, List[str]]]" = None,
+        basedOn: "Optional[Union[str, list[str]]]" = None,
         **kwargs,
     ) -> None:
         """Load keywords from a csv file.
@@ -854,7 +856,7 @@ class Keywords:
         self,
         names: "Optional[Sequence]" = None,
         keymode: str = "prefixed",
-    ) -> "List[dict]":
+    ) -> "list[dict]":
         """Return the content of this Keywords object as a list of JSON-LD
         dicts.
 
@@ -951,7 +953,7 @@ class Keywords:
         dicts: "Sequence[dict]",
         prefixes: "Optional[dict]" = None,
         theme: "Optional[str]" = None,
-        basedOn: "Optional[Union[str, List[str]]]" = None,
+        basedOn: "Optional[Union[str, list[str]]]" = None,
         strict: bool = False,
         redefine: str = "raise",
     ) -> None:
@@ -986,7 +988,7 @@ class Keywords:
         dicts: "Sequence[dict]",
         prefixes: "Optional[dict]" = None,
         theme: "Optional[str]" = None,
-        basedOn: "Optional[Union[str, List[str]]]" = None,
+        basedOn: "Optional[Union[str, list[str]]]" = None,
     ) -> dict:
         """Help method for `fromdicts()` that returns a dict with
         keyword definitions following the format of the YAML file.
@@ -1145,7 +1147,7 @@ class Keywords:
         ts: "Triplestore",
         include_classes: bool = False,
         return_existing: bool = False,
-    ) -> "Union[list, Tuple[list, list]]":
+    ) -> "Union[list, tuple[list, list]]":
         """List keywords not defined in triplestore `ts`.
 
         Arguments:
@@ -1544,7 +1546,7 @@ class Keywords:
             indent: Indentation level. Defaults to two.
         """
         context = {"@context": self.get_context()}
-        with open(outfile, "wt", encoding="utf-8") as f:
+        with open(outfile, "w", encoding="utf-8") as f:
             json.dump(context, f, indent=indent)
             f.write(os.linesep)
 
@@ -1554,7 +1556,7 @@ class Keywords:
         classes: "Optional[Union[str, Sequence[str]]]" = None,
         themes: "Optional[Union[str, Sequence[str]]]" = None,
         namespace_filter: "Optional[Union[str, Sequence[str]]]" = None,
-    ) -> "Tuple[Set[str], Set[str], Set[str]]":
+    ) -> "tuple[set[str], set[str], set[str]]":
         """Help function returning a list of keywords corresponding to
         arguments `keywords`, `classes` and `themes`.
 
@@ -1642,7 +1644,7 @@ class Keywords:
     def _keywords_table(
         self,
         keywords: "Sequence[str]",
-    ) -> "List[str]":
+    ) -> "list[str]":
         """Help function for save_markdown_table().
 
         Returns a list with Markdown table documenting the provided
@@ -1693,7 +1695,7 @@ class Keywords:
     ) -> None:
         """Save markdown file with documentation of the keywords."""
         table = self._keywords_table(keywords)
-        with open(outfile, "wt", encoding="utf-8") as f:
+        with open(outfile, "w", encoding="utf-8") as f:
             f.write(os.linesep.join(table) + os.linesep)
 
     def save_markdown(
@@ -1828,7 +1830,7 @@ class Keywords:
         out.append("")
         out.append("")
         out.extend(refs)
-        with open(outfile, "wt", encoding="utf-8") as f:
+        with open(outfile, "w", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
 
     def save_markdown_prefixes(self, outfile: "FileLoc") -> None:
@@ -1857,7 +1859,7 @@ class Keywords:
                 "[User-defined prefixes]: customisation.md/#user-defined-prefixes",  # noqa: E501
             ]
         )
-        with open(outfile, "wt", encoding="utf-8") as f:
+        with open(outfile, "w", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
 
     def _to_table(self, header: "Sequence", rows: "Iterable") -> list:

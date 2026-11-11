@@ -1,7 +1,8 @@
 """Utilities for manipulating dicts and lists."""
 
 import re
-from typing import TYPE_CHECKING, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING
 
 from tripper.datadoc.errors import InvalidDatadocError
 from tripper.namespace import RDFS, SKOS

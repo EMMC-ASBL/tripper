@@ -6,8 +6,8 @@ from tripper.literal import Literal
 from tripper.utils import parse_object
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Sequence
-    from typing import Generator, Optional, Union
+    from collections.abc import Generator, Sequence
+    from typing import Optional, Union
 
     import dlite
 

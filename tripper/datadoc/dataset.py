@@ -69,12 +69,7 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import (
-        List,
-        Optional,
-        Sequence,
-        Union,
-    )
+    from collections.abc import Sequence
 
     from tripper.datadoc.context import ContextType
 
@@ -97,7 +92,7 @@ MATCH_IRI = re.compile(
 logger = logging.getLogger(__name__)
 
 
-def _get_range(keyword: str, keywords: "Optional[Keywords]" = None):
+def _get_range(keyword: str, keywords: Keywords | None = None):
     """Return the range of `keyword`.
 
     If `keywords` is None, the keywords for the default theme are used.
@@ -120,13 +115,13 @@ def show(obj, indent=2) -> None:
 
 
 def told(
-    descr: "Union[dict, list]",
-    type: "Optional[str]" = None,
-    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
-    keywords: "Optional[Keywords]" = None,
-    context: "Optional[Context]" = None,
-    prefixes: "Optional[dict]" = None,
-) -> "AttrDict":
+    descr: dict | list,
+    type: str | None = None,
+    theme: str | Sequence[str] | None = "ddoc:datadoc",
+    keywords: Keywords | None = None,
+    context: Context | None = None,
+    prefixes: dict | None = None,
+) -> AttrDict:
     """Return an updated copy of data description `descr` as valid JSON-LD.
 
     The following transformations are performed:
@@ -241,9 +236,9 @@ def told(
 
 
 def _told(
-    descr: "Union[dict, list, str]",
-    type: "Optional[str]",
-    keywords: "Keywords",
+    descr: dict | list | str,
+    type: str | None,
+    keywords: Keywords,
     context: Context,
     root: bool = False,  # true at first recursive call
     hasid: bool = True,  # whether description has an @id
@@ -379,15 +374,15 @@ def _told(
 
 def store(
     ts: Triplestore,
-    source: "Union[dict, list]",
-    type: "Optional[str]" = None,
-    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
-    keywords: "Optional[Keywords]" = None,
-    context: "Optional[Context]" = None,
-    prefixes: "Optional[dict]" = None,
+    source: dict | list,
+    type: str | None = None,
+    theme: str | Sequence[str] | None = "ddoc:datadoc",
+    keywords: Keywords | None = None,
+    context: Context | None = None,
+    prefixes: dict | None = None,
     method: str = "raise",
-    restrictions: "Optional[dict]" = None,
-    baseiri: "Optional[str]" = None,
+    restrictions: dict | None = None,
+    baseiri: str | None = None,
     unknown_key: str = "raise",
 ) -> dict:
     """Store documentation of a resource to a triplestore.
@@ -500,17 +495,17 @@ def store(
 
 def save_dict(
     ts: Triplestore,
-    source: "Union[dict, list]",
-    type: "Optional[str]" = None,
-    context: "Optional[Context]" = None,
-    keywords: "Optional[Keywords]" = None,
-    prefixes: "Optional[dict]" = None,
+    source: dict | list,
+    type: str | None = None,
+    context: Context | None = None,
+    keywords: Keywords | None = None,
+    prefixes: dict | None = None,
     method: str = "merge",
     unknown_key: str = "raise",
     # The unnecessary strictness of the "build documentation" CI enforces us
     # to add a `restrictions` argument to save_dict(), although this argument
     # came after that save_dict() was renamed.
-    restrictions: "Optional[dict]" = None,
+    restrictions: dict | None = None,
 ) -> dict:
     """This function is deprecated. Use store() instead."""
     warnings.warn(
@@ -554,9 +549,9 @@ def _isclass(d, context):
 
 
 def update_context(
-    source: "Union[dict, list]",
-    context: "Context",
-) -> "Context":
+    source: dict | list,
+    context: Context,
+) -> Context:
     """Update `context` with information from `source`.
 
     Currently this only adds classes defined in `source` to `context`.
@@ -611,8 +606,8 @@ def update_context(
 
 
 def infer_restriction_types(
-    source: "Union[dict, list]",
-    context: "Optional[Context]" = None,
+    source: dict | list,
+    context: Context | None = None,
 ) -> dict:
     """Return a dict that describes default restriction types used by
     update_restrictions().
@@ -726,10 +721,10 @@ def infer_restriction_types(
 
 
 def update_restrictions(
-    source: "Union[dict, list]",
-    context: "Optional[Context]" = None,
-    restrictions: "Optional[dict]" = None,
-) -> "Union[dict, list]":
+    source: dict | list,
+    context: Context | None = None,
+    restrictions: dict | None = None,
+) -> dict | list:
     """Update `source`, ensuring that relations on and to classes
     are correctly represented as restrictions in OWL.
 
@@ -881,8 +876,8 @@ def save_extra_content(ts: Triplestore, source: dict) -> None:
 def acquire(
     ts: Triplestore,
     iri: str,
-    use_sparql: "Optional[bool]" = None,
-    context: "Optional[ContextType]" = None,
+    use_sparql: bool | None = None,
+    context: ContextType | None = None,
 ) -> dict:
     """Load description of a resource from the triplestore.
 
@@ -930,7 +925,7 @@ def acquire(
 def load_dict(
     ts: Triplestore,
     iri: str,
-    use_sparql: "Optional[bool]" = None,
+    use_sparql: bool | None = None,
 ) -> dict:
     """This function is deprecated. Use acquire() instead."""
     warnings.warn(
@@ -945,7 +940,7 @@ def load_dict(
 def _load_triples(
     ts: Triplestore,
     iri: str,
-    context: "Optional[Context]" = None,
+    context: Context | None = None,
 ) -> dict:
     """Load `iri` from triplestore by calling `ts.triples()`."""
     if context is None:
@@ -991,9 +986,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     return dct
 
 
-def get_values(
-    data: "Union[dict, list]", key: str, extend: bool = True
-) -> list:
+def get_values(data: dict | list, key: str, extend: bool = True) -> list:
     """Parse `data` recursively and return a list with the values
     corresponding to the given key.
 
@@ -1020,7 +1013,7 @@ def get_values(
 
 
 def get_jsonld_context(
-    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+    context: str | dict | Sequence[str | dict] | None = None,
     timeout: float = 5,
     fromfile: bool = True,
 ) -> dict:
@@ -1049,7 +1042,7 @@ def get_jsonld_context(
     )
 
     if fromfile:
-        with open(CONTEXT_PATH, "r", encoding="utf-8") as f:
+        with open(CONTEXT_PATH, encoding="utf-8") as f:
             ctx = json.load(f)["@context"]
     else:
         r = requests.get(CONTEXT_URL, allow_redirects=True, timeout=timeout)
@@ -1076,7 +1069,7 @@ def get_jsonld_context(
 
 
 def get_prefixes(
-    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+    context: str | dict | Sequence[str | dict] | None = None,
     timeout: float = 5,
     fromfile: bool = True,
 ) -> dict:
@@ -1107,7 +1100,7 @@ def get_prefixes(
 
 
 def get_shortnames(
-    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+    context: str | dict | Sequence[str | dict] | None = None,
     timeout: float = 5,
     fromfile: bool = True,
 ) -> dict:
@@ -1150,7 +1143,7 @@ def load_list(ts: Triplestore, iri: str):
     return lst
 
 
-def read_datadoc(filename: "Union[str, Path]") -> dict:
+def read_datadoc(filename: str | Path) -> dict:
     """Read YAML data documentation and return it as a dict.
 
     The filename may also be an URL to a file accessible with HTTP GET.
@@ -1165,10 +1158,10 @@ def read_datadoc(filename: "Union[str, Path]") -> dict:
 
 def save_datadoc(
     ts: Triplestore,
-    file_or_dict: "Union[str, Path, dict]",
-    keywords: "Optional[Keywords]" = None,
-    context: "Optional[Context]" = None,
-    baseiri: "Optional[str]" = None,
+    file_or_dict: str | Path | dict,
+    keywords: Keywords | None = None,
+    context: Context | None = None,
+    baseiri: str | None = None,
     unknown_key: str = "raise",
 ) -> dict:
     """Populate triplestore with data documentation.
@@ -1214,9 +1207,9 @@ def save_datadoc(
 
 
 def _handle_unknown_keywords(
-    source: "Union[dict, list]",
-    keywords: "Keywords",
-    context: "Context",
+    source: dict | list,
+    keywords: Keywords,
+    context: Context,
     unknown_key: str = "raise",
 ) -> None:
     """Handle unknown keys in a JSON-LD document in place."""
@@ -1278,9 +1271,9 @@ def _handle_unknown_keywords(
 
 def validate(
     dct: dict,
-    type: "Optional[str]" = None,
-    context: "Optional[Context]" = None,
-    keywords: "Optional[Keywords]" = None,
+    type: str | None = None,
+    context: Context | None = None,
+    keywords: Keywords | None = None,
 ) -> None:
     """Validates single-resource dict `dct`.
 
@@ -1298,7 +1291,7 @@ def validate(
     if context is None:
         context = Context(keywords=keywords)
 
-    effective_type: "Optional[Union[str, Sequence[str]]]" = type
+    effective_type: str | Sequence[str] | None = type
 
     if effective_type is None and "@type" in dct:
         detected_type = dct["@type"]
@@ -1366,7 +1359,7 @@ def validate(
         _check_keywords(k, v)
 
     if effective_type:
-        keyword_check_type: "Union[str, Sequence[str]]"
+        keyword_check_type: str | Sequence[str]
         if isinstance(effective_type, list):
             typename = None
             for t in effective_type:
@@ -1412,11 +1405,11 @@ def get_partial_pipeline(
     ts: Triplestore,
     client,
     iri: str,
-    context: "Optional[Context]" = None,
-    parser: "Optional[Union[bool, str]]" = None,
-    generator: "Optional[Union[bool, str]]" = None,
-    distribution: "Optional[str]" = None,
-    use_sparql: "Optional[bool]" = None,
+    context: Context | None = None,
+    parser: bool | str | None = None,
+    generator: bool | str | None = None,
+    distribution: str | None = None,
+    use_sparql: bool | None = None,
 ) -> bytes:
     """Returns a OTELib partial pipeline.
 
@@ -1561,13 +1554,13 @@ def delete_iri(ts: Triplestore, iri: str) -> None:
 def make_query(
     ts: Triplestore,
     type=None,
-    criterias: "Optional[dict]" = None,  # deprecated
-    criteria: "Optional[dict]" = None,  # new preferred name
-    regex: "Optional[dict]" = None,
-    flags: "Optional[str]" = None,
-    keywords: "Optional[Keywords]" = None,
-    query_type: "Optional[str]" = "SELECT DISTINCT",
-) -> "str":
+    criterias: dict | None = None,  # deprecated
+    criteria: dict | None = None,  # new preferred name
+    regex: dict | None = None,
+    flags: str | None = None,
+    keywords: Keywords | None = None,
+    query_type: str | None = "SELECT DISTINCT",
+) -> str:
     """Help function for creating a SPARQL query.
 
     See search() for description of arguments.
@@ -1695,13 +1688,13 @@ def make_query(
 def search(
     ts: Triplestore,
     type=None,
-    criterias: "Optional[dict]" = None,  # deprecated
-    criteria: "Optional[dict]" = None,  # new preferred name
-    regex: "Optional[dict]" = None,
-    flags: "Optional[str]" = None,
-    keywords: "Optional[Keywords]" = None,
-    skipblanks: "bool" = True,
-) -> "List[str]":
+    criterias: dict | None = None,  # deprecated
+    criteria: dict | None = None,  # new preferred name
+    regex: dict | None = None,
+    flags: str | None = None,
+    keywords: Keywords | None = None,
+    skipblanks: bool = True,
+) -> list[str]:
     """Return a list of IRIs for all matching resources.
 
     Arguments:
@@ -1800,12 +1793,12 @@ def search(
 def search_iris(
     ts: Triplestore,
     type=None,
-    criterias: "Optional[dict]" = None,
-    regex: "Optional[dict]" = None,
-    flags: "Optional[str]" = None,
-    keywords: "Optional[Keywords]" = None,
-    skipblanks: "bool" = True,
-) -> "List[str]":
+    criterias: dict | None = None,
+    regex: dict | None = None,
+    flags: str | None = None,
+    keywords: Keywords | None = None,
+    skipblanks: bool = True,
+) -> list[str]:
     """This function is deprecated. Use search() instead."""
     warnings.warn(
         "tripper.datadoc.search_iris() is deprecated. "
@@ -1827,11 +1820,11 @@ def search_iris(
 def delete(
     ts: Triplestore,
     type=None,
-    criterias: "Optional[dict]" = None,  # deprecated
-    criteria: "Optional[dict]" = None,  # new preferred name
-    regex: "Optional[dict]" = None,
-    flags: "Optional[str]" = None,
-    keywords: "Optional[Keywords]" = None,
+    criterias: dict | None = None,  # deprecated
+    criteria: dict | None = None,  # new preferred name
+    regex: dict | None = None,
+    flags: str | None = None,
+    keywords: Keywords | None = None,
 ) -> None:
     """Delete matching resources.
 

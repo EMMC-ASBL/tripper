@@ -24,18 +24,18 @@ from tripper.datadoc.dataset import acquire, add, get, store
 from tripper.utils import AttrDict
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional, Sequence, Union
+    from collections.abc import Sequence
 
 
 def save(
     ts: Triplestore,
     data: bytes,
-    class_iri: "Optional[str]" = None,
-    dataset: "Optional[Union[str, dict]]" = None,
-    distribution: "Optional[Union[str, dict]]" = None,
-    generator: "Optional[str]" = None,
-    prefixes: "Optional[dict]" = None,
-    use_sparql: "Optional[bool]" = None,
+    class_iri: str | None = None,
+    dataset: str | dict | None = None,
+    distribution: str | dict | None = None,
+    generator: str | None = None,
+    prefixes: dict | None = None,
+    use_sparql: bool | None = None,
     method: str = "raise",
 ) -> str:
     """Saves data to a dataresource and document it in the triplestore.
@@ -215,8 +215,8 @@ def save(
 def load(
     ts: Triplestore,
     iri: str,
-    distributions: "Optional[Union[str, Sequence[str]]]" = None,
-    use_sparql: "Optional[bool]" = None,
+    distributions: str | Sequence[str] | None = None,
+    use_sparql: bool | None = None,
     retries: int = 1,
 ) -> bytes:
     """Load dataset with given IRI from its source.
@@ -283,10 +283,10 @@ def load(
                     if n < retries - 1:
                         time.sleep(1)
                     else:
-                        raise IOError(
+                        raise OSError(
                             f"cannot access dataset '{iri}' using "
                             f"scheme={scheme}, location={location} "
                             f"and options='{p.query}'"
                         ) from exc
 
-    raise IOError(f"Cannot access dataset: {iri}")
+    raise OSError(f"Cannot access dataset: {iri}")
