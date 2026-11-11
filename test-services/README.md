@@ -47,10 +47,11 @@ running the tests, e.g.
 
 - fuseki is started with admin password `admin0` and a `test_repo`
   dataset.
-- Starting graphdb also starts the one-shot `graphdb-init` service,
-  which creates the `test_repo` repository with full-text search from
-  [graphdb-test_repo-config.ttl](graphdb-test_repo-config.ttl), unless
-  it already exists.
+- graphdb is started with a `test_repo` repository with full-text
+  search, created from
+  [graphdb-test_repo-config.ttl](graphdb-test_repo-config.ttl) by the
+  health check of the service.  The service is reported healthy when
+  `test_repo` exists.
 
 
 Continuous integration

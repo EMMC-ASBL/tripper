@@ -48,26 +48,22 @@ services:
     image: docker.io/ontotext/graphdb:10.8.3
     ports:
       - "${TRIPPER_TEST_GRAPHDB_PORT:-7200}:7200"
+    volumes:
+      - ./graphdb-test_repo-config.ttl:/test_repo-config.ttl:ro,z
+    # The health check also creates the "test_repo" repository if it
+    # doesn't exist, so graphdb is only reported healthy when test_repo
+    # is ready.  This is done in the health check instead of in a
+    # one-shot service, since `docker compose up --wait` fails when a
+    # container exits, even with exit code 0.
     healthcheck:
-      test: ["CMD-SHELL", "curl -fs http://localhost:7200/protocol || exit 1"]
+      test:
+        - CMD-SHELL
+        - >-
+          curl -fs http://localhost:7200/protocol >/dev/null
+          && { curl -fs http://localhost:7200/rest/repositories/test_repo
+          >/dev/null
+          || curl -fs -X POST -F config=@/test_repo-config.ttl
+          http://localhost:7200/rest/repositories; }
       interval: 5s
       timeout: 3s
       retries: 30
-
-  # One-shot service that creates the "test_repo" repository in graphdb
-  # (if it doesn't already exist) when graphdb is up.
-  graphdb-init:
-    image: docker.io/curlimages/curl:8.23.0
-    depends_on:
-      graphdb:
-        condition: service_healthy
-    volumes:
-      - ./graphdb-test_repo-config.ttl:/config.ttl:ro,z
-    command:
-      - sh
-      - -c
-      - >-
-        curl -fs http://graphdb:7200/rest/repositories/test_repo >/dev/null
-        || curl -fsS -X POST -F config=@/config.ttl
-        http://graphdb:7200/rest/repositories
-    restart: "no"
