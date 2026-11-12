@@ -56,7 +56,10 @@ backends = [
     "rdflib>=6.3.0,<=7.6.0",
 ]
 testing-core = [
-    "pytest==9.2.0",
+    # pytest 9.2 breaks `--dist=loadgroup` in pytest-xdist 3.8.0, which
+    # sets the removed `Item._nodeid` attribute.  Keep 9.1 until xdist
+    # is fixed (also ignored in .github/dependabot.yml).
+    "pytest==9.1.1",
     "pytest-cov==7.1.0",
     "pytest-xdist==3.8.0",
 ]
