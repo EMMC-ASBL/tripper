@@ -3,6 +3,9 @@
 
 import pytest
 
+# tripper.mappings depends on pint
+pytest.importorskip("pint")
+
 
 def test_mappings():
     """Test mappings.
