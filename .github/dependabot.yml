@@ -26,6 +26,12 @@ updates:
     day: monday
     time: "05:30"
   versioning-strategy: increase-if-necessary
+  ignore:
+    # pytest 9.2 breaks `--dist=loadgroup` in pytest-xdist 3.8.0, so the
+    # tests sharing the Fuseki/GraphDB test services run concurrently and
+    # fail.  Remove when pytest-xdist supports pytest 9.2.
+    - dependency-name: pytest
+      versions: [">=9.2"]
   groups:
     python-dependencies:
       patterns: ["*"]
