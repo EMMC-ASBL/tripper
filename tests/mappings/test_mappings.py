@@ -55,6 +55,25 @@ digraph G {
     # routes.visualise(0, output="graph.png", format="png", dot="dot")
 
 
+def test_value_init():
+    """Test Value.__init__()."""
+    from tripper.mappings import Value
+
+    def length():
+        return 3.0
+
+    # The IRI is used if it is given
+    assert Value(3.0, iri="ex:a").output_iri == "ex:a"
+
+    # Otherwise, the name of a function value is used as IRI
+    value = Value(length)
+    assert value.output_iri == "length"
+    assert value.value == 3.0
+
+    # Other values get a blank node IRI
+    assert Value(3.0).output_iri.startswith("_:value_")
+
+
 def test_value_repr():
     """Test Value.__repr__()."""
     from tripper.mappings import Value

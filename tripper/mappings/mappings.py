@@ -100,7 +100,7 @@ class Value:
         self.unit = unit
         if iri:
             self.output_iri = iri
-        elif hasattr(value, __name__):
+        elif hasattr(value, "__name__"):
             self.output_iri = value.__name__
         else:
             self.output_iri = f"_:value_{id(value)}"

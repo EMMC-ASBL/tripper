@@ -109,9 +109,14 @@ def save(
             "if given, `dataset` should be either a string or dict"
         )
 
+    # Whether the distribution is taken from the dataset documentation.
+    # In that case, it is already referred to by the dataset.
+    from_dataset = False
+
     if distribution is None:
         if "distribution" in dataset:
             distribution = get(dataset, "distribution")[0]
+            from_dataset = True
         else:
             newiri = f"_:N{secrets.token_hex(16)}"
             distribution = AttrDict(
@@ -128,16 +133,20 @@ def save(
             distribution = AttrDict(
                 {"@id": distribution, "@type": DCAT.Distribution}
             )
-            add(dataset, "distribution", distribution)
-            triples.append((dataset["@id"], DCAT.distribution, newiri))
+            if not from_dataset:
+                add(dataset, "distribution", distribution)
+                triples.append(
+                    (dataset["@id"], DCAT.distribution, distribution["@id"])
+                )
             save_distribution = True
     elif isinstance(distribution, dict):
-        add(dataset, DCAT.distribution, distribution)
-        if "@id" in distribution:
-            triples.append(
-                (dataset["@id"], DCAT.distribution, distribution["@id"])
-            )
-        save_distribution = True
+        if not from_dataset:
+            add(dataset, DCAT.distribution, distribution)
+            if "@id" in distribution:
+                triples.append(
+                    (dataset["@id"], DCAT.distribution, distribution["@id"])
+                )
+            save_distribution = True
     else:
         raise TypeError(
             "if given, `distribution` should be either a string or dict"
@@ -173,6 +182,11 @@ def save(
 
     # Save data
     url = distribution.get("downloadURL", distribution.get("accessURL"))
+    if not url:
+        raise ValueError(
+            f"distribution '{distribution['@id']}' has neither a "
+            "downloadURL nor an accessURL"
+        )
     p = urlparse(str(url.decode() if isinstance(url, bytes) else url))
     scheme = (
         schemes.get(p.scheme, p.scheme) if p.scheme else "file"  # type: ignore

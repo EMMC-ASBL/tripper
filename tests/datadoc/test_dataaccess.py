@@ -55,10 +55,8 @@ def test_save():
         assert iri.startswith("_:")
         assert file2.read_bytes() == b"second data"
 
-        # Saving to an existing dataset uses its distribution.
-        # method="overwrite" is needed, since save() stores the
-        # documentation of the (blank node) distribution again.
-        save(ts, b"updated data", dataset=EX + "dataset1", method="overwrite")
+        # Saving to an existing dataset uses its distribution
+        save(ts, b"updated data", dataset=EX + "dataset1")
         assert file1.read_bytes() == b"updated data"
 
     # `dataset` and `distribution` must be either a string or dict
@@ -66,6 +64,10 @@ def test_save():
         save(ts, b"data", dataset=1)
     with pytest.raises(TypeError):
         save(ts, b"data", dataset=EX + "dataset3", distribution=1)
+
+    # A distribution that is not documented has no URL to save to
+    with pytest.raises(ValueError, match="neither a downloadURL nor"):
+        save(ts, b"data", dataset=EX + "dataset3", distribution=EX + "nodistr")
 
     # Asking for a generator that the distribution doesn't have
     with pytest.raises(ValueError, match="has no such generator"):

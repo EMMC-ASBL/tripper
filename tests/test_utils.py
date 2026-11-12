@@ -182,6 +182,20 @@ def test_infer_iri():
         def schema(self):
             return {}
 
+    class AnyUrl:
+        """Like pydantic.AnyUrl, which is not a string."""
+
+        def __init__(self, url):
+            self.url = url
+
+        def __str__(self):
+            return self.url
+
+    class Soft7ModelV2(Soft7Model):
+        """Like a SOFT7 model in Pydantic v2, where `identity` is an AnyUrl."""
+
+        identity = AnyUrl("http://onto-ns.com/meta/0.1/Soft7v2")
+
     class PydanticModel:
         """Like a Pydantic model, whose schema() describes its properties."""
 
@@ -200,6 +214,7 @@ def test_infer_iri():
 
     # SOFT7 Pydantic models
     assert infer_iri(Soft7Model()) == "http://onto-ns.com/meta/0.1/Soft7"
+    assert infer_iri(Soft7ModelV2()) == "http://onto-ns.com/meta/0.1/Soft7v2"
 
     # Other Pydantic models, with an IRI as `uri`, `identity` or `uuid`
     # property
