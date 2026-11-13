@@ -4,7 +4,6 @@ import pytest
 
 pytest.importorskip("pyld")
 
-# pylint: disable=wrong-import-position
 from tripper.datadoc.context import Context, get_context
 
 # A fixture used by all the tests
@@ -42,7 +41,7 @@ def test_add_context():
 
 def test_add_context_seq():
     """Test add_context() method with list input."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     c = Context(theme=None)
     assert c.get_mappings() == {}
@@ -126,20 +125,34 @@ def test_sync_prefixes():
     from tripper import Triplestore
 
     ts = Triplestore("rdflib")
-    ns1 = ts.namespaces.copy()
-    pf1 = ctx.get_prefixes().copy()
     ctx.sync_prefixes(ts)
     ns2 = ts.namespaces.copy()
     pf2 = ctx.get_prefixes().copy()
-    assert len(ns2) > len(ns1)
-    assert len(pf2) >= len(pf1)
     # xml cannot be added to `ctx` since it doesn't end with a slash or hash
-    # assert pf2 == ns2
+    # Remove prefixes not ending with slash or hash from ns2
+    for prefix, ns in ns2.copy().items():
+        if str(ns)[-1] not in "/#":
+            del ns2[prefix]
+    assert pf2 == ns2
+
+    # Test update=False
+    ts.bind("ex", "http://example.com/")
+    ctx.add_prefixes({"ex": "http://www.ex.com/"})
+    ctx.sync_prefixes(ts, update=False)
+    assert str(ts.namespaces["ex"]) == "http://www.ex.com/"
+    assert ctx.get_prefixes()["ex"] == "http://www.ex.com/"
+
+    # Test update=True
+    ts.bind("ex", "http://example.com/")
+    ctx.add_prefixes({"ex": "http://www.ex.com/"})
+    ctx.sync_prefixes(ts, update=True)
+    assert str(ts.namespaces["ex"]) == "http://example.com/"
+    assert ctx.get_prefixes()["ex"] == "http://example.com/"
 
 
 def test_expand():
     """Test expand() method."""
-    from tripper import DCAT, DCTERMS
+    from tripper import DCAT, DCTERMS, EMMO
     from tripper.errors import NamespaceError
 
     assert ctx.expand("mediaType") == DCAT.mediaType
@@ -148,6 +161,11 @@ def test_expand():
     assert ctx.expand(DCAT.mediaType) == DCAT.mediaType
     assert ctx.expand(DCAT.distribution) == DCAT.distribution
     assert ctx.expand("non-existing") == "non-existing"
+    assert ctx.expand("emmo:Atom") == "https://w3id.org/emmo#Atom"
+
+    # Perform namespace expansion as well
+    ctx.add_prefixes({"emmo": EMMO})
+    assert ctx.expand("emmo:Atom") == EMMO.Atom
 
     with pytest.raises(NamespaceError):
         ctx.expand("non-existing", strict=True)
@@ -292,7 +310,6 @@ def test_is_class():
 
 def test_to_triplestore():
     """Test to_triplestore() method."""
-    # pylint: disable=too-many-locals
     from tripper import OWL, RDF, RDFS, Namespace, Triplestore
     from tripper.errors import NamespaceError
 

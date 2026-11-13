@@ -1,7 +1,5 @@
 """Test utils"""
 
-# pylint: disable=invalid-name,too-few-public-methods,import-outside-toplevel
-
 import pytest
 
 
@@ -11,21 +9,24 @@ def test_AttrDict():
 
     d = AttrDict(a=1, b=2)
     assert d.a == 1
-    assert repr(d) == """AttrDict({
+    assert (
+        repr(d)
+        == """AttrDict({
   'a': 1,
   'b': 2,
 })"""
+    )
     assert repr(AttrDict()) == "AttrDict()"
 
     with pytest.raises(KeyError):
-        d.c  # pylint: disable=pointless-statement
+        d.c
 
     d.c = 3
     assert d.c == 3
 
     d.get = 4
     assert d["get"] == 4
-    assert d.get("get") == 4  # pylint: disable=not-callable
+    assert d.get("get") == 4
 
     d2 = AttrDict({"a": "A"})
     assert d2.a == "A"
@@ -101,7 +102,6 @@ def test_recursive_update():
 
 def test_openfile():
     """Test openfile()."""
-    # pylint: disable=no-member
     from paths import indir
 
     from tripper.utils import openfile
@@ -118,11 +118,11 @@ def test_openfile():
     with openfile(open(indir / "openfile.txt", encoding="utf-8")) as f:
         assert f.read().strip() == "Example file."
 
-    with pytest.raises(IOError):
-        with openfile("xxx://unknown_scheme"):
-            pass
+    with pytest.raises(IOError), openfile("xxx://unknown_scheme"):
+        pass
 
 
+@pytest.mark.network
 def test_openfile_http():
     """Test openfile()."""
     from tripper.utils import openfile
@@ -133,7 +133,7 @@ def test_openfile_http():
         "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
         "master/tests/input/openfile.txt"
     ) as f:
-        assert f.read().strip() == "Example file."  # pylint: disable=no-member
+        assert f.read().strip() == "Example file."
 
 
 def infer_IRIs():
@@ -166,7 +166,7 @@ def infer_SOFT7_IRIs():
     pytest.importorskip("pydantic")
     from typing import Any, Optional
 
-    from pydantic import (  # pylint: disable=no-name-in-module,import-error
+    from pydantic import (
         AnyUrl,
         BaseModel,
         Field,
@@ -177,7 +177,6 @@ def infer_SOFT7_IRIs():
     class Property(BaseModel):
         """A property."""
 
-        # pylint: disable=unsubscriptable-object
         # Yet another pylint bug, see
         # https://github.com/PyCQA/pylint/issues/1498
         type: Any = Field(..., description="Valid type name.")
@@ -192,7 +191,6 @@ def infer_SOFT7_IRIs():
     class Entity(BaseModel):
         """An entity."""
 
-        # pylint: disable=unsubscriptable-object
         identity: AnyUrl = Field(
             ..., description="Unique URI identifying the entity."
         )
@@ -477,14 +475,14 @@ def test_extend_namespace():
 
     # Test extending with dict
     with pytest.raises(NoSuchIRIError):
-        FOOD.Hamburger  # pylint: disable=pointless-statement
+        FOOD.Hamburger
 
     extend_namespace(FOOD, {"Hamburger": FOOD + "Hamburger"})
     assert FOOD.Hamburger == FOOD + "Hamburger"
 
     # Test extending with triplestore
     with pytest.raises(NoSuchIRIError):
-        FOOD.Fish  # pylint: disable=pointless-statement
+        FOOD.Fish
 
     extend_namespace(FOOD, ontodir / "food-more.ttl")
     assert FOOD.Fish == FOOD + "FOOD_90f5dd54_9e5c_46c9_824f_e10625a90c26"
@@ -494,6 +492,7 @@ def test_extend_namespace():
         extend_namespace(EX, {"Item": EX + "Item"})
 
 
+@pytest.mark.network
 def test_expand_iri():
     """Test expand_iri()."""
     pytest.importorskip("rdflib")
@@ -521,7 +520,6 @@ def test_expand_iri():
     # A `Namespace` instance with label lookup should also resolve
     # labels in full IRIs (not just prefixed names).
     onto = Namespace("http://example.com/onto#")
-    # pylint: disable=protected-access
     onto._iris = {
         "DFTComputation": "http://example.com/onto#EMMO_123",
         "EMMO_124": "http://example.com/onto#EMMO_124",
@@ -545,27 +543,41 @@ def test_expand_iri():
     )
 
 
+@pytest.mark.network
 def test_prefix_iri():
     """Test prefix_iri()."""
     pytest.importorskip("rdflib")
 
-    from tripper import CHAMEO, DCTERMS, OTEIO, RDF
+    from tripper import CHAMEO, DCTERMS, EMMO, OTEIO, RDF
     from tripper.errors import NamespaceError
     from tripper.utils import prefix_iri
 
     prefixes = {
-        "chameo": str(CHAMEO),
-        "dcterms": str(DCTERMS),
-        "oteio": str(OTEIO),
-        "rdf": str(RDF),
+        "chameo": CHAMEO,
+        "dcterms": DCTERMS,
+        "emmo": EMMO,
+        "oteio": OTEIO,
+        "rdf": RDF,
     }
     assert prefix_iri(CHAMEO.Sample, prefixes) == "chameo:Sample"
     assert prefix_iri(DCTERMS.title, prefixes) == "dcterms:title"
     assert prefix_iri(OTEIO.Parser, prefixes) == "oteio:Parser"
     assert prefix_iri(RDF.type, prefixes) == "rdf:type"
+    assert prefix_iri("rdf:type", prefixes) == "rdf:type"
     assert prefix_iri("xxx", prefixes) == "xxx"
     with pytest.raises(NamespaceError):
         prefix_iri("xxx", prefixes, strict=True)
+
+    assert prefix_iri("emmo:Atom", prefixes) == (
+        "emmo:EMMO_eb77076b_a104_42ac_a065_798b2d2809ad"
+    )
+    assert prefix_iri(EMMO.Atom, prefixes) == (
+        "emmo:EMMO_eb77076b_a104_42ac_a065_798b2d2809ad"
+    )
+    assert prefix_iri("emmo:Atom", prefixes, ns_translate=False) == "emmo:Atom"
+    assert prefix_iri(EMMO.Atom, prefixes, ns_translate=False) == (
+        "emmo:EMMO_eb77076b_a104_42ac_a065_798b2d2809ad"
+    )
 
 
 def test_substitute_query():
@@ -588,8 +600,7 @@ def test_substitute_query():
             query="SELECT ?s WHERE { ?s $name $obj }",
             iris={
                 "name": (
-                    'http://xmlns.com/foaf/0.1/name> "x" . '
-                    "<something nasty> <"
+                    'http://xmlns.com/foaf/0.1/name> "x" . <something nasty> <'
                 )
             },
             literals={"obj": 'John Dow" . <something nasty> "'},

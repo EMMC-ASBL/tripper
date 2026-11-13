@@ -1,18 +1,18 @@
 """Test using SPARQL via Tripper."""
 
-# pylint: disable=invalid-name,import-outside-toplevel
-
 import pytest
 
 
+@pytest.mark.network
 def test_sparql_select():
     """Test SPARQL SELECT query."""
     pytest.importorskip("rdflib")
     from tripper import Triplestore
 
-    # Load pre-inferred EMMO
+    # Load EMMO.  Use a fixed version, since the query depends on how
+    # units are represented (individuals since EMMO 1.0.4)
     ts = Triplestore("rdflib", base_iri="https://w3id.org/emmo#")
-    ts.parse("https://w3id.org/emmo#inferred")
+    ts.parse("https://w3id.org/emmo/1.1.0")
 
     # Bind "emmo" prefix to base_iri
     EMMO = ts.bind("emmo", label_annotations=True, check=True)
@@ -111,12 +111,11 @@ def test_sparql_select2():
     r = ts.query(query)
 
     assert set(r) == {
-        (Literal("Alice"), Literal("Bob"), "None"),
+        (Literal("Alice"), Literal("Bob"), None),
         (Literal("Alice"), Literal("Clare"), Literal("CT")),
     }
 
 
-# if True:
 def test_sparql_construct2():
     """Test SPARQL CONSTRUCT query."""
     # From https://www.w3.org/TR/rdf-sparql-query/#construct

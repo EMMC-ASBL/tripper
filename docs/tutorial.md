@@ -220,9 +220,9 @@ Note:
 2. The curly brackets after the `WHERE` clause have to be written `{{`, `}}` because the query is an f-string.
 
 ```python
-# Load pre-inferred EMMO
+# Load EMMO 1.1.0
 >>> ts = Triplestore("rdflib", base_iri="https://w3id.org/emmo#")
->>> ts.parse("https://w3id.org/emmo#inferred")
+>>> ts.parse("https://w3id.org/emmo/1.1.0")
 
 # Bind "emmo" prefix to base_iri
 >>> EMMO = ts.bind("emmo", label_annotations=True, check=True)
@@ -332,6 +332,7 @@ A namespace object for this data model can be created with
 
 ```python
 from tripper import Namespace
+
 DM = Namespace("http://onto-ns.com/meta/ex/0.1/MyDataModel#")
 ```
 
@@ -347,6 +348,7 @@ Here we repeat the above with DLite:
 
 ```python
 import dlite
+
 mymodel = dlite.get_instance("http://onto-ns.com/meta/ex/0.1/MyDataModel")
 ts.map(mymodel.velocity, ONTO.Velocity)
 ```
@@ -359,7 +361,8 @@ For example, to semantically document the general function `mean()` applied to t
 ```python
 def mean(x, y):
     """Returns the mean value of `x` and `y`."""
-    return (x + y)/2
+    return (x + y) / 2
+
 
 ts.add_function(
     mean,

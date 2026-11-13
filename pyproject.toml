@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=3.4,<4"]
+requires = ["flit_core >=3.4,<5"]
 build-backend = "flit_core.buildapi"
 
 [project]
@@ -19,6 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Environment :: Plugins",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -40,42 +41,48 @@ mappings = [
 ]
 datadoc = [
     "tripper[mappings]",
-    "keyring>=22.0.0,<25.6.1",
+    "keyring>=22.0.0,<25.7.1",
     "PyLD>=2.0.0,<3.0.0; python_version<'3.10'",
-    "PyLD>=2.0.0,<3.0.1; python_version>='3.10'",
+    "PyLD>=2.0.0,<3.3.1; python_version>='3.10'",
     "PyYaml>=3.0.0,<6.0.4",
     "requests>=2.0.0,<3.4.1",
     "sparqlwrapper>=2.0.0,<2.0.1",
     "openpyxl ~= 3.0"
 ]
 backends = [
-    "dlite-python>=0.5.27",
-    "emmontopy>=0.5.0,<=0.11.3",
-    "graphviz>=0.20.1,<0.20.4",
-    "numpy<2.1.0; python_version=='3.13'",
+    "dlite-python>=0.5.27; python_version<'3.15'",  # no wheels for 3.15 yet
+    "emmontopy>=0.5.0,<=0.11.4",
+    "graphviz>=0.20.1,<0.22.0",
     "rdflib>=6.3.0,<=7.6.0",
 ]
 testing-core = [
+    # pytest 9.2 breaks `--dist=loadgroup` in pytest-xdist 3.8.0, which
+    # sets the removed `Item._nodeid` attribute.  Keep 9.1 until xdist
+    # is fixed (also ignored in .github/dependabot.yml).
     "pytest==9.1.1",
-    "pytest-cov==6.0.0",
+    "pytest-cov==7.1.0",
+    "pytest-xdist==3.8.0",
 ]
 testing = [
     "tripper[datadoc,backends,testing-core]",
 ]
 docs = [
     "tripper[testing]",
-    "mike==2.1.3",
+    "mike==2.2.0",
     "mkdocs==1.6.1",
-    "mkdocs-autorefs==1.4.1",
+    "mkdocs-autorefs==1.4.4",
     "mkdocs-awesome-pages-plugin==2.10.1",
-    "mkdocs-github-admonitions-plugin==0.0.3",
-    "mkdocs-material==9.6.11",
-    "mkdocstrings==0.27.0",
-    "mkdocstrings-python-legacy==0.2.4",
+    "mkdocs-get-deps==0.2.2",
+    "mkdocs-github-admonitions-plugin==0.1.2",
+    "mkdocs-material==9.7.7",
+    "mkdocs-material-extensions==1.3.1",
+    "mkdocstrings==1.0.7",
+    "mkdocstrings-python-legacy==0.2.7",
+    "pymdown-extensions==12.3",
 ]
 pre-commit = [
-    "pre-commit==4.0.1",
-    "pylint==3.3.4",
+    "pre-commit==4.6.2",
+    "ruff==0.17.4",
 ]
 dev = [
     "tripper[pre-commit,docs]",
@@ -87,18 +94,45 @@ Home = "https://github.com/EMMC-ASBL/tripper"
 Documentation = "https://EMMC-ASBL.github.io/tripper"
 Source = "https://github.com/EMMC-ASBL/tripper"
 "Issue Tracker" = "https://github.com/EMMC-ASBL/tripper/issues"
-Changelog = "https://github.com/EMMC-ASBL/tripper/blob/master/CHANGELOG.md"
+Changelog = "https://github.com/EMMC-ASBL/tripper/releases"
 Package = "https://pypi.org/project/tripper"
 
 [project.scripts]
 datadoc = "tripper.datadoc.clitool:main"
 keywords = "tripper.datadoc.keywords:main"
 
-[tool.isort]
-line_length = 79  # PEP8
-
-[tool.black]
+[tool.ruff]
 line-length = 79
+
+[tool.ruff.lint]
+# E/F = standard syntax errors/style (defaults)
+# I = import sorting (isort replacement)
+# UP = modern Python syntax upgrades
+# B = common design flaws, code smells, and subtle bugs
+# SIM = simplification opportunities
+# S = security (bandit replacement)
+# T20 = debugging statement checks (debug-statements replacement)
+select = ["E", "F", "I", "UP", "B", "SIM", "S", "T20"]
+# TODO: Enable B028 (no explicit stacklevel in warnings.warn()) in a
+# separate PR, since it changes the location reported by the warnings
+ignore = ["B028"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use assert, and expressions evaluated only for their side
+# effects, e.g. to check that they raise an exception
+"tests/**" = ["S101", "B018", "T201"]
+# Names imported in __init__.py files are re-exported as the public API
+"__init__.py" = ["F401"]
+# Printing is intended in examples and command-line tools
+"examples/**" = ["T201"]
+"tripper/datadoc/clitool.py" = ["T201"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint.isort]
+known-first-party = ["tripper"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -110,36 +144,16 @@ allow_redefinition = true
 #explicit-package-bases = true
 
 
-[tool.pylint]
-max-line-length = 80
-max-args = 10
-max-public-methods = 25
-max-locals = 20
-disable = [
-    "fixme",
-    "invalid-name",
-    "too-many-positional-arguments",
-]
-good-names = [
-    # Default
-    "i", "j", "k", "ex", "Run", "_",
-    # Triplestore instance
-    "ts",
-    # Triple components: subject, predicate, object
-    "s", "p", "o",
-    # Namespaces
-    "EX",
-    # dict, value, file, keyword...
-    "d", "v", "f", "kw",
-]
-
 [tool.pytest.ini_options]
 minversion = "7.0"
 # Tips: set --cov-report to "term-missing" to list missing coverage
 addopts = """-rs --cov=tripper --cov-report=term \
     --doctest-modules --doctest-ignore-import-errors \
-    --ignore-glob=**/old/
+    --ignore-glob=**/old/ --dist=loadgroup
     """
+markers = [
+    "network: needs internet access (deselect with '-m \"not network\"')",
+]
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
     "ignore:ConjunctiveGraph.*:DeprecationWarning",  # in pyld

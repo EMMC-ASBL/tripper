@@ -1,7 +1,5 @@
 """Test the dataset module."""
 
-# pylint: disable=invalid-name,too-many-locals,duplicate-code,too-many-lines
-
 import pytest
 
 pytest.importorskip("yaml")
@@ -20,7 +18,6 @@ def test__get_range():
 
 def test_told():
     """Test told()."""
-    # pylint: disable=too-many-statements
     from pathlib import Path
 
     from tripper import DCAT, DCTERMS, RDF, Triplestore
@@ -262,6 +259,7 @@ def test_told():
     assert d10["n"] == 3
 
 
+@pytest.mark.network
 def test_get_jsonld_context():
     """Test get_context()."""
     import warnings
@@ -805,7 +803,7 @@ def test_literals_not_checked_in_context():
     from tripper.datadoc import get_context, told
     from tripper.datadoc.dataset import update_restrictions
 
-    prefixes = {"dummy": "https://dummypoject.eu/"}
+    prefixes = {"dummy": "https://dummyproject.eu/"}
     context = get_context()
 
     # Directly add the "missing" class in the context
@@ -844,11 +842,11 @@ def test_literals_not_checked_in_context():
     )
 
 
+@pytest.mark.network
 def test_datadoc():
     """Test save_datadoc() and acquire()/store()."""
-    # pylint: disable=too-many-statements
 
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper import CHAMEO, DCAT, DCTERMS, EMMO, OTEIO, Triplestore
     from tripper.datadoc import acquire, save_datadoc, search, store
@@ -997,6 +995,13 @@ def test_datadoc():
         SEMDATA.SEM_cement_batch2,
     ]
 
+    # IRI-valued criteria must be compared as RDF terms rather than strings.
+    assert search(
+        ts, criteria={"distribution.generator": GEN.sem_hitachi}
+    ) == [
+        iri,
+    ]
+
     title = "Nested series of SEM images of cement batch2"
     dset = [SEMDATA.SEM_cement_batch2]
     # Search with predefined keyword
@@ -1012,7 +1017,7 @@ def test_datadoc():
         search(
             ts,
             criteria={
-                "https://w3id.org/emmo#isDescriptionOf": "https://he-matchmaker.eu/material/concrete1"  # pylint: disable=line-too-long
+                "https://w3id.org/emmo#isDescriptionOf": "https://he-matchmaker.eu/material/concrete1"
             },
         )
     ) == [
@@ -1023,7 +1028,7 @@ def test_datadoc():
 
 def test_custom_context():
     """Test saving YAML file with custom context to triplestore."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper import Triplestore
     from tripper.datadoc import save_datadoc
@@ -1109,7 +1114,7 @@ def test_pipeline():
     from tripper import Triplestore
 
     otelib = pytest.importorskip("otelib")
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper.datadoc import get_partial_pipeline, save_datadoc
 
@@ -1137,17 +1142,20 @@ def test_pipeline():
     pipeline.get()
 
 
+# Uses the shared Fuseki "test_repo" dataset, see test_backends_sparql.py
+@pytest.mark.xdist_group("triplestore")
 def test_fuseki():
     """Test save and load dataset with Fuseki."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper import Session
     from tripper.datadoc import acquire, delete, store
+    from tripper.testutils import service_responds
 
     session = Session(indir / "session.yaml")
-    ts = session.get_triplestore("FusekiTest")
-    if not ts.is_available():
+    if not service_responds("http://localhost:3030"):
         pytest.skip("Cannot connect to Fuseki server")
+    ts = session.get_triplestore("FusekiTest")
 
     EX = ts.bind("ex", "http://example.com/ex#")
     d = {
@@ -1196,7 +1204,7 @@ def test_deprecated():
         },
     }
     with pytest.warns(DeprecationWarning):
-        save_dict(ts, d, type="Dataset")
+        save_dict(ts, d, type="Dataset", prefixes={"ex": EX})
 
     with pytest.warns(DeprecationWarning):
         d2 = load_dict(ts, EX.exdata)

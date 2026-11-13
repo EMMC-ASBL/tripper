@@ -1,4 +1,3 @@
-# pylint: disable=line-too-long
 """Tripper module for converting between RDF and other repetations.
 
 Example use:
@@ -25,18 +24,18 @@ ValueError: Unrecognised predicate 'http://purl.org/dc/terms/title' in dict: :da
 
 ```
 
-"""
+"""  # noqa: E501
 
-# pylint: disable=invalid-name,redefined-builtin
 import warnings
-from typing import TYPE_CHECKING, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from tripper import DCAT, DCTERMS, EMMO, MAP, OTEIO, OWL, RDF, RDFS, Literal
 from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Dict, Optional, Union
+    from typing import Any, Optional, Union
 
     from tripper import Triplestore
 
@@ -72,17 +71,20 @@ BASIC_RECOGNISED_KEYS = {
     # "configuration": OTEIO.Configuration,
 }
 
-# EMMO 1.1.0 changes hasStringValue to stringValue
-stringValue = (
-    EMMO.stringValue if "stringValue" in EMMO else EMMO.hasStringValue
+# EMMO 1.0.4 renamed hasStringValue to stringValue and hasDataValue to
+# dataValue, while keeping their IRIs.  Refer to them by IRI, such that
+# this module works with all versions of EMMO.
+STRING_VALUE = (
+    "https://w3id.org/emmo#EMMO_02face50_43a1_40ce_a909_dfe54d5e186b"
 )
+DATA_VALUE = "https://w3id.org/emmo#EMMO_b6292331_94af_4f00_976b_ea55960c2f1c"
 
 
 def from_container(
     container: "Union[Mapping[str, Any], Sequence[Any]]",
     iri: str,
     lang: str = "en",
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
     keep: bool = False,
 ) -> list:
     """Serialise a basic Python container type (mapping or sequence) as RDF.
@@ -142,7 +144,7 @@ def from_container(
         return obj_iri
 
     if isinstance(container, Sequence):
-        assert not isinstance(container, str)  # nosec
+        assert not isinstance(container, str)  # noqa: S101
         if not container:
             raise ValueError("empty sequence is not supported")
 
@@ -176,11 +178,11 @@ def from_container(
                         (key_indv, RDF.type, OTEIO.DictionaryKey),
                         (
                             key_indv,
-                            stringValue,
+                            STRING_VALUE,
                             Literal(key, lang=lang),
                         ),
                         (value_indv, RDF.type, OTEIO.DictionaryValue),
-                        (value_indv, EMMO.hasDataValue, value_iri),
+                        (value_indv, DATA_VALUE, value_iri),
                         (pair, RDF.type, OTEIO.KeyValuePair),
                         (pair, OTEIO.hasDictionaryKey, key_indv),
                         (pair, OTEIO.hasDictionaryValue, value_indv),
@@ -198,7 +200,7 @@ def save_container(
     container: "Union[Mapping[str, Any], Sequence[Any]]",
     iri: str,
     lang: str = "en",
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
     keep: bool = False,
 ) -> None:
     """Save a basic Python container object to a triplestore.
@@ -239,7 +241,7 @@ def save_container(
 def load_container(
     ts: "Triplestore",
     iri: str,
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
     ignore_unrecognised: bool = False,
 ) -> "Union[dict, list]":
     """Deserialise a Python container object from a triplestore.
@@ -258,7 +260,6 @@ def load_container(
     Returns:
         A Python container object corresponding to `iri`.
     """
-    # pylint: disable=too-many-branches
     if iri == RDF.nil:
         return []
 
@@ -284,13 +285,13 @@ def load_container(
         return value.value if isinstance(value, Literal) else value
 
     if OTEIO.Dictionary in parents:
-        container: "Dict[str, Any]" = {}
+        container: dict[str, Any] = {}
         for pred, obj in ts.predicate_objects(iri):
             if pred == OTEIO.hasKeyValuePair:
                 key_iri = ts.value(obj, OTEIO.hasDictionaryKey)
-                key = ts.value(key_iri, stringValue)
+                key = ts.value(key_iri, STRING_VALUE)
                 value_iri = ts.value(obj, OTEIO.hasDictionaryValue)
-                value = ts.value(value_iri, EMMO.hasDataValue)
+                value = ts.value(value_iri, DATA_VALUE)
                 container[str(key)] = get_obj(value)
             elif pred in recognised_iris:
                 container[recognised_iris[pred]] = get_obj(obj)
@@ -340,7 +341,7 @@ def from_dict(
     iri: str,
     bases: "Optional[Sequence]" = None,
     lang: str = "en",
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
     keep: bool = False,
 ) -> list:
     """Serialise a dict as RDF.
@@ -378,7 +379,7 @@ def save_dict(
     iri: str,
     bases: "Optional[Sequence]" = None,
     lang: str = "en",
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
     keep: bool = False,
 ) -> None:
     """Save a dict to a triplestore.
@@ -411,7 +412,7 @@ def save_dict(
 def load_dict(
     ts: "Triplestore",
     iri: str,
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
 ) -> "Union[dict, list]":
     """Deserialise a dict from an RDF triplestore.
 

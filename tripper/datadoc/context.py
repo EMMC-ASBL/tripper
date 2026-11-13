@@ -1,13 +1,12 @@
 """Parse and work with JSON-LD context."""
 
-# pylint: disable=too-many-branches,redefined-builtin
-
 import json
 import os
 import re
 import warnings
+from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
 
 from pyld import jsonld
 
@@ -24,12 +23,14 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import IO, Optional, Union
+    from typing import Optional, Union
 
     from tripper.datadoc.keywords import Keywords
 
     # Possible types for a JSON-LD context
-    ContextType = Union[str, dict, Sequence[Union[str, dict]], "Context"]
+    ContextType = Union[
+        str, dict, Path, Sequence[Union[str, dict, Path]], "Context"
+    ]
 
 
 def get_context(
@@ -71,7 +72,7 @@ def get_context(
         if copy:
             context = context.copy()
         # if keywords or theme:
-        #    # pylint: disable=import-outside-toplevel
+        #
         #    from tripper.datadoc.keywords import get_keywords
         #
         #    kw = get_keywords(keywords=keywords, theme=theme)
@@ -121,7 +122,6 @@ class Context:
             timeout: Timeout when accessing remote files.
 
         """
-        # pylint: disable=import-outside-toplevel
         from tripper.datadoc.keywords import Keywords
 
         self.ld = jsonld.JsonLdProcessor()
@@ -172,7 +172,6 @@ class Context:
         """Return a copy of this context."""
         copy = Context(theme=None)
         copy.ctx = self.ctx  # frozendict - no need to copy
-        # pylint: disable=protected-access
         copy._namespace_prefixes = self._namespace_prefixes.copy()
         return copy
 
@@ -188,12 +187,13 @@ class Context:
         self.add_context(
             {prefix: str(namespace) for prefix, namespace in prefixes.items()}
         )
+        self._create_caches()
 
     def add_context(self, context: "ContextType") -> None:
         """Add a context to this object."""
         if isinstance(context, Context):
             context = context.get_context_dict()
-        elif isinstance(context, str):
+        elif isinstance(context, (Path, str)):
             with openfile(context, "rt", timeout=self.timeout) as f:
                 context = json.load(f)
         elif isinstance(context, Sequence):
@@ -204,8 +204,8 @@ class Context:
             pass
         else:
             raise TypeError(
-                "`context` should be a dict, str, Context or a sequence of "
-                f"these.  Got: {type(context)}"
+                "`context` should be a dict, str, Path, Context or a sequence "
+                f"of these.  Got: {type(context)}"
             )
 
         if "@id" in context:
@@ -235,13 +235,16 @@ class Context:
                         )
                 if isinstance(v, dict):
                     d[k] = rec(v)
-            return d
+            return {
+                k: str(v) if isinstance(v, Namespace) else v
+                for k, v in d.items()
+            }
 
         try:
             self.ctx = self.ld.process_context(
                 self.ctx, rec(context), options={}
             )
-        except jsonld.JsonLdError:  # pylint: disable=try-except-raise
+        except jsonld.JsonLdError:
             # TODO: convert error message to something more readable
             raise
 
@@ -291,6 +294,7 @@ class Context:
         for k, v in self.ctx["mappings"].items():
             if v.get("_prefix") and "@id" in v:
                 prefixes[k] = v["@id"]
+        prefixes.update(self._namespace_prefixes)
         return prefixes
 
     def get_properties(self) -> dict:
@@ -336,8 +340,10 @@ class Context:
         - None:  A PrefixMismatchError is raised.
 
         """
-        ns1 = self.get_prefixes().copy()
-        ns2 = {pf: str(ns) for pf, ns in ts.namespaces.items()}
+        ns1 = self.get_prefixes()  # context prefixes
+        ns2 = {
+            pf: str(ns) for pf, ns in ts.namespaces.items()
+        }  # namespace prefixes
         if update is None:
             mismatch = [
                 p for p in set(ns1).intersection(ns2) if ns1[p] != ns2[p]
@@ -355,16 +361,17 @@ class Context:
                 raise PrefixMismatchError(os.linesep.join(msg))
 
         if update:
-            ns1.update(ns2)
-            ns2 = ns1
+            prefixes = ns1.copy()
+            prefixes.update(ns2)
         else:
-            ns2.update(ns1)
-            ns1 = ns2
+            prefixes = ns2.copy()
+            prefixes.update(ns1)
 
-        self.add_context(ns2)
-
-        for prefix, ns in ns1.items():
-            if prefix not in ts.namespaces:
+        self.add_prefixes(prefixes)
+        for prefix, ns in prefixes.items():
+            # The triplestore is bound to Namespace objects. Don't change them
+            # unless required
+            if prefix not in ns2 or ns2[prefix] != ns:
                 ts.bind(prefix, ns)
 
     def expand(self, name: str, strict: bool = False) -> str:
@@ -427,6 +434,10 @@ class Context:
             self._create_caches()
         if name in self._prefixed:
             return self._prefixed[name]
+        if pf := prefix_iri(name, self.get_prefixes(), strict=strict):
+            if strict:
+                self._prefixed[name] = pf
+            return pf
         if strict:
             raise NamespaceError(f"cannot prefix: {name}")
         return name
@@ -671,10 +682,10 @@ class Context:
         self._shortnamed["@type"] = "@type"
         # Build a reverse map: IRI -> all prefixed aliases (e.g. both
         # "dcterms:license" and "term:license" when two prefixes share an IRI)
-        aliases: "dict[str, list[str]]" = {}
+        aliases: dict[str, list[str]] = {}
         for pfx, ns in prefixes.items():
             for expanded in mappings.values():
-                if expanded.startswith(ns):
+                if expanded.startswith(str(ns)):
                     local = expanded[len(ns) :]
                     aliases.setdefault(expanded, []).append(f"{pfx}:{local}")
 

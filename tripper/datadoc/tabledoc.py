@@ -1,7 +1,5 @@
 """Basic interface for tabular documentation of datasets."""
 
-# pylint: disable=too-many-locals
-
 import csv
 import re
 from pathlib import Path
@@ -17,15 +15,14 @@ from tripper.literal import Literal
 from tripper.utils import AttrDict, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Iterable, List, Optional, Protocol, Sequence, Union
+    from collections.abc import Iterable, Sequence
+    from typing import Optional, Protocol, Union
 
     from tripper.datadoc.context import ContextType
     from tripper.datadoc.keywords import KeywordsType
 
     class Writer(Protocol):
         """Prototype for a class with a write() method."""
-
-        # pylint: disable=too-few-public-methods,missing-function-docstring
 
         def write(self, data: str) -> None: ...
 
@@ -65,9 +62,6 @@ class TableDoc:
         baseiri: If given, it will be used as a base iri to
             resolve relative IRIs. (I.e. Not valid URLs).
     """
-
-    # pylint: disable=redefined-builtin,too-few-public-methods
-    # pylint: disable=too-many-arguments,too-many-instance-attributes
 
     def __init__(
         self,
@@ -136,7 +130,7 @@ class TableDoc:
             unknown_key=unknown_key,
         )
 
-    def asdicts(self) -> "List[dict]":
+    def asdicts(self) -> "list[dict]":
         """Return the table as a list of dicts."""
         # Parse column headers. Follow the syntax defined in
         # https://emmc-asbl.github.io/tripper/latest/datadoc/documenting-a-resource/#documenting-as-table
@@ -277,7 +271,6 @@ class TableDoc:
         baseiri: "Optional[str]" = None,
         **kwargs,
     ) -> "TableDoc":
-        # pylint: disable=line-too-long
         """Parse a csv file using the standard library csv module.
 
         Arguments:
@@ -370,7 +363,6 @@ class TableDoc:
         prefixes: "Optional[dict]" = None,
         **kwargs,
     ) -> None:
-        # pylint: disable=line-too-long
         """Write the table to a csv file using the standard library csv module.
 
         Arguments:
@@ -397,7 +389,7 @@ class TableDoc:
                 for h in self.headers:
                     for prefix, ns in prefixes.items():
                         if h.startswith(str(ns)):
-                            headers.append(f"{prefix}:{h[len(str(ns)):]}")
+                            headers.append(f"{prefix}:{h[len(str(ns)) :]}")
                             break
                     else:
                         headers.append(h)
@@ -409,7 +401,7 @@ class TableDoc:
                 writer.writerow(row)
 
         if isinstance(csvfile, (str, Path)):
-            with open(csvfile, mode="wt", encoding=encoding) as f:
+            with open(csvfile, mode="w", encoding=encoding) as f:
                 write(f)
         else:
             write(csvfile)
@@ -428,7 +420,6 @@ class TableDoc:
         redefine: str = "raise",
         baseiri: "Optional[str]" = None,
     ) -> "TableDoc":
-        # pylint: disable=line-too-long
         """Parse a csv file using the standard library csv module.
 
         Arguments:
@@ -445,7 +436,8 @@ class TableDoc:
             context: Dict with user-defined JSON-LD context.
             prefixes: Dict with prefixes in addition to those included in the
                 JSON-LD context.  Should map namespace prefixes to IRIs.
-            strip: Whether to strip leading and trailing whitespaces from cells.
+            strip: Whether to strip leading and trailing whitespaces from
+                cells.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
             redefine: Determine how to handle redefinition of existing
@@ -462,7 +454,6 @@ class TableDoc:
             New TableDoc instance.
 
         """
-        # pylint: disable=import-outside-toplevel
         from openpyxl import load_workbook
 
         wb = load_workbook(
@@ -581,7 +572,6 @@ def csvsniff(sample):
     class dialect(csv.Dialect):
         """Custom dialect."""
 
-        # pylint: disable=too-few-public-methods
         _name = "sniffed"
         delimiter = delim
         doublequote = True  # quote chars inside quotes are duplicated
@@ -598,10 +588,7 @@ def csvsniff(sample):
 class Column:
     """Help class representing a column."""
 
-    # pylint: disable=too-few-public-methods
-
     def __init__(self, header, context=None, strip=True):
-        # pylint: disable=line-too-long,too-many-branches
         """Initialise a column opject.
 
         Arguments:
@@ -651,10 +638,16 @@ class Column:
         if context and not leafname.startswith("@"):
             df = context.getdef(leafname, strict=False)
 
-            # If a full IRI or a prefixed name is used as header but the
-            # context does not define it, treat this as an error instead
-            # of silently accepting it.
-            if (is_full_iri or is_prefixed) and not df:
+            # A header unknown to the context is an error, unless it is a
+            # real IRI: either a full IRI or a prefixed name whose prefix
+            # is known to the context.
+            if not df and not (
+                is_full_iri
+                or (
+                    is_prefixed
+                    and leafname.split(":", 1)[0] in context.get_prefixes()
+                )
+            ):
                 raise InvalidKeywordError(
                     f"Unknown keyword/IRI in header: '{leafname}'"
                 )
@@ -665,14 +658,17 @@ class Column:
             # defines it, ensure the exact header string is present in the
             # JSON-LD context as a synonym (so coercion like @type:@id
             # applies). Do NOT create entries for undefined terms.
-            if (is_full_iri or is_prefixed) and df:
-                if leafname not in context.get_context_dict():
-                    entry = {"@id": df["@id"]}
-                    if "@type" in df:
-                        entry["@type"] = df["@type"]
-                    elif "@language" in df:
-                        entry["@language"] = df["@language"]
-                    context.add_context({leafname: entry})
+            if (
+                (is_full_iri or is_prefixed)
+                and df
+                and leafname not in context.get_context_dict()
+            ):
+                entry = {"@id": df["@id"]}
+                if "@type" in df:
+                    entry["@type"] = df["@type"]
+                elif "@language" in df:
+                    entry["@language"] = df["@language"]
+                context.add_context({leafname: entry})
 
         self.header = header
         self.context = context

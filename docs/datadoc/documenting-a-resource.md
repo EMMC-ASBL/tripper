@@ -178,6 +178,11 @@ Tripper allows multiple columns with the same keyword in the header.
 Nested fields may be specified as dot-separated keywords.
 Ex: `distribution.downloadURL`.
 
+A header that is not defined in the context raises an `InvalidKeywordError`.
+The exception is headers that are real IRIs, which are accepted even if they are not defined in the context.
+This includes full IRIs (e.g. `http://example.com/myproperty`) and prefixed names whose prefix is known to the context (e.g. `dcterms:myproperty`, or `ex:prop` if `ex` is provided with the `prefixes` argument).
+A prefixed name with an unknown prefix raises an `InvalidKeywordError`.
+
 The header keyword(s) may be followed by an optional square bracket with the following syntax (inspired by URL options):
 
     name[label?key1=value1&key2=value2]

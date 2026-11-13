@@ -10,20 +10,19 @@ for more details.
 
 """
 
-# pylint: disable=line-too-long
 import warnings
-from typing import TYPE_CHECKING, Generator
+from collections.abc import Generator
+from typing import TYPE_CHECKING
 
 try:
-    import rdflib  # pylint: disable=unused-import
+    import rdflib  # noqa: F401
 except ImportError as exc:
     raise ImportError(
         "rdflib is not installed.\nInstall it with:\n\n    pip install rdflib"
     ) from exc
 
-from rdflib import BNode, Graph
+from rdflib import BNode, Graph, URIRef
 from rdflib import Literal as rdflibLiteral
-from rdflib import URIRef
 from rdflib.util import guess_format
 
 from tripper import Literal
@@ -32,7 +31,7 @@ from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import List, Optional, Tuple, Union
+    from typing import Optional, Union
 
     from tripper.triplestore import Triple
 
@@ -55,13 +54,15 @@ def totriple(triple: "Triple"):
 
 
 def fromrdflib(
-    value: "Union[URIRef, rdflibLiteral, BNode]",
-) -> "Union[str, Literal]":
-    """Help function converting an rdflib value to corresponding tripper value."""
+    value: "Union[URIRef, rdflibLiteral, BNode, None]",
+) -> "Union[str, Literal, None]":
+    """Help function converting an rdflib value to a tripper value."""
     if isinstance(value, rdflibLiteral):
         return parse_literal(value)
     if isinstance(value, BNode) and not value.startswith("_:"):
         return f"_:{value}"
+    if value is None:
+        return value
     return str(value)
 
 
@@ -84,10 +85,10 @@ class RdflibStrategy:
 
     def __init__(
         self,
-        base_iri: "Optional[str]" = None,  # pylint: disable=unused-argument
+        base_iri: "Optional[str]" = None,
         database: "Optional[str]" = None,
         triplestore_url: "Optional[str]" = None,
-        format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        format: "Optional[str]" = None,
         graph: "Optional[Graph]" = None,
     ) -> None:
         # Note that although `base_iri` is unused in this backend, it may
@@ -132,7 +133,7 @@ class RdflibStrategy:
         source=None,
         location=None,
         data=None,
-        format=None,  # pylint: disable=redefined-builtin
+        format=None,
         **kwargs,
     ):
         """Parse source and add the resulting triples to triplestore.
@@ -158,15 +159,16 @@ class RdflibStrategy:
     def serialize(
         self,
         destination=None,
-        format="turtle",  # pylint: disable=redefined-builtin
+        format="turtle",
         **kwargs,
     ) -> "Union[None, str]":
         """Serialise to destination.
 
         Parameters:
-            destination: File name or object to write to. If None, the serialisation is
-                returned.
-            format: Format to serialise as. Supported formats, depends on the backend.
+            destination: File name or object to write to. If None, the
+                serialisation is returned.
+            format: Format to serialise as. Supported formats, depends on
+                the backend.
             kwargs: Passed to the rdflib.Graph.serialize() method.
                 See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.serialize
 
@@ -184,7 +186,7 @@ class RdflibStrategy:
 
     def query(
         self, query_object, **kwargs
-    ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
+    ) -> "Union[list[tuple], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
         Parameters:
@@ -214,7 +216,8 @@ class RdflibStrategy:
             resulttype = "CONSTRUCT"  # also DESCRIBE
         else:
             warnings.warn(
-                "Unknown return type from rdflib.query(). Return it unprocessed."
+                "Unknown return type from rdflib.query(). "
+                "Return it unprocessed."
             )
             return result  # type: ignore
 
@@ -225,7 +228,7 @@ class RdflibStrategy:
             return bool(result)
         if resulttype in ("CONSTRUCT", "DESCRIBE"):
             return _convert_triples_to_tripper(result)
-        assert False, "should never be reached"  # nosec
+        raise AssertionError("should never be reached")
 
     def update(self, update_object, **kwargs) -> None:
         """Update triplestore with SPARQL.
@@ -270,5 +273,5 @@ class RdflibStrategy:
 def _convert_triples_to_tripper(triples) -> "Generator[Triple, None, None]":
     """Help function that converts a iterator/generator of rdflib triples
     to tripper triples."""
-    for s, p, o in triples:  # pylint: disable=not-an-iterable
-        yield (fromrdflib(s), str(p), fromrdflib(o))
+    for s, p, o in triples:
+        yield (fromrdflib(s), str(p), fromrdflib(o))  # type: ignore

@@ -3,19 +3,19 @@
 Pint is used for programatic unit conversions.
 """
 
-# pylint: disable=too-few-public-methods,too-many-lines
-
 import math
-import pickle  # nosec
+import pickle
 import re
+import sys
 import warnings
-from collections import defaultdict, namedtuple
+from collections import defaultdict, deque, namedtuple
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 import pint
 
 from tripper import (
+    EMMO,
     OWL,
     RDF,
     RDFS,
@@ -26,27 +26,41 @@ from tripper import (
     Triplestore,
 )
 from tripper.errors import IRIExistsError, PermissionWarning, TripperError
-from tripper.namespace import get_cachedir
+from tripper.namespace import atomic_write, get_cachedir
 from tripper.utils import AttrDict, bnode_iri
 
 if TYPE_CHECKING:  # pragma: no cover
-    from pathlib import Path, PurePath
-    from typing import Any, Iterable, Mapping, Optional, Tuple, Union
+    from collections.abc import Generator
+    from pathlib import Path
+    from typing import (
+        Any,
+        Optional,
+        Union,
+    )
 
     from pint.compat import TypeAlias
 
 
 # Default EMMO version
-EMMO_VERSION = "1.0.4"
+EMMO_VERSION = "1.1.0"
+
+# EMMO namespace IRI (the same for all versions of EMMO)
+EMMO_IRI = "https://w3id.org/emmo#"
+
+# Some EMMO properties used by this module were renamed in EMMO 1.0.4,
+# while keeping their IRI.  Refer to them by IRI, such that this module
+# works with all versions of EMMO.
+NUMBER_VALUE = EMMO_IRI + "EMMO_faf79f53_749d_40b2_807c_d34244c192f4"
+"""emmo:numberValue (named emmo:hasNumberValue before EMMO 1.0.4)."""
+
+# Only defined in EMMO 1.0.3 and earlier
+SI_QUANTITY_VALUE = EMMO_IRI + "EMMO_42806efc_581b_4ff8_81b0_b4d62153458b"
+"""emmo:hasSIQuantityValue (removed in EMMO 1.0.4)."""
 
 # Cached module variables
-_cache = {
-    "ts": None,
-    "ureg": None,
-    "ns": None,
-}
-# _unit_ts = None  # Unit triplestore object
-# _unit_reg = None  # Default unit registry
+_unit_ts: "dict[str, Triplestore]" = {}  # Unit triplestores, by name
+_unit_ns: "dict[str, Namespace]" = {}  # Unit namespaces, by name
+_unit_reg = None  # Default unit registry
 
 # Named tuple used to represent a dimension string
 # Note we use H instead of ϴ to represent the thermodynamic temperature
@@ -94,22 +108,34 @@ def get_ureg(*args, nocreate=False, **kwargs) -> "UnitRegistry":
     If no default unit registry has been set and `nocreate` is true,
     a `NoDefaultUnitRegistryError` exception is raised. Otherwise,
     a new default unit registry is created using the `args` and `kwargs`
-    arguments.
+    arguments.  E.g. `get_ureg(emmo_version="1.0.3")` creates a default
+    unit registry for EMMO 1.0.3.
 
     """
-    if not _cache["ureg"]:
+    global _unit_reg
+    if not _unit_reg:
         if nocreate:
             raise NoDefaultUnitRegistryError("No default unit registry")
-        _cache["ureg"] = UnitRegistry(*args, **kwargs)
-    return _cache["ureg"]
+        ureg = UnitRegistry(*args, **kwargs)
+        _unit_reg = ureg
+    else:
+        ureg = _unit_reg
+    return ureg
 
 
-def _default_url_name(url, name) -> tuple:
-    "Return default unit triplestore url and name."
+def _default_url_name(url, name, emmo_version=None) -> tuple:
+    """Return default unit triplestore url and name.
+
+    If `url` is not given, it defaults to the given version of EMMO, or
+    to `EMMO_VERSION` if `emmo_version` is not given.
+    """
     if url is None:
-        url = f"https://w3id.org/emmo/{EMMO_VERSION}"
+        version = emmo_version if emmo_version else EMMO_VERSION
+        url = f"https://w3id.org/emmo/{version}"
         if not name:
-            name = f"emmo-{EMMO_VERSION}"
+            name = f"emmo-{version}"
+    elif emmo_version:
+        raise ValueError("`url` and `emmo_version` cannot both be given")
     elif not name:
         raise ValueError("`name` must be given with `url`")
     return url, name
@@ -117,15 +143,16 @@ def _default_url_name(url, name) -> tuple:
 
 def get_unit_triplestore(
     url: "Optional[Union[str, Path]]" = None,
-    format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+    format: "Optional[str]" = None,
     name: "Optional[str]" = None,
     cache: "Union[bool, None]" = True,
+    emmo_version: "Optional[str]" = None,
 ) -> Triplestore:
     """Return, potentially cached, triplestore object that defines the units.
 
     Arguments:
         url: URL or path to unit triplestore.
-            Default: "https://w3id.org/emmo/{EMMO_VERSION}"
+            Default: "https://w3id.org/emmo/{emmo_version}"
         format: Optional format of the source referred to by `url`.
         name: A (versioned) name for the triplestore. Used for caching.
             Ex: "emmo-1.0.0".
@@ -133,85 +160,88 @@ def get_unit_triplestore(
             - True: Load cache if it exists, otherwise create new cache.
             - False: Don't load cache, but (over)write new cache.
             - None: Don't use cache.
+        emmo_version: Version of EMMO to load units from if `url` is not
+            given.  Defaults to `EMMO_VERSION`.
 
     """
-    if not _cache["ts"]:
+    url, name = _default_url_name(url, name, emmo_version)
+    if name not in _unit_ts:
         ts = Triplestore("rdflib")
-        url, name = _default_url_name(url, name)
-
         cachefile = get_cachedir() / f"units-{name}.ntriples"
         if cache and cachefile.exists():
             ts.parse(cachefile, format="ntriples")
         else:
-            print("* caching units triplestore... ", end="", flush=True)
+            print(  # noqa: T201
+                "* caching units triplestore... ",
+                end="",
+                flush=True,
+                file=sys.stderr,
+            )
             ts.parse(url, format=format)
-            print("done")
+            print("done", file=sys.stderr)  # noqa: T201
             if cache is not None:
                 try:
-                    ts.serialize(
-                        cachefile, format="ntriples", encoding="utf-8"
-                    )
+                    with atomic_write(cachefile) as tmp:
+                        ts.serialize(tmp, format="ntriples", encoding="utf-8")
                 except PermissionError as exc:
                     warnings.warn(
                         f"{exc}: {cachefile}",
                         category=PermissionWarning,
                     )
-        _cache["ts"] = ts
-    return _cache["ts"]
+        _unit_ts[name] = ts
+    return _unit_ts[name]
 
 
 def get_unit_namespace(
-    iri: "Optional[str]" = None,
-    label_annotations: "Union[Sequence, bool]" = (),
-    check: bool = False,
-    reload: "Optional[bool]" = None,
-    triplestore: "Optional[Union[Triplestore, str]]" = None,
+    url: "Optional[Union[str, Path]]" = None,
     format: "Optional[str]" = None,
     name: "Optional[str]" = None,
     cache: "Union[bool, None]" = True,
+    emmo_version: "Optional[str]" = None,
 ) -> Namespace:
-    """Return, potentially cached, triplestore object that defines the units.
+    """Return, potentially cached, EMMO namespace for the unit triplestore.
+
+    Unlike `tripper.EMMO`, which looks up labels in the latest version of
+    EMMO, labels of the returned namespace are looked up in the given
+    version of EMMO.  This matters, since some IRIs differ between
+    versions of EMMO.
 
     Arguments:
-        iri: IRI of namespace to represent.
-            Default: "https://w3id.org/emmo/{EMMO_VERSION}"
-        label_annotations: Sequence of label annotations. If given, check
-            the underlying ontology during attribute access if the name
-            correspond to a label. The label annotations should be ordered
-            from highest to lowest precedense.
-            If True is provided, `label_annotations` is set to
-            ``(SKOS.prefLabel, RDF.label, SKOS.altLabel)``.
-        check: Whether to check underlying ontology if the IRI exists during
-            attribute access.  If true, NoSuchIRIError will be raised if the
-            IRI does not exist in this namespace.
-        reload: Whether to reload the ontology (which is needed when
-            `label_annotations` or `check` are given) disregardless whether it
-            has been cached locally.
-        triplestore: Use this triplestore for label lookup and checking.
-            Can be either a Triplestore object or an URL to load from.
-            Defaults to `iri`.
-        format: Optional format of the source referred to by `iri`.
+        url: URL or path to unit triplestore.
+            Default: "https://w3id.org/emmo/{emmo_version}"
+        format: Optional format of the source referred to by `url`.
         name: A (versioned) name for the triplestore. Used for caching.
             Ex: "emmo-1.0.0".
-        cache: Whether to load from cache. If `cache` is:
-            - True: Load cache if it exists, otherwise create new cache.
-            - False: Don't load cache, but (over)write new cache.
-            - None: Don't use cache.
+        cache: Whether to load the triplestore from cache.  See
+            get_unit_triplestore().
+        emmo_version: Version of EMMO to load units from if `url` is not
+            given.  Defaults to `EMMO_VERSION`.
 
     Returns:
-        Namespace object for units.
+        EMMO namespace object with label lookup in the unit triplestore.
     """
-    if iri is None:
-        iri = f"https://w3id.org/emmo/{EMMO_VERSION}"
-    ts = get_unit_triplestore(url=None, format=format, name=name, cache=cache)
-    ns = Namespace(
-        iri=iri,
-        label_annotations=label_annotations,
-        check=check,
-        reload=reload,
+    url, name = _default_url_name(url, name, emmo_version)
+    if name not in _unit_ns:
+        ts = get_unit_triplestore(
+            url=url, format=format, name=name, cache=cache
+        )
+        _unit_ns[name] = _create_unit_namespace(ts, name)
+    return _unit_ns[name]
+
+
+def _create_unit_namespace(ts: Triplestore, name: str) -> Namespace:
+    """Return EMMO namespace with label lookup in triplestore `ts`.
+
+    The label cache is named after `name`, such that it is not shared
+    with `tripper.EMMO` or namespaces for other versions of EMMO.
+    """
+    return Namespace(
+        iri=EMMO_IRI,
+        label_annotations=True,
+        check=True,
         triplestore=ts,
+        cachename=f"namespace-{name}",
     )
-    return ns
 
 
 def base_unit_expression(dimension: Dimension) -> str:
@@ -233,91 +263,81 @@ def base_unit_expression(dimension: Dimension) -> str:
     return " * ".join(expr) if expr else "1"
 
 
-def get_unit_symbol(iri: str) -> str:
-    """Return symbol for emmo unit with given `iri`."""
-    units = Units()
-    return units._get_unit_symbols(iri)[0]  # pylint: disable=protected-access
+def load_emmo_quantity(ts: Triplestore, iri: str) -> "tuple[float, str]":
+    """Return value and unit for EMMO quantity with given `iri`.
 
+    The quantity may either be an individual or a class, in which case
+    the value and unit are given with value restrictions.
 
-def load_emmo_quantity(ts: Triplestore, iri: str) -> tuple:
-    """Return value and unit for EMMO quantity with given `iri`."""
+    The following representations of quantities are supported:
+
+    - `emmo:hasNumericalPart` (or `emmo:numberValue`) for the value and
+      `emmo:hasMeasurementUnit`, `emmo:hasReferencePart` or
+      `emmo:hasMetrologicalReference` for the unit.  The unit is returned
+      as an IRI.
+    - `emmo:hasSIQuantityValue` (EMMO 1.0.3 and earlier), with the value
+      and unit as a literal, like "2 mm".  The unit is returned as a
+      symbol.
+
+    """
     isclass = ts.query(f"ASK {{<{iri}> a owl:Class}}")
-    if isclass:
-        query = f"""
-        SELECT DISTINCT ?value ?unit WHERE {{
-          OPTIONAL {{
-            <{iri}> rdfs:subClassOf+ ?r1 .
-            ?r1 a owl:Restriction .
-            {{
-              ?r1 owl:onProperty ?dataprop .
-              ?r1 owl:hasValue ?value .
-            }} UNION {{
-              ?r1 owl:onProperty <{EMMO.hasNumericalPart}> .
-              ?r1 owl:hasValue ?v .
-              ?v ?dataprop ?value .
-            }}
-            ?dataprop rdfs:subPropertyOf* ?parentdataprop .
-            VALUES ?parentdataprop {{
-              <{EMMO.dataValue}> <{EMMO.numberValue}>
-            }}
-          }}
-          OPTIONAL {{
-            <{iri}> rdfs:subClassOf+ ?r2 .
-            ?r2 a owl:Restriction .
-            ?r2 owl:onProperty ?prop .
-            ?r2 owl:hasValue ?unit .
-            ?prop rdfs:subPropertyOf* ?parentprop .
-            VALUES ?parentprop {{
-              <{EMMO.hasMeasurementUnit}>
-              <{EMMO.hasMetrologicalReference}>
-              <{EMMO.hasReferencePart}>
-            }}
-          }}
-        }}
-        """
-    else:
-        query = f"""
-        SELECT DISTINCT ?value ?unit WHERE {{
-          OPTIONAL {{
-            {{
-              <{iri}> ?dataprop ?value .
-            }} UNION {{
-              <{iri}> <{EMMO.hasNumericalPart}> ?numerical .
-              ?numerical ?dataprop ?value .
-            }}
-            ?dataprop rdfs:subPropertyOf* ?parentdataprop .
-            VALUES ?parentdataprop {{
-              <{EMMO.dataValue}> <{EMMO.numberValue}>
-            }}
-          }}
-          OPTIONAL {{
-            <{iri}> ?prop ?unit .
-            ?prop rdfs:subPropertyOf* ?parentprop .
-            VALUES ?parentprop {{
-              <{EMMO.hasMeasurementUnit}>
-              <{EMMO.hasMetrologicalReference}>
-              <{EMMO.hasReferencePart}>
-            }}
-          }}
-        }}
-        """
-    results = ts.query(query)
-    if results:
-        value, unit = results[0]
-        return (
-            float(value) if value is not None else None,
-            unit if unit else None,
+
+    def pattern(prop: str, var: str) -> str:
+        """Return SPARQL pattern relating the quantity to `?var` via
+        property `prop`."""
+        if isclass:
+            r = f"?r_{var}"
+            return (
+                f"<{iri}> rdfs:subClassOf+ {r} . "
+                f"{r} owl:onProperty <{prop}> . "
+                f"{r} owl:hasValue|owl:someValuesFrom ?{var} ."
+            )
+        return f"<{iri}> <{prop}> ?{var} ."
+
+    def first(query: str) -> "Any":
+        """Return first value returned by `query` or None."""
+        result = ts.query(query)
+        return result[0][0] if result else None  # type: ignore
+
+    # Check for emmo:hasSIQuantityValue
+    qval = first(f"SELECT ?v WHERE {{ {pattern(SI_QUANTITY_VALUE, 'v')} }}")
+    if qval:
+        m = re.match(
+            r"([+-]?[0-9]*\.?[0-9]*([eE][+-]?[0-9]+)?)[ *⋅]*(.*)?", str(qval)
         )
-    return (None, None)
+        if m:
+            value, _, unit = m.groups()
+            return float(value), unit
+
+    # Check for emmo:hasNumericalPart (or emmo:numberValue) and unit
+    value = first(f"""
+    SELECT ?v WHERE {{
+      {{ {pattern(EMMO.hasNumericalPart, "num")} ?num <{NUMBER_VALUE}> ?v . }}
+      UNION
+      {{ {pattern(NUMBER_VALUE, "v")} }}
+    }}
+    """)
+    unit = first(f"""
+    SELECT ?v WHERE {{
+      {{ {pattern(EMMO.hasMeasurementUnit, "v")} }}
+      UNION
+      {{ {pattern(EMMO.hasReferencePart, "v")} }}
+      UNION
+      {{ {pattern(EMMO.hasMetrologicalReference, "v")} }}
+    }}
+    """)
+    if value is None or unit is None:
+        raise UnitError(f"cannot find value and unit of quantity: {iri}")
+    return float(value), str(unit)
 
 
 def save_emmo_quantity(
     ts: Triplestore,
     q: "Quantity",
     iri: str,
-    type: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+    type: "Optional[str]" = None,
     tbox: bool = False,
-    si_datatype: bool = True,
+    si_datatype: "Optional[bool]" = None,
     annotations: "Optional[dict]" = None,
 ) -> None:
     """Save quantity to triplestore.
@@ -330,11 +350,29 @@ def save_emmo_quantity(
             quantity.
         tbox: Whether to document the quantity in the tbox.
         si_datatype: Whether to represent the value using the
-            `emmo:SIQuantityDatatype` datatype.
+            `emmo:SIQuantityDatatype` datatype.  This datatype was removed
+            in EMMO 1.0.4.  The default is to use it with the versions of
+            EMMO that support it.
         annotations: Additional annotations describing the quantity.
             Use Literal() for literal annotations.
 
+    Notes:
+        With EMMO 1.0.4 and later, the quantity is represented with
+        `emmo:hasNumericalPart` and `emmo:hasMeasurementUnit`, where the
+        unit is an individual.  With earlier versions,
+        `emmo:hasReferencePart` is used, since units are classes.
+
     """
+    units = q._REGISTRY._get_tripper_units()
+    ns = units.ns
+    if si_datatype is None:
+        si_datatype = not units.units_are_individuals
+    elif si_datatype and units.units_are_individuals:
+        raise UnitError(
+            "emmo:SIQuantityDatatype is not supported by EMMO version used "
+            f"by the unit registry: {units.name}"
+        )
+
     if EMMO not in ts.namespaces.values():
         ts.bind("emmo", EMMO)
 
@@ -342,7 +380,7 @@ def save_emmo_quantity(
         raise IRIExistsError(iri)
 
     if not type:
-        type = EMMO.Quantity
+        type = ns.Quantity
 
     triples = [(iri, RDF.type, OWL.Class if tbox else type)]
     if tbox:
@@ -357,7 +395,7 @@ def save_emmo_quantity(
         if si_datatype:
             triples.extend(
                 [
-                    (r, OWL.onProperty, EMMO.hasSIQuantityValue),
+                    (r, OWL.onProperty, SI_QUANTITY_VALUE),
                     (r, OWL.hasValue, Literal(q)),
                 ]
             )
@@ -367,26 +405,45 @@ def save_emmo_quantity(
             q2 = q.to_ontology_units()
             triples.extend(
                 [
-                    (r, OWL.onProperty, EMMO.hasNumericalPart),
+                    (r, OWL.onProperty, ns.hasNumericalPart),
                     (r, OWL.hasValue, v),
-                    (v, EMMO.hasNumberValue, Literal(q2.m)),
+                    (v, RDF.type, ns.Numerical),
+                    (v, NUMBER_VALUE, Literal(q2.m)),
                     (iri, RDFS.subClassOf, r2),
                     (r2, RDF.type, OWL.Restriction),
-                    (r2, OWL.onProperty, EMMO.hasReferencePart),
-                    (r2, OWL.someValuesFrom, q2.u.emmoIRI),
                 ]
             )
+            if units.units_are_individuals:
+                triples.extend(
+                    [
+                        (r2, OWL.onProperty, ns.hasMeasurementUnit),
+                        (r2, OWL.hasValue, q2.u.emmoIRI),
+                    ]
+                )
+            else:
+                triples.extend(
+                    [
+                        (r2, OWL.onProperty, ns.hasReferencePart),
+                        (r2, OWL.someValuesFrom, q2.u.emmoIRI),
+                    ]
+                )
     else:
         if si_datatype:
-            triples.append((iri, EMMO.hasSIQuantityValue, Literal(q)))
+            triples.append((iri, SI_QUANTITY_VALUE, Literal(q)))
         else:
             v = bnode_iri("value")
             q2 = q.to_ontology_units()
+            unitprop = (
+                ns.hasMeasurementUnit
+                if units.units_are_individuals
+                else ns.hasReferencePart
+            )
             triples.extend(
                 [
-                    (iri, EMMO.hasNumericalPart, v),
-                    (v, EMMO.hasNumberValue, Literal(q2.m)),
-                    (iri, EMMO.hasReferencePart, q2.u.emmoIRI),
+                    (iri, ns.hasNumericalPart, v),
+                    (v, RDF.type, ns.Numerical),
+                    (v, NUMBER_VALUE, Literal(q2.m)),
+                    (iri, unitprop, q2.u.emmoIRI),
                 ]
             )
 
@@ -400,17 +457,16 @@ def save_emmo_quantity(
 class Units:
     """A class representing all units in an ontology."""
 
-    # pylint: disable=too-many-instance-attributes
-
     def __init__(
         self,
         ts: "Optional[Triplestore]" = None,
         url: "Optional[Union[str, Path]]" = None,
-        format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        format: "Optional[str]" = None,
         name: "Optional[str]" = None,
         formalisation: str = "emmo",
         include_prefixed: bool = False,
         cache: "Union[bool, None]" = True,
+        emmo_version: "Optional[str]" = None,
     ) -> None:
         """Initialise a Units class from triplestore `ts`
 
@@ -419,7 +475,7 @@ class Units:
                 units from.
             url: URL (or path) to the ontology from where unit
                 definitions are loaded if `ts` is not given.
-                Default: "https://w3id.org/emmo/{EMMO_VERSION}"
+                Default: "https://w3id.org/emmo/{emmo_version}"
             format: Optional format of the source referred to by `url`.
             name: A (versioned) name for the triplestore. Used for caching.
                 Ex: "emmo-1.0.0".
@@ -431,22 +487,36 @@ class Units:
                 - True: Load cache if it exists, otherwise create new cache.
                 - False: Don't load cache, but (over)write new cache.
                 - None: Don't use cache.
+            emmo_version: Version of EMMO to load units from if neither
+                `ts` nor `url` are given.  Defaults to `EMMO_VERSION`.
+
+        Attributes:
+            ns: EMMO namespace with label lookup in the unit ontology.
+                Use it instead of `tripper.EMMO`, since some IRIs differ
+                between versions of EMMO.
+            units_are_individuals: Whether units are individuals (EMMO
+                1.0.4 and later) or classes (EMMO 1.0.3 and earlier).
 
         """
-        url, name = _default_url_name(url, name)
+        url, name = _default_url_name(url, name, emmo_version)
 
         if ts:
             self.ts = ts
+            self.ns = _create_unit_namespace(ts, name)
         else:
             self.ts = get_unit_triplestore(
                 url=url, format=format, name=name, cache=cache
             )
+            self.ns = get_unit_namespace(
+                url=url, format=format, name=name, cache=cache
+            )
 
-        self.ns = Namespace(
-            iri="https://w3id.org/emmo#",
-            label_annotations=True,
-            check=True,
-            triplestore=self.ts,
+        # Created on demand by _get_dimension_maps()
+        self._dimension_maps: Optional[tuple[dict, dict, dict]] = None
+
+        # EMMO 1.0.4 changed units from classes to individuals
+        self.units_are_individuals = self.ts.has(
+            EMMO_IRI + "Metre", RDF.type, OWL.NamedIndividual
         )
 
         pf = "-prefixed" if include_prefixed else ""
@@ -455,27 +525,37 @@ class Units:
         cachefile = cachedir / fname
         if cache and cachefile.exists():
             with open(cachefile, "rb") as f:
-                d = pickle.load(f)  # nosec
+                d = pickle.load(f)  # noqa: S301
                 self.units = d["units"]
                 self.quantities = d["quantities"]
                 self.constants = d["constants"]
         else:
-            print("* caching units... ", end="", flush=True)
+            print("* caching units... ", end="", flush=True, file=sys.stderr)  # noqa: T201
             self.units = self._parse_units(include_prefixed=include_prefixed)
-            print("done\n* caching quantities... ", end="", flush=True)
+            print(  # noqa: T201
+                "done\n* caching quantities... ",
+                end="",
+                flush=True,
+                file=sys.stderr,
+            )
             self.quantities = self._parse_quantities(constants=False)
-            print("done\n* caching constants... ", end="", flush=True)
+            print(  # noqa: T201
+                "done\n* caching constants... ",
+                end="",
+                flush=True,
+                file=sys.stderr,
+            )
             self.constants = self._parse_quantities(constants=True)
-            print("done")
+            print("done", file=sys.stderr)  # noqa: T201
 
-        if cache is not None:
-            with open(cachefile, "wb") as f:
+            if cache is not None:
                 d = {
                     "units": self.units,
                     "quantities": self.quantities,
                     "constants": self.constants,
                 }
-                pickle.dump(d, f)
+                with atomic_write(cachefile) as tmp, open(tmp, "wb") as f:
+                    pickle.dump(d, f)
 
         self.url = url
         self.name = name
@@ -488,21 +568,41 @@ class Units:
 
         If `include_prefixed` is true, also return prefixed units.
         """
-        prefixfilter = f"""
-          FILTER NOT EXISTS {{
-            ?unit a ?prefixed .
-            ?prefixed rdfs:subClassOf* <{EMMO.PrefixedUnit}> .
-          }}
-        """
+        if self.units_are_individuals:
+            # A unit is an individual with a dimension string inherited
+            # from its type
+            dimstrs = self._get_dimension_maps()[1]
+            units = []
+            for iri, _, _ in self.ts.triples(
+                predicate=RDF.type, object=OWL.NamedIndividual
+            ):
+                classes = set(self._superclasses(iri))
+                if not any(cls in dimstrs for cls in classes):
+                    continue
+                if include_prefixed or self.ns.PrefixedUnit not in classes:
+                    units.append(iri)
+            return sorted(units)
+
+        prefixfilter = (
+            ""
+            if include_prefixed
+            else (
+                "FILTER NOT EXISTS "
+                f"{{ ?unit rdfs:subClassOf <{self.ns.PrefixedUnit}> . }}"
+            )
+        )
         query = f"""
-        SELECT ?unit WHERE {{
-          ?unit a ?cls .
-          ?cls rdfs:subClassOf+ <{EMMO.MeasurementUnit}> .
-          {"" if include_prefixed else prefixfilter}
+        PREFIX rdfs: <{RDFS}>
+        SELECT ?unit
+        WHERE {{
+          ?unit rdfs:subClassOf+ ?dimunit .
+          ?dimunit rdfs:subClassOf ?r .
+          ?r owl:onProperty <{self.ns.hasDimensionString}> .
+          {prefixfilter}
         }}
         """
         # Bug in mupy... seems to be fixed in master
-        return [iri for iri, in self.ts.query(query)]  # type: ignore
+        return [iri for (iri,) in self.ts.query(query)]  # type: ignore
 
     def _emmo_quantity_iris(self, constants: bool = False) -> list:
         """Return a list with the IRIs of all EMMO quantities.
@@ -510,82 +610,143 @@ class Units:
         If `constants` is true, only physical constants are returned,
         otherwise all quantities, but physical constants are returned.
         """
-        constantfilter = f"""
-          FILTER NOT EXISTS {{
-            ?q rdfs:subClassOf+ <{EMMO.PhysicalConstant}> .
-          }}
-        """
         # Note, we liberately do not include
         #
         #    ?q rdfs:subClassOf+ <{EMMO.Quantity}> .
         #
         # in the query, since that makes it very slow.
+        constonly = "" if constants else "NOT"
         query = f"""
-        SELECT ?q WHERE {{
-          # ?q rdfs:subClassOf+ <{EMMO.Quantity}> .
+        PREFIX rdfs: <{RDFS}>
+        PREFIX owl: <{OWL}>
+        SELECT ?q
+        WHERE {{
+          # {{
+          #   SELECT ?q WHERE {{
+          #     ?q rdfs:subClassOf+ <{EMMO.Quantity}> .
+          #   }}
+          # }}
           ?q rdfs:subClassOf* ?r .
-          ?r owl:onProperty <{EMMO.hasMeasurementUnit}> .
-          {"" if constants else constantfilter}
+          ?r owl:onProperty <{self.ns.hasMeasurementUnit}> .
+          FILTER {constonly} EXISTS {{
+            ?q rdfs:subClassOf+ <{self.ns.PhysicalConstant}> .
+          }}
           FILTER (!isBlank(?q))
         }}
         """
         # Bug in mupy... seems to be fixed in master
-        return [iri for iri, in self.ts.query(query)]  # type: ignore
+        return [iri for (iri,) in self.ts.query(query)]  # type: ignore
 
     def _get_unit_symbols(self, iri: str) -> list:
-        """Return a list with unit symbols for unit with the given IRI."""
-        query = f"""
-        SELECT DISTINCT ?symbol WHERE {{
-          <{iri}> (<{EMMO.unitSymbolValue}> | <{EMMO.unitSymbol}> |
-                   <{EMMO.ucumCode}> ) ?symbol .
-        }}
+        """Return a list with unit symbols for unit with the given IRI.
+
+        Symbols from `emmo:unitSymbolValue` come first, followed by
+        symbols from annotations.  Within each group, symbols are sorted,
+        since the iteration order of the triplestore may differ between
+        processes.
         """
-        symbols = []
-        results = self.ts.query(query)
-        if results:
-            for symbol in results[0]:
-                s = str(symbol)
-                symbols.append(f"1{s}" if s.startswith("/") else s)
+        if self.units_are_individuals:
+            symbols = sorted(
+                str(symbol)
+                for symbol in self.ts.value(
+                    iri, self.ns.unitSymbolValue, any=None
+                )
+            )
+        else:
+            symbols = sorted(
+                str(r["value"])
+                for r in self.ts.restrictions(
+                    iri, self.ns.unitSymbolValue, type="value"
+                )
+            )
+        annotated = sorted(
+            str(symbol)
+            for symbol in self.ts.value(iri, self.ns.unitSymbol, any=None)
+        )
+        symbols.extend(f"1{s}" if s.startswith("/") else s for s in annotated)
         return symbols
+
+    def _get_dimension_maps(self) -> "tuple[dict, dict, dict]":
+        """Return dicts used for looking up dimension strings.
+
+        Returns a tuple of three dicts:
+            - parents: maps a class to a sorted list of its direct
+              superclasses (rdfs:subClassOf) and an individual to its
+              types (rdf:type).
+            - dimstrs: maps a hasDimensionString restriction to its
+              dimension string.
+            - measurement_units: maps a hasMeasurementUnit restriction to
+              its unit (owl:someValuesFrom).
+
+        The dicts are created on first call by reading the triplestore
+        once.  This is much faster than doing a SPARQL query with a
+        `rdfs:subClassOf+` property path for every unit and quantity.
+        """
+        maps = self._dimension_maps
+        if maps is None:
+            parents: dict[str, list] = {}
+            for s, _, o in self.ts.triples(predicate=RDFS.subClassOf):
+                parents.setdefault(s, []).append(o)
+            for s, _, o in self.ts.triples(predicate=RDF.type):
+                if not o.startswith(str(OWL)):
+                    parents.setdefault(s, []).append(o)
+            for superclasses in parents.values():
+                superclasses.sort()
+
+            onprop = {
+                s: o for s, _, o in self.ts.triples(predicate=OWL.onProperty)
+            }
+            dimstr_prop = self.ns.hasDimensionString
+            dimstrs = {
+                s: o
+                for s, _, o in self.ts.triples(predicate=OWL.hasValue)
+                if onprop.get(s) == dimstr_prop
+            }
+            unit_prop = self.ns.hasMeasurementUnit
+            measurement_units = {
+                s: o
+                for s, _, o in self.ts.triples(predicate=OWL.someValuesFrom)
+                if onprop.get(s) == unit_prop
+            }
+            maps = (parents, dimstrs, measurement_units)
+            self._dimension_maps = maps
+        return maps
+
+    def _superclasses(self, iri: str) -> "Generator[str, None, None]":
+        """Generate all superclasses of `iri` (rdfs:subClassOf+) in
+        breadth-first order.
+
+        If `iri` is an individual, its types and their superclasses are
+        generated."""
+        parents = self._get_dimension_maps()[0]
+        visited = set()
+        queue = deque(parents.get(iri, ()))
+        while queue:
+            cls = queue.popleft()
+            if cls not in visited:
+                visited.add(cls)
+                yield cls
+                queue.extend(parents.get(cls, ()))
 
     def _get_unit_dimension_string(self, iri: str) -> str:
         """Return the dimension string for unit with the given IRI."""
-        query = f"""
-        SELECT DISTINCT ?dimstr WHERE {{
-          <{iri}> a ?unit .
-          ?unit rdfs:subClassOf* ?r .
-          ?r a owl:Restriction .
-          ?r owl:onProperty <{EMMO.hasDimensionString}> .
-          ?r owl:hasValue ?dimstr .
-        }}
-        """
-        results = self.ts.query(query)
-        if results:
-            # Bug in mupy
-            return results[0][0].value  # type: ignore
+        dimstrs = self._get_dimension_maps()[1]
+        for cls in self._superclasses(iri):
+            if cls in dimstrs:
+                return dimstrs[cls]
         raise MissingDimensionStringError(iri)
 
     def _get_quantity_dimension_string(self, iri: str) -> str:
         """Return the dimension string for quantity with the given IRI."""
-        # Note, the use of subquery greately speeds up this SPARQL query
-        query = f"""
-        SELECT ?dimstr WHERE {{
-          {{
-            SELECT ?dimunit WHERE {{
-              <{iri}> rdfs:subClassOf+ ?r .
-              ?r owl:onProperty <{EMMO.hasMeasurementUnit}> .
-              ?r owl:someValuesFrom ?dimunit .
-            }}
-          }}
-          ?dimunit rdfs:subClassOf+ ?rr .
-          ?rr owl:onProperty <{EMMO.hasDimensionString}> .
-          ?rr owl:hasValue ?dimstr .
-        }}
-        """  # nosec
-        result = self.ts.query(query)
-        if result:
-            # Bug in mupy
-            return str(result[0][0])  # type: ignore
+        measurement_units = self._get_dimension_maps()[2]
+        for cls in self._superclasses(iri):
+            if cls in measurement_units:
+                try:
+                    return self._get_unit_dimension_string(
+                        measurement_units[cls]
+                    )
+                except MissingDimensionStringError:
+                    pass
         raise MissingDimensionStringError(iri)
 
     def _parse_dimension_string(self, dimstr: str) -> "Any":
@@ -602,7 +763,7 @@ class Units:
             return Dimension(*[int(d) for d in m.groups()])
         raise InvalidDimensionStringError(dimstr)
 
-    def _parse_unitname(self, unitname: str) -> "Tuple[float, dict]":
+    def _parse_unitname(self, unitname: str) -> "tuple[float, dict]":
         """Parse CamelCase unit name and return a multiplication factor (from
         prefixes) and a dict mapping each unit component to its power.
 
@@ -682,17 +843,26 @@ class Units:
         d = {}
         for iri in self._emmo_unit_iris(include_prefixed=include_prefixed):
             name = str(self.ts.value(iri, SKOS.prefLabel))
-            description = self.ts.value(iri, EMMO.elucidation)
-            if not description:
-                description = self.ts.value(iri, EMMO.definition)
+            description = self._get_description(iri)
             dimstr = str(self._get_unit_dimension_string(iri))
             dimension = self._parse_dimension_string(dimstr)
-            mult = self.ts.value(iri, EMMO.hasSIConversionMultiplier, any=True)
-            offset = self.ts.value(iri, EMMO.hasSIConversionOffset, any=True)
-            qudtIRI = self.ts.value(iri, EMMO.qudtReference, any=True)
-            omIRI = self.ts.value(iri, EMMO.omReference, any=True)
+            mult = self._get_unit_value(iri, self.ns.hasSIConversionMultiplier)
+            offset = self._get_unit_value(iri, self.ns.hasSIConversionOffset)
+            # A missing multiplier means one, except for non-SI units,
+            # whose conversion to SI then is unknown.  Units with no
+            # multiplier and offset are regarded as SI coherent, since
+            # older versions of EMMO don't classify all SI units as such.
+            classes = set(self._superclasses(iri))
+            non_si = self.ns.NonSIUnit in classes
+            if mult is None and not non_si:
+                mult = 1.0
+            coherent = self.ns.SICoherentUnit in classes or (
+                not non_si and mult == 1.0 and not offset
+            )
+            qudtIRI = self.ts.value(iri, self.ns.qudtReference, any=True)
+            omIRI = self.ts.value(iri, self.ns.omReference, any=True)
 
-            for unitCodeIRI in (SCHEMA.unitCode, EMMO.uneceCommonCode):
+            for unitCodeIRI in (SCHEMA.unitCode, self.ns.uneceCommonCode):
                 unitCode = self.ts.value(iri, unitCodeIRI)
                 if unitCode:
                     break
@@ -700,22 +870,45 @@ class Units:
             d[name] = AttrDict(
                 name=name,
                 description=description,
-                aliases=[
+                # Sort, since the iteration order of the triplestore may
+                # differ between processes
+                aliases=sorted(
                     str(s) for s in self.ts.value(iri, SKOS.altLabel, any=None)
-                ],
+                ),
                 symbols=self._get_unit_symbols(iri),
                 dimension=dimension,
                 emmoIRI=iri,
                 qudtIRI=str(qudtIRI) if qudtIRI else None,
                 omIRI=str(omIRI) if omIRI else None,
-                ucumCodes=[
-                    str(s) for s in self.ts.value(iri, EMMO.ucumCode, any=None)
-                ],
+                ucumCodes=sorted(
+                    str(s)
+                    for s in self.ts.value(iri, self.ns.ucumCode, any=None)
+                ),
                 unitCode=str(unitCode) if unitCode else None,
-                multiplier=float(mult) if mult else None,
-                offset=float(offset) if offset else None,
+                multiplier=float(mult) if mult is not None else None,
+                offset=float(offset) if offset is not None else None,
+                coherent=coherent,
+                siAccepted=self.ns.SIAcceptedUnit in classes,
             )
         return d
+
+    def _get_description(self, iri: str) -> "Optional[str]":
+        """Return elucidation or definition of `iri`."""
+        description = self.ts.value(iri, self.ns.elucidation, any=True)
+        if not description:
+            description = self.ts.value(iri, self.ns.definition, any=True)
+        return description
+
+    def _get_unit_value(self, iri: str, prop: str) -> "Any":
+        """Return the value of data property `prop` for the unit `iri`.
+
+        The value is given directly if units are individuals, otherwise
+        with a value restriction.  None is returned if there is no value.
+        """
+        if self.units_are_individuals:
+            return self.ts.value(iri, prop, any=True)
+        restrictions = list(self.ts.restrictions(iri, property=prop))
+        return restrictions[0]["value"] if restrictions else None
 
     def _parse_quantities(self, constants: bool) -> "dict[str, AttrDict]":
         """Parse EMMO quantities and return them as an iterator over named
@@ -732,26 +925,28 @@ class Units:
         d = {}
         for iri in self._emmo_quantity_iris(constants=constants):
             name = str(self.ts.value(iri, SKOS.prefLabel))
-            description = self.ts.value(iri, EMMO.elucidation)
-            if not description:
-                description = self.ts.value(iri, EMMO.definition)
+            description = self._get_description(iri)
             try:
                 dimstr = str(self._get_quantity_dimension_string(iri))
             except MissingDimensionStringError:
                 # Skip general quantity classes with no dimension string
                 continue
             dimension = self._parse_dimension_string(dimstr)
-            qudtIRI = self.ts.value(iri, EMMO.qudtReference, any=True)
-            omIRI = self.ts.value(iri, EMMO.omReference, any=True)
-            iupacIRI = self.ts.value(iri, EMMO.iupacReference, any=True)
-            iso80000Ref = self.ts.value(iri, EMMO.ISO80000Reference, any=True)
+            qudtIRI = self.ts.value(iri, self.ns.qudtReference, any=True)
+            omIRI = self.ts.value(iri, self.ns.omReference, any=True)
+            iupacIRI = self.ts.value(iri, self.ns.iupacReference, any=True)
+            iso80000Ref = self.ts.value(
+                iri, self.ns.ISO80000Reference, any=True
+            )
 
             d[name] = AttrDict(
                 name=name,
                 description=description,
-                aliases=[
+                # Sort, since the iteration order of the triplestore may
+                # differ between processes
+                aliases=sorted(
                     str(s) for s in self.ts.value(iri, SKOS.altLabel, any=None)
-                ],
+                ),
                 dimension=dimension,
                 emmoIRI=iri,
                 qudtIRI=str(qudtIRI) if qudtIRI else None,
@@ -790,8 +985,11 @@ class Units:
             - omIRI: IRI of the unit in the OM ontology.
             - ucumCodes: List of UCUM codes for the unit.
             - unitCode: UNECE common code for the unit.
-            - multiplier: Unit multiplier.
+            - multiplier: Unit multiplier.  None if the conversion to SI
+              is not known.
             - offset: Unit offset.
+            - coherent: Whether the unit is a SI coherent unit.
+            - siAccepted: Whether the unit is accepted for use with SI.
         """
         if name and name in self.units:
             return self.units[name]
@@ -841,7 +1039,6 @@ class Units:
 
     def write_pint_units(self, filename: "Union[str, Path]") -> None:
         """Write Pint units definition to `filename`."""
-        # pylint: disable=too-many-branches,too-many-locals,too-many-statements
 
         # For now, include prefixes and base units...
         # TODO: infer from ontology
@@ -926,34 +1123,51 @@ class Units:
             "Candela",
         }
 
-        # Ensure that unit symbols registered are unique
+        # Pint requires that symbols and aliases are unique.  Assign each
+        # symbol to the first unit that claims it, in order of priority.
+        # Within each round, SI coherent units take precedence, followed
+        # by units accepted for use with SI.  Hence, "K" is Kelvin and not
+        # Kayser.
+        ordered = sorted(
+            self.units.items(),
+            key=lambda item: (
+                not item[1].get("coherent", False),
+                not item[1].get("siAccepted", False),
+            ),
+        )
         forbidden_chars = ".·/*-"
-        trans = {"[]": None, " {}": "_"}
-        table = str.maketrans({c: v for k, v in trans.items() for c in k})
-        symbolkeys: "dict[str, str]" = {}  # maps symbol to unit key
+        table = str.maketrans(
+            {"[": None, "]": None, " ": "_", "{": "_", "}": "_"}
+        )
+        symbolkeys: dict[str, str] = {}  # maps symbol to unit key
+        realsymbols = set()  # symbols that are not codes or aliases
 
-        def addsymbol(symbol, key):
-            """Add symbol and key to symbolkeys dict."""
-            if not any(c in symbol for c in forbidden_chars):
-                s = symbol.translate(table)
-                symbolkeys.setdefault(s, key)
+        def addsymbol(symbol, key, real=False):
+            """Assign `symbol` to unit `key`, if it is valid and free."""
+            if symbol and not any(c in symbol for c in forbidden_chars):
+                symbol = symbol.translate(table)
+                if symbol not in symbolkeys:
+                    symbolkeys[symbol] = key
+                    if real:
+                        realsymbols.add(symbol)
 
-        # Round 1: First element in symbols
-        for key, unit in self.units.items():
+        # Round 1: first symbol of each unit
+        for key, unit in ordered:
             if unit.symbols:
-                addsymbol(unit.symbols[0], key)
-        # Round 2: Rest of symbols
-        for key, unit in self.units.items():
+                addsymbol(unit.symbols[0], key, real=True)
+        # Round 2: other symbols
+        for key, unit in ordered:
             for symbol in unit.symbols[1:]:
+                addsymbol(symbol, key, real=True)
+        # Round 3: UCUM codes and UNECE common codes
+        for key, unit in ordered:
+            for symbol in unit.ucumCodes + [unit.unitCode]:
                 addsymbol(symbol, key)
-        # Round 3: ucumCodes
-        for key, unit in self.units.items():
-            for symbol in unit.ucumCodes:
-                addsymbol(symbol, key)
-        # Round 4: unitCode
-        for key, unit in self.units.items():
-            for symbol in unit.ucumCodes:
-                addsymbol(symbol, key)
+        # Round 4: aliases (skos:altLabel)
+        for key, unit in ordered:
+            for alias in unit.aliases:
+                addsymbol(alias, key)
+
         # Map unit keys to list of symbols
         symbols = defaultdict(list)
         for symbol, key in symbolkeys.items():
@@ -962,6 +1176,7 @@ class Units:
         for key, unit in self.units.items():
             if unit.name in skipunits:
                 continue
+
             baseexpr = base_unit_expression(unit.dimension)
             mult = f"{unit.multiplier} * " if unit.multiplier != 1.0 else ""
             if unit.multiplier or unit.offset:
@@ -975,20 +1190,27 @@ class Units:
                 elif unit.offset:
                     s = [f"{unit.name} = {baseexpr}; offset: {-unit.offset}"]
                 else:
-                    assert False, "should never happen"  # nosec
+                    raise AssertionError("should never happen")
             elif baseexpr == "1":
                 s = [f"{unit.name} = []"]
             else:
                 s = [f"{unit.name} = {baseexpr}"]
 
-            s.append(f" = {symbols[key][0] if symbols[key] else '_'}")
+            # The first real symbol is the Pint symbol.  Other symbols,
+            # codes and labels are added as aliases.
+            real = [x for x in symbols[key] if x in realsymbols]
+            s.append(f" = {real[0] if real else '_'}")
 
+            # Add snake_case name as alias, unless it is used by another unit
             snake = snake_pattern.sub("_", unit.name).lower()
-            if snake != unit.name:
+            if snake != unit.name and symbolkeys.get(snake, key) == key:
                 s.append(f" = {snake}")
 
-            for alias in symbols[key][1:]:
-                s.append(f" = {alias}")
+            s.extend(
+                f" = {alias}"
+                for alias in symbols[key]
+                if alias not in real[:1] and alias != snake
+            )
 
             # IRIs cannot be added to unit registry since they contain
             # invalid characters like ':', '/' and '#'.
@@ -1033,7 +1255,7 @@ class Units:
             ]
         )
 
-        with open(filename, "wt", encoding="utf-8") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write("\n".join(content) + "\n")
 
     def clear_cache(self) -> None:
@@ -1047,7 +1269,6 @@ class Units:
             tsfile.unlink()
 
 
-# pylint: disable=too-many-ancestors
 class Unit(pint.Unit):
     """A subclass of pint.Unit with additional methods and properties."""
 
@@ -1118,25 +1339,26 @@ class Quantity(pint.Quantity):
 
             1. Find units with compatible physical dimensionality in the
                ontology.
-            2. Among these units, select the unit that:
-               - Is coherent with the SI system, i.e. minimises
-                 `log10(magnitude) % 1`, where `magnitude` is the magnitude
-                 of the quantity when expressed in SI base units.
-               - Minimises the absolute value of the sum of the powers of each
-                 unit component.
+               SI coherent units and units accepted for use with SI are
+               preferred.  Units with unknown conversion to SI are
+               ignored.
+            2. Among these units, select the unit that minimises the absolute
+               value of the sum of the powers of each unit component.
 
-                 Example: among the units
+               Example: among the units
 
-                     Pa = Pa^1       -> sum=1
-                     J/m^3 = J^1/m^3 -> sum=1+3=4
-                     N/m^2 = N^1/m^2 -> sum=1+2=3
+                   Pa = Pa^1       -> sum=1
+                   J/m^3 = J^1/m^3 -> sum=1+3=4
+                   N/m^2 = N^1/m^2 -> sum=1+2=3
 
-                 Pa will be selected.
-               - Minimises the absolute value of the magnitude, i.e. minimises
-                 `abs(log10(magnitude/5))`.
+               Pa will be selected.
+            3. If two units have the same sum, the unit that minimises
+               `log10(magnitude/5)` is selected, where `magnitude` is the
+               magnitude of the quantity when expressed in SI base units.
+            4. Units with an UNECE common code are preferred over equally
+               ranked units without.
 
         """
-        # pylint: disable=protected-access
         ureg = self._REGISTRY
 
         try:
@@ -1148,7 +1370,8 @@ class Quantity(pint.Quantity):
         dim = self._get_dimension()
         compatible_units = []
         for info in units.units.values():
-            if info.dimension == dim:
+            # Skip units with unknown conversion to SI units
+            if info.dimension == dim and info.multiplier is not None:
                 q = self.to(info.name)
                 try:
                     d = units._parse_unitname(info.name)
@@ -1156,21 +1379,26 @@ class Quantity(pint.Quantity):
                     d = 1.0, {q.u.name: 1}
                 compatible_units.append((info.name, q.m, d))
 
+        # Prefer SI coherent units and units accepted for use with SI
+        preferred = [
+            x
+            for x in compatible_units
+            if units.units[x[0]].get("coherent")
+            or units.units[x[0]].get("siAccepted")
+        ]
+        if preferred:
+            compatible_units = preferred
+
         def sortkey(x):
             """Returns sort key for `compatible_units`."""
             # This function prioritise compact unit expression with
             # small exponents.  Lower priority is given to pre-factor
             # close to five.
-            u, m, (_, d) = x
-            info = ureg.parse_expression(u).u.info
-            mult = info.multiplier if info.multiplier else 1
-            r = (
-                1000 * (math.log10(mult if mult else 1) % 1)
-                + 10 * sum(abs(v) for v in d.values())
-                + abs(math.log10(m / 5))
+            name, m, (_, d) = x
+            score = 100 * sum(abs(v) for v in d.values()) + abs(
+                math.log10(m / 5)
             )
-            print("***", x[0], m, r)
-            return r
+            return score, units.units[name].unitCode is None
 
         compatible_units.sort(key=sortkey)
         name, mult, _ = compatible_units[0]
@@ -1200,11 +1428,12 @@ class UnitRegistry(pint.UnitRegistry):
         *args: "Any",
         ts: "Optional[Triplestore]" = None,
         url: "Optional[Union[str, Path]]" = None,
-        format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        format: "Optional[str]" = None,
         name: "Optional[str]" = None,
         formalisation: str = "emmo",
         include_prefixed: bool = False,
         cache: "Optional[bool]" = True,
+        emmo_version: "Optional[str]" = None,
         **kwargs: "Any",
     ) -> None:
         """Initialise a Units class from triplestore `ts`
@@ -1215,7 +1444,7 @@ class UnitRegistry(pint.UnitRegistry):
                 units from.
             url: URL (or path) to triplestore from where to load the unit
                 definitions if `ts` is not given.
-                Default: "https://w3id.org/emmo/{EMMO_VERSION}"
+                Default: "https://w3id.org/emmo/{emmo_version}"
             format: Optional format of the source referred to by `url`.
             name: A (versioned) name for the triplestore. Used for caching.
                 Ex: "emmo-1.0.0".
@@ -1227,6 +1456,9 @@ class UnitRegistry(pint.UnitRegistry):
                 - True: Load cache if it exists, otherwise create new cache.
                 - False: Don't load cache, but (over)write new cache.
                 - None: Don't use cache.
+            emmo_version: Version of EMMO to load units from if neither
+                `ts` nor `url` are given.  Defaults to `EMMO_VERSION`.
+                Ex: "1.0.3".
             kwargs: Keyword arguments passed to pint.UnitRegistry().
 
         Examples:
@@ -1247,7 +1479,7 @@ class UnitRegistry(pint.UnitRegistry):
             'http://qudt.org/vocab/unit/HR'
 
         """
-        url, name = _default_url_name(url, name)
+        url, name = _default_url_name(url, name, emmo_version)
 
         self._tripper_cachedir = get_cachedir(create=cache is not None)
         self._tripper_units = None
@@ -1269,16 +1501,17 @@ class UnitRegistry(pint.UnitRegistry):
             kwargs["filename"] = unitsfile
             if not unitsfile.exists():
                 units = self._get_tripper_units()
-                units.write_pint_units(unitsfile)
+                with atomic_write(unitsfile) as tmp:
+                    units.write_pint_units(tmp)
 
         if cache:
             kwargs.setdefault("cache_folder", self._tripper_cachedir)
 
         super().__init__(*args, **kwargs)
 
-    def parse_units(  # pylint: disable=arguments-differ
-        self, units, *args, **kwargs
-    ):
+    def parse_units(self, units, *args, **kwargs):
+        """Parses a unit expression string and returns a UnitContainer object
+        with canonical unit names."""
         try:
             return super().parse_units(units, *args, **kwargs)
         except pint.UndefinedUnitError:
@@ -1379,7 +1612,6 @@ class UnitRegistry(pint.UnitRegistry):
             value: Value of the quantity value in units of SI base units.
 
         """
-        # pylint: disable=too-many-branches
         units = self._get_tripper_units()
         if name:
             if name not in units.quantities:
@@ -1435,9 +1667,9 @@ class UnitRegistry(pint.UnitRegistry):
         ts: Triplestore,
         q: Quantity,
         iri: str,
-        type: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        type: "Optional[str]" = None,
         tbox: bool = False,
-        si_datatype: bool = True,
+        si_datatype: "Optional[bool]" = None,
         annotations: "Optional[dict]" = None,
     ) -> None:
         """Save a Pint quantity individual to triplestore.
@@ -1450,7 +1682,9 @@ class UnitRegistry(pint.UnitRegistry):
                 quantity.
             tbox: Whether to document the quantity in the tbox.
             si_datatype: Whether to represent the value using the
-                `emmo:SIQuantityDatatype` datatype.
+                `emmo:SIQuantityDatatype` datatype.  The default is to use
+                it with the versions of EMMO that support it (EMMO 1.0.3
+                and earlier).
             annotations: Additional annotations describing the quantity.
                 Use Literal() for literal annotations.
 
@@ -1476,10 +1710,10 @@ class UnitRegistry(pint.UnitRegistry):
         cachedir = self._tripper_cachedir
         ontofile = cachedir / f"units-{name}.ntriples"
         unitsfile = cachedir / f"units{pf}-{name}.pickle"
-        if ontofile.exists():
-            ontofile.unlink()
-        if unitsfile.exists():
-            unitsfile.unlink()
+        nsfile = cachedir / f"namespace-{name}.cache"
+        for path in ontofile, unitsfile, nsfile:
+            if path.exists():
+                path.unlink()
 
     def set_as_default(self) -> "Union[UnitRegistry, None]":
         """Set current unit registry as the default one.
@@ -1487,6 +1721,7 @@ class UnitRegistry(pint.UnitRegistry):
         This unit registry can then be accessed with `get_ureg()`.
 
         Returns the previous default unit registry."""
-        old = _cache("ureg")
-        _cache["ureg"] = self
+        global _unit_reg
+        old = _unit_reg
+        _unit_reg = self
         return old

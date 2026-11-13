@@ -16,7 +16,6 @@ def test_mapping():
 
     Uses rdflib as backend
     """
-    # pylint: disable=unused-argument,invalid-name
     import pytest
 
     pytest.importorskip("rdflib")

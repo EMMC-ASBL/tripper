@@ -211,11 +211,11 @@ You can use to [to_ontology_units()] method (or its in-place variant [ito_ontolo
 ```python
 >>> duration.ito_ontology_units()
 >>> f"{duration:.1f}"  # avoid rounding errors
-'1200.0 Hour'
+'50.0 Day'
 
 # The unit now has a `info` property
 >>> duration.u.info.qudtIRI
-'http://qudt.org/vocab/unit/HR'
+'http://qudt.org/vocab/unit/DAY'
 
 ```
 
@@ -310,16 +310,22 @@ The content of the triplestore is now
 >>> print(ts.serialize())
 @prefix : <http://example.com#> .
 @prefix emmo: <https://w3id.org/emmo#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <BLANKLINE>
 :MeanSpeed a emmo:EMMO_81369540_1b0e_471b_9bae_6801af22800e ;
-    emmo:EMMO_42806efc_581b_4ff8_81b0_b4d62153458b "5.0 km/h"^^emmo:EMMO_799c067b_083f_4365_9452_1f1433b03676 .
+    emmo:EMMO_8ef3cd6d_ae58_4a8d_9fc0_ad8f49015cd0 [ a emmo:EMMO_4ce76d7f_03f8_45b6_9003_90052a79bfaa ;
+            emmo:EMMO_faf79f53_749d_40b2_807c_d34244c192f4 1.388889e+00 ] ;
+    emmo:EMMO_bed1d005_b04e_4a90_94cf_02bc678a8569 emmo:MetrePerSecond .
 <BLANKLINE>
 <BLANKLINE>
 
 ```
 
-By default [ureg.save_quantity()] saves the quantity as an individual using the `emmo:SIQuantityDatatype` datatype.
-But, the [ureg.save_quantity()] method has also options for saving the quantity as a class (argument `tbox=True`) or to represent the quantity using the `emmo:hasNumericalPart` and `emmo:hasReferencePart` properties (argument `si_datatype=False`).
+By default [ureg.save_quantity()] saves the quantity as an individual with a numerical part (`emmo:hasNumericalPart` and `emmo:numberValue`) and a unit (`emmo:hasMeasurementUnit`).
+The value is converted to a unit in the ontology with [to_ontology_units()].
+With `tbox=True`, the quantity is instead saved as a class.
+
+With EMMO 1.0.3 and earlier (see [EMMO versions]), the quantity is by default saved using the `emmo:SIQuantityDatatype` datatype, which was removed in EMMO 1.0.4.
 
 Loading a quantity from the triplestore can be with [ureg.load_quantity()]:
 
@@ -327,7 +333,32 @@ Loading a quantity from the triplestore can be with [ureg.load_quantity()]:
 ```python
 >>> q = ureg.load_quantity(ts, iri=NS.MeanSpeed)
 >>> q
+<Quantity(1.38888889, 'MetrePerSecond')>
+
+>>> q.to("km/h")
 <Quantity(5.0, 'KiloMetre / Hour')>
+
+```
+
+
+EMMO versions
+-------------
+By default, units are loaded from EMMO 1.1.0.
+Use the `emmo_version` option to load units from another version of EMMO:
+
+```python
+>>> ureg_old = UnitRegistry(emmo_version="1.0.0")  # doctest: +SKIP
+
+```
+
+EMMO 1.0.4 changed units from classes to individuals and renamed some properties, like `emmo:hasNumberValue` to `emmo:numberValue`.
+Tripper supports both representations.
+Since the IRIs of some annotation properties also changed, use the `EMMO` namespace from [tripper.units] to look up names in the same version of EMMO as the default unit registry:
+
+```python
+>>> from tripper.units import EMMO
+>>> EMMO.ucumCode
+'https://w3id.org/emmo#ucumCode'
 
 ```
 
@@ -375,6 +406,7 @@ For manual deletion of the cache files, the cache directory can be found using t
 
 
 [Working with quantities]: #working-with-quantities
+[EMMO versions]: #emmo-versions
 [Accessing quantities in a triplestore]: #accessing-quantities-in-a-triplestore
 [Setting up custom unit registry]: #setting-up-custom-unit-registry
 

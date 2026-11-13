@@ -47,7 +47,7 @@ def test_asdicts():
         # },
     )
 
-    s1, d1, d2 = td.asdicts()  # pylint: disable=unbalanced-tuple-unpacking
+    s1, d1, d2 = td.asdicts()
 
     assert s1["@id"] == "ds:s1"
     assert set(s1["@type"]) == {
@@ -113,11 +113,11 @@ def test_fromdicts():
     ]
 
 
-def test_csv():  # pylint: disable=too-many-locals
+def test_csv():
     """Test parsing a csv file."""
     import io
 
-    from dataset_paths import indir, outdir  # pylint: disable=import-error
+    from dataset_paths import indir, outdir
 
     pytest.importorskip("rdflib")
 
@@ -191,7 +191,6 @@ def test_csv():  # pylint: disable=too-many-locals
         },
     )
 
-    # pylint: disable=unused-variable,unbalanced-tuple-unpacking
     tddict = td.asdicts()
     img = tddict[0]
 
@@ -249,7 +248,7 @@ def test_csv():  # pylint: disable=too-many-locals
     content = (outdir / "semdata.ttl").read_text()
     assert "sem:SEMImageSeries" in content
     expected_restriction = {
-        OWL.onProperty: "https://w3id.org/emmo#EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461",  # pylint: disable=line-too-long
+        OWL.onProperty: "https://w3id.org/emmo#EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461",
         "@type": OWL.Restriction,
         OWL.someValuesFrom: EXP.EXP_12345,
     }
@@ -299,7 +298,7 @@ def test_csv_duplicated_columns():
     """Test CSV with duplicated columns."""
     pytest.importorskip("rdflib")
 
-    from dataset_paths import indir, outdir  # pylint: disable=import-error
+    from dataset_paths import indir, outdir
 
     from tripper import Namespace
     from tripper.datadoc import TableDoc
@@ -312,7 +311,6 @@ def test_csv_duplicated_columns():
         prefixes=prefixes,
     )
 
-    # pylint: disable=unused-variable,unbalanced-tuple-unpacking
     img1, img2, img3 = td.asdicts()
 
     assert set(img1["@type"]) == {
@@ -335,7 +333,7 @@ def test_parse_excel():
     """Test parse_excel() method."""
     pytest.importorskip("openpyxl")
 
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper import Namespace
     from tripper.datadoc import TableDoc
@@ -352,7 +350,6 @@ def test_parse_excel():
     assert d1["description"].startswith("Low-magnification TEM ")
     assert d1["distribution"] == {
         "@type": ["dcat:Distribution", "dcat:Resource"],
-        # pylint: disable=line-too-long
         "downloadURL": "https://folk.ntnu.no/friisj/temdata/BF_100-at-m5-and-2_001.dm3",
         "format": "dm3",
     }
@@ -409,7 +406,7 @@ def test_csvsniff():
 
 def test_csv_keywords():
     """Test load CSV with custom keywords file."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     pytest.importorskip("rdflib")
 
@@ -478,39 +475,69 @@ def test_column_sep():
         data=[("kb:s1", "kb:T1,kb:T2", "A title, with a comma")],
         prefixes={"kb": "http://example.com/kb#"},
     )
-    (s1,) = td.asdicts()  # pylint: disable=unbalanced-tuple-unpacking
+    (s1,) = td.asdicts()
     assert s1["@id"] == "kb:s1"
     assert s1["@type"] == ["kb:T1", "kb:T2"]
     assert s1["dcterms:title"] == "A title, with a comma"
 
 
-def test_unknown_header_full_iri():
-    """Test that unknown full-IRI headers raise InvalidKeywordError."""
+def test_unknown_header():
+    """Test that unknown non-IRI headers raise InvalidKeywordError."""
 
     from tripper.datadoc import TableDoc
     from tripper.datadoc.errors import InvalidKeywordError
 
-    # Full IRI header not defined in context should raise
+    # Plain name not defined in context
+    td = TableDoc(headers=["@id", "unknown"], data=[("id1", "value1")])
+    with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
+        td.asdicts()
+
+    # Prefixed name with a prefix that is unknown to the context
+    td = TableDoc(
+        headers=["@id", "unknown:property"], data=[("id1", "value1")]
+    )
+    with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
+        td.asdicts()
+
+
+def test_extra_header_iri():
+    """Test that headers that are real IRIs are accepted even if they are
+    not defined in the context."""
+
+    from tripper.datadoc import TableDoc
+
+    # Full IRI
     td = TableDoc(
         headers=["@id", "http://example.com/unknown"],
         data=[("id1", "value1")],
     )
+    (d,) = td.asdicts()
+    assert d["http://example.com/unknown"] == "value1"
 
-    with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
-        td.asdicts()
+    # Prefixed name with a prefix known to the context
+    td = TableDoc(
+        headers=["@id", "dcterms:unknownproperty"], data=[("id1", "value1")]
+    )
+    (d,) = td.asdicts()
+    assert d["dcterms:unknownproperty"] == "value1"
+
+    # Prefixed name with a user-provided prefix
+    td = TableDoc(
+        headers=["@id", "ex:prop"],
+        data=[("id1", "value1")],
+        prefixes={"ex": "http://example.com/"},
+    )
+    (d,) = td.asdicts()
+    assert d["ex:prop"] == "value1"
 
 
-def test_unknown_header_prefixed():
-    """Test that unknown prefixed headers raise InvalidKeywordError."""
+def test_unknown_header_csv(tmp_path):
+    """Test that parsing a csv file with an unknown header raises."""
 
     from tripper.datadoc import TableDoc
     from tripper.datadoc.errors import InvalidKeywordError
 
-    # Prefixed header not defined in context should raise
-    td = TableDoc(
-        headers=["@id", "unknown:property"],
-        data=[("id1", "value1")],
-    )
-
+    csvfile = tmp_path / "unknown.csv"
+    csvfile.write_text("@id,unknown\nid1,value1\n")
     with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
-        td.asdicts()
+        TableDoc.parse_csv(csvfile).asdicts()

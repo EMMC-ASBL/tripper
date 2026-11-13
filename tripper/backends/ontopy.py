@@ -4,7 +4,6 @@ For developers: The usage of `s`, `p`, and `o` represent the different parts of
 an RDF Triple: subject, predicate, and object.
 """
 
-# pylint: disable=protected-access
 import os
 import tempfile
 from typing import TYPE_CHECKING
@@ -20,8 +19,8 @@ except ImportError as exc:
     ) from exc
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Sequence
-    from typing import Generator, List, Optional, Union
+    from collections.abc import Generator, Sequence
+    from typing import Optional, Union
 
     from rdflib.query import Result
 
@@ -53,7 +52,6 @@ class OntopyStrategy:
         load: bool = False,
         **kwargs,
     ):
-        # pylint: disable=unused-argument
         if onto is None:
             if base_iri is None:
                 base_iri = "http://example.com/onto#"
@@ -99,7 +97,7 @@ class OntopyStrategy:
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""
         if TYPE_CHECKING:  # pragma: no cover
-            datatype: "Union[int, str]"
+            datatype: Union[int, str]
         for s, p, o in triples:
             if isinstance(o, Literal):
                 if o.lang:
@@ -143,7 +141,7 @@ class OntopyStrategy:
         source=None,
         location=None,
         data=None,
-        format=None,  # pylint: disable=redefined-builtin
+        format=None,
         encoding=None,
         **kwargs,
     ):
@@ -189,7 +187,7 @@ class OntopyStrategy:
     def serialize(
         self,
         destination=None,
-        format="turtle",  # pylint: disable=redefined-builtin
+        format="turtle",
         **kwargs,
     ) -> "Union[None, str]":
         """Serialise to destination.
@@ -213,7 +211,7 @@ class OntopyStrategy:
                 with tempfile.NamedTemporaryFile(delete=False) as handle:
                     filename = handle.name
                     self.onto.save(filename, format=format, **kwargs)
-                with open(filename, "rt", encoding="utf8") as handle:
+                with open(filename, encoding="utf8") as handle:
                     return handle.read()
             finally:
                 if filename:
@@ -222,7 +220,7 @@ class OntopyStrategy:
 
     def query(
         self, query_object, native=True, **kwargs
-    ) -> "Union[List, Result]":
+    ) -> "Union[list, Result]":
         """SPARQL query.
 
         Parameters:
@@ -235,7 +233,7 @@ class OntopyStrategy:
 
         """
         if TYPE_CHECKING:  # pragma: no cover
-            res: "Union[List, Result]"
+            res: Union[list, Result]
 
         if native:
             res = self.onto.world.sparql(query_object)

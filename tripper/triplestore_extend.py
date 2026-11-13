@@ -1,6 +1,5 @@
 """A module that adds additional functionality to triplestore"""
 
-# pylint: disable=invalid-name,too-many-public-methods,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import uuid
@@ -20,7 +19,8 @@ from tripper.triplestore import (
 from tripper.utils import parse_literal, random_string
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Callable, Optional, Sequence, Union
+    from collections.abc import Sequence
+    from typing import Any, Callable
 
     from tripper.mappings import Value
 
@@ -38,12 +38,12 @@ class Tripper(Triplestore):
 
     def add_data(
         self,
-        func: "Union[Callable, Literal]",
-        iri: "Optional[Union[str, Sequence]]" = None,
-        configurations: "Optional[dict]" = None,
-        base_iri: "Optional[str]" = None,
+        func: Callable | Literal,
+        iri: str | Sequence | None = None,
+        configurations: dict | None = None,
+        base_iri: str | None = None,
         standard: str = "emmo",
-        cost: "Optional[Union[float, Callable]]" = None,
+        cost: float | Callable | None = None,
     ) -> str:
         """Register a data source to the triplestore.
 
@@ -125,11 +125,11 @@ class Tripper(Triplestore):
         self,
         iri,
         routeno=0,
-        unit: "Optional[str]" = None,
+        unit: str | None = None,
         magnitude: bool = False,
-        quantity: "Optional[Any]" = None,
+        quantity: Any | None = None,
         **kwargs,
-    ) -> "Value":
+    ) -> Value:
         """Return the value of an individual.
 
         Parameters:
@@ -149,7 +149,7 @@ class Tripper(Triplestore):
         Returns:
             The value of the individual.
         """
-        from tripper.mappings import (  # pylint: disable=import-outside-toplevel
+        from tripper.mappings import (
             Value,
             mapping_routes,
         )
@@ -177,7 +177,7 @@ class Tripper(Triplestore):
             if self.has(iri, hasAccessFunction):  # callable
                 func_iri = self.value(iri, hasAccessFunction)
                 func = self.function_repo[func_iri]
-                assert callable(func)  # nosec
+                assert callable(func)  # noqa: S101
                 retval = func()
                 if isinstance(retval, Value):
                     return retval.get_value(
@@ -209,18 +209,18 @@ class Tripper(Triplestore):
             quantity=quantity,
         )
 
-    def add_interpolation_source(  # pylint: disable=too-many-arguments
+    def add_interpolation_source(
         self,
         xcoord: str,
         ycoord: str,
         input_iri: str,
         output_iri: str,
-        base_iri: "Optional[str]" = None,
+        base_iri: str | None = None,
         standard: str = "emmo",
-        cost: "Optional[Union[float, Callable]]" = None,
-        left: "Optional[float]" = None,
-        right: "Optional[float]" = None,
-        period: "Optional[float]" = None,
+        cost: float | Callable | None = None,
+        left: float | None = None,
+        right: float | None = None,
+        period: float | None = None,
     ) -> str:
         """Add data source to triplestore, such that it can be used to
         transparently transform other data.
@@ -259,7 +259,7 @@ class Tripper(Triplestore):
 
         """
         try:
-            import numpy as np  # pylint: disable=import-outside-toplevel
+            import numpy as np
         except ImportError as exc:
             raise RuntimeError(
                 "Triplestore.add_interpolation_source() requires numpy.\n"

@@ -1,0 +1,69 @@
+# Services used by the Tripper tests.  See README.md in this directory.
+#
+# Start all services from the root of the repository with
+#
+#     docker compose -f test-services/compose.yaml up -d
+#
+# or only some of them, e.g.
+#
+#     docker compose -f test-services/compose.yaml up -d fuseki
+#
+# and stop them again with
+#
+#     docker compose -f test-services/compose.yaml down
+#
+# The credentials below are only meant for local testing.  They agree
+# with the defaults in TEST_SERVICES in tripper/testutils.py
+# and can be changed with environment variables named
+# TRIPPER_TEST_<SERVICE>_<KEY>.
+
+# Images are given with fully qualified names, which is required by podman.
+# Keep them pinned to fixed tags.  The CI workflow caches the images with
+# a key computed from this file, so a new tag invalidates the cache.
+
+# Fixed project name, so that the services are easy to recognise and
+# can be managed from any directory.
+name: tripper-test-services
+
+services:
+
+  # Apache Jena Fuseki with admin password "admin0" and a "test_repo"
+  # dataset on port 3030.
+  fuseki:
+    image: docker.io/stain/jena-fuseki:5.1.0
+    environment:
+      ADMIN_PASSWORD: ${TRIPPER_TEST_FUSEKI_PASSWORD:-admin0}
+      FUSEKI_DATASET_1: ${TRIPPER_TEST_FUSEKI_DATASET:-test_repo}
+    ports:
+      - "${TRIPPER_TEST_FUSEKI_PORT:-3030}:3030"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:3030/$$/ping || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Ontotext GraphDB with a "test_repo" repository with full-text search
+  # on port 7200.
+  graphdb:
+    image: docker.io/ontotext/graphdb:10.8.3
+    ports:
+      - "${TRIPPER_TEST_GRAPHDB_PORT:-7200}:7200"
+    volumes:
+      - ./graphdb-test_repo-config.ttl:/test_repo-config.ttl:ro,z
+    # The health check also creates the "test_repo" repository if it
+    # doesn't exist, so graphdb is only reported healthy when test_repo
+    # is ready.  This is done in the health check instead of in a
+    # one-shot service, since `docker compose up --wait` fails when a
+    # container exits, even with exit code 0.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          curl -fs http://localhost:7200/protocol >/dev/null
+          && { curl -fs http://localhost:7200/rest/repositories/test_repo
+          >/dev/null
+          || curl -fs -X POST -F config=@/test_repo-config.ttl
+          http://localhost:7200/rest/repositories; }
+      interval: 5s
+      timeout: 3s
+      retries: 30

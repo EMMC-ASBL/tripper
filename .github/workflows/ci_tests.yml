@@ -7,46 +7,99 @@ on:
       - 'master'
       - 'push-action/**'  # Allow pushing to protected branches
 
+# Cancel superseded runs on the same PR/branch (but never on master)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
-  basic-tests:
-    name: External
-    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.10.0
-    with:
-      ## General settings:
-      install_extras: "[dev]"
+  # Run ruff via its pre-commit hooks, such that CI uses the same ruff
+  # version as pre-commit (see .pre-commit-config.yaml).  The hooks fail
+  # if they change any file, i.e. if the code isn't linted and formatted.
+  ruff:
+    name: Run ruff
+    runs-on: ubuntu-latest
 
-      ## pre-commit
-      run_pre-commit: false
-      skip_pre-commit_hooks: "generate-context-and-doc"
+    steps:
+    - name: Checkout tripper
+      uses: actions/checkout@v7
 
-      ## pylint & safety
-      python_version_pylint_safety: "3.11"
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v7
+      with:
+        python-version: "3.14"
 
-      # pylint-specific settings
-      run_pylint: true
-      pylint_runs: |
-        --rcfile=pyproject.toml tripper
-        --rcfile=pyproject.toml --disable=import-outside-toplevel,redefined-outer-name tests
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v10.3.3
 
-      # safety-specific settings
-      run_safety: false
+    - name: Install pre-commit
+      run: uv pip install --system pre-commit
 
-      ## Build package
-      run_build_package: true
-      python_version_package: "3.11"
-      build_libs: flit
-      build_cmd: flit build
+    - name: Run ruff linter
+      run: pre-commit run ruff-check --all-files --show-diff-on-failure
 
-      ## Build documentation
-      run_build_docs: true
-      python_version_docs: "3.11"
-      warnings_as_errors: true
-      use_mkdocs: true
+    - name: Run ruff formatter
+      run: pre-commit run ruff-format --all-files --show-diff-on-failure
 
-      # mkdocs-specific settings
-      update_python_api_ref: true
-      update_docs_landing_page: true
-      package_dirs: tripper
+  build-package:
+    name: Build distribution package
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout tripper
+      uses: actions/checkout@v7
+
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v7
+      with:
+        python-version: "3.14"
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v10.3.3
+
+    - name: Install flit
+      run: uv pip install --system flit
+
+    - name: Build distribution package
+      run: flit build
+
+  docs:
+    name: Build documentation
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout tripper
+      uses: actions/checkout@v7
+
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v7
+      with:
+        python-version: "3.14"
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v10.3.3
+      with:
+        enable-cache: true
+        cache-dependency-glob: pyproject.toml
+
+    - name: Install dependencies
+      run: uv pip install --system -e .[dev]
+
+    # Regenerate the API reference and the landing page with the same
+    # pre-commit hooks and options as used locally, such that the docs
+    # are built from the current sources.  A hook exits with a non-zero
+    # code when it changes files, so each hook is run a second time if
+    # the first run fails; the second run only fails if the hook is broken.
+    - name: Update API reference and landing page
+      run: |
+        for hook in docs-api-reference docs-landing-page; do
+          pre-commit run "$hook" --all-files \
+            || pre-commit run "$hook" --all-files
+        done
+        git status --short docs
+
+    - name: Build documentation
+      run: mkdocs build --strict
 
   safety:
     runs-on: ubuntu-latest
@@ -58,59 +111,143 @@ jobs:
           api-key: ${{ secrets.SAFETY_API_KEY2 }}
           args: --detailed-output # To always see detailed output from this action
 
-  pytest:
+  # Pull the Docker images of the test services once and store them with
+  # actions/cache, such that the pytest jobs don't pull from Docker Hub,
+  # whose rate limit for anonymous pulls may otherwise make CI fail.
+  # The cache key changes when the image tags in compose.yaml change.
+  docker-images:
+    name: Cache Docker images for test services
     runs-on: ubuntu-latest
-
-
-    services:
-      fuseki:
-        image: stain/jena-fuseki
-        env:
-          ADMIN_PASSWORD: admin0
-          FUSEKI_DATASET_1: test_repo
-        ports:
-          - 3030:3030
-        options: >-
-          --health-cmd "curl -f http://localhost:3030 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    env:
+      # Secrets cannot be used directly in `if:` conditions
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
     steps:
     - name: Checkout tripper
       uses: actions/checkout@v7
+
+    - name: Look up cached Docker images
+      id: cache
+      uses: actions/cache@v6
+      with:
+        path: ~/docker-images.tar
+        key: docker-images-${{ hashFiles('test-services/compose.yaml') }}
+        lookup-only: true
+
+    # Authenticated pulls have a much higher rate limit than anonymous
+    # pulls.  Skipped if the secrets are not available, e.g. for pull
+    # requests from forks.
+    - name: Log in to Docker Hub
+      if: steps.cache.outputs.cache-hit != 'true' && env.DOCKERHUB_USERNAME != ''
+      uses: docker/login-action@v4
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Pull and save Docker images
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        images=$(docker compose -f test-services/compose.yaml config --images)
+        for image in $images; do
+          for attempt in 1 2 3 4 5; do
+            docker pull "$image" && break
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+            echo "Pull of $image failed, retrying in $((attempt * 30)) s"
+            sleep $((attempt * 30))
+          done
+        done
+        docker save -o ~/docker-images.tar $images
+
+  pytest:
+    needs: docker-images
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
+
+    steps:
+    - name: Checkout tripper
+      uses: actions/checkout@v7
+
+    - name: Restore Docker images
+      uses: actions/cache/restore@v6
+      with:
+        path: ~/docker-images.tar
+        key: docker-images-${{ hashFiles('test-services/compose.yaml') }}
+        fail-on-cache-miss: true
+
+    - name: Load Docker images
+      run: docker load -i ~/docker-images.tar
+
+    - name: Start services
+      run: |
+        docker compose -f test-services/compose.yaml up -d --wait --pull never
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v10.3.3
+      with:
+        enable-cache: true
+        cache-dependency-glob: pyproject.toml
+
     - name: Install dependencies
-      run: |
-        # sudo apt install graphviz
-        python -m pip install -U pip
-        pip install -U setuptools wheel flit
-        pip install -e .[testing]
+      run: uv pip install --system -e .[testing]
 
     - name: List installed packages
-      run: pip freeze
+      run: uv pip freeze --system
 
+    # The tripper cache holds e.g. the units table generated from EMMO,
+    # which otherwise is downloaded and rebuilt in every job.
+    # Not used on Python 3.14, which measures coverage, since the code
+    # that creates the cache would otherwise not be covered.
+    - name: Cache tripper data
+      if: matrix.python-version != '3.14'
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/tripper
+        key: tripper-cache-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('tripper/units/**', 'tripper/context/**', 'pyproject.toml') }}
+
+    # Create the tripper cache once, instead of in every pytest-xdist
+    # worker.  Fast if the cache was restored.  On the coverage job, run
+    # it with coverage, which pytest appends to with --cov-append.
+    - name: Warm up tripper cache
+      env:
+        COVERAGE_CORE: sysmon
+      run: ${{ matrix.python-version == '3.14' && 'coverage run --source=tripper' || 'python' }} tests/warm_cache.py
+
+    # Only measure coverage on the version that uploads to Codecov.
+    # COVERAGE_CORE=sysmon uses the much faster sys.monitoring API (3.12+).
     - name: Test with pytest
-      run: pytest -vvv --cov-report=xml --doctest-modules
+      env:
+        COVERAGE_CORE: sysmon
+      run: pytest -vvv -n auto --durations=20 ${{ matrix.python-version == '3.14' && '--cov-append --cov-report=xml' || '--no-cov' }}
 
     - name: Upload coverage to Codecov
-      if: matrix.python-version == '3.11' && github.repository == 'EMMC-ASBL/tripper'
+      if: matrix.python-version == '3.14' && github.repository == 'EMMC-ASBL/tripper'
       uses: codecov/codecov-action@v7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
 
-    - name: Run doctest on tutorial
-      run: python -m doctest docs/tutorial.md
+    - name: Show service logs
+      if: failure()
+      run: docker compose -f test-services/compose.yaml logs
+
+    - name: Stop services
+      if: always()
+      run: docker compose -f test-services/compose.yaml down
 
   pytest-no-extra-dependencies: # Test for basic version, without extras installed
     runs-on: ubuntu-latest
@@ -118,7 +255,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
 
     steps:
     - name: Checkout tripper
@@ -129,11 +266,14 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v10.3.3
+      with:
+        enable-cache: true
+        cache-dependency-glob: pyproject.toml
+
     - name: Install minimal dependencies
-      run: |
-        python -m pip install -U pip
-        pip install -U setuptools wheel flit
-        pip install -e .[testing-core]
+      run: uv pip install --system -e .[testing-core]
 
     - name: Test with pytest, but without other extra dependencies
-      run: pytest -vvv tests/
+      run: pytest -vvv -n auto --durations=20 --no-cov tests/

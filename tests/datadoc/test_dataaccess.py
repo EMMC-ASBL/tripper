@@ -1,7 +1,5 @@
 """Test the dataaccess module."""
 
-# pylint: disable=invalid-name,too-many-locals,duplicate-code
-
 import pytest
 
 pytest.importorskip("yaml")
@@ -9,11 +7,11 @@ pytest.importorskip("requests")
 pytest.importorskip("pyld")
 
 
+@pytest.mark.network
 def test_save_and_load():
     """Test save() and load()."""
-    # pylint: disable=too-many-statements
 
-    from dataset_paths import outdir  # pylint: disable=import-error
+    from dataset_paths import outdir
 
     from tripper import DCAT, DCTERMS, EMMO, IANA, Triplestore
     from tripper.datadoc import acquire, load, save, store

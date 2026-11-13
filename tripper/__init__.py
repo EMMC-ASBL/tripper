@@ -6,7 +6,7 @@ See the README.md file for a description for how to use this package.
 
 # Import backends here to avoid defining new globals later
 # Needed for pytest+doctest to pass
-from . import backends  # pylint: disable=unused-import
+from . import backends
 from .literal import Literal
 from .namespace import (
     ADMS,
@@ -43,7 +43,7 @@ from .session import Session
 from .triplestore import Triplestore, backend_packages
 from .triplestore_extend import Tripper
 
-__version__ = "0.5.3"
+__version__ = "0.5.5"
 
 # Pre-defined namespaces
 EMMO = Namespace(

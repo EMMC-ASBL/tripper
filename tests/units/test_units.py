@@ -4,11 +4,11 @@ import sys
 
 import pytest
 
-# Import targeted version of EMMO
-from tripper.units import EMMO
-
 pytest.importorskip("pint")
 pytest.importorskip("rdflib")
+
+# EMMO namespace with labels looked up in the version of EMMO used for units
+from tripper.units import EMMO  # noqa: E402
 
 
 def test_get_unit_triplestore():
@@ -34,7 +34,8 @@ def test_base_unit_expression():
 def test_load_emmo_quantity():
     """Test load_emmo_quantity()."""
     from tripper import OWL, RDF, RDFS, Literal, Triplestore
-    from tripper.units.units import load_emmo_quantity
+    from tripper.literal import SIQuantityDatatype
+    from tripper.units.units import SI_QUANTITY_VALUE, load_emmo_quantity
 
     ts = Triplestore(backend="rdflib")
     EX = ts.bind("ex", "http://example.com/")
@@ -70,6 +71,13 @@ def test_load_emmo_quantity():
             (EX.val, RDF.type, EMMO.Numerical),
             (EX.val, EMMO.numberValue, Literal(2.2)),
             (EX.body_energy, EMMO.hasReferencePart, EMMO.Joule),
+            # Representation used by EMMO 1.0.3 and earlier
+            (EX.height, RDF.type, EMMO.Length),
+            (
+                EX.height,
+                SI_QUANTITY_VALUE,
+                Literal("4 mm", datatype=SIQuantityDatatype),
+            ),
         ]
     )
     assert load_emmo_quantity(ts, EX.Width) == (2, EMMO.MilliMetre)
@@ -77,10 +85,12 @@ def test_load_emmo_quantity():
     assert load_emmo_quantity(ts, EX.BodyEnergy) == (1.1, EMMO.MilliJoule)
     assert load_emmo_quantity(ts, EX.body_energy) == (2.2, EMMO.Joule)
 
+    # With emmo:hasSIQuantityValue, the unit is returned as a symbol
+    assert load_emmo_quantity(ts, EX.height) == (4, "mm")
+
 
 def test_units():
     """Test the Units class."""
-    # pylint: disable=too-many-statements,protected-access
 
     from pathlib import Path
 
@@ -112,11 +122,10 @@ def test_units():
     assert "m²" in units._get_unit_symbols(EMMO.SquareMetre)
 
     # Test _get_unit_dimension_string()
-    # Uncomment after merging PR: https://github.com/emmo-repo/EMMO/pull/415
-    # assert (
-    #    units._get_unit_dimension_string(EMMO.UnitOne)
-    #    == "T0 L0 M0 I0 Θ0 N0 J0"
-    # )
+    assert (
+        units._get_unit_dimension_string(EMMO.UnitOne)
+        == "T0 L0 M0 I0 Θ0 N0 J0"
+    )
     assert (
         units._get_unit_dimension_string(EMMO.Joule)
         == "T-2 L+2 M+1 I0 Θ0 N0 J0"
@@ -135,10 +144,10 @@ def test_units():
         units._get_quantity_dimension_string(EMMO.Energy)
         == "T-2 L+2 M+1 I0 Θ0 N0 J0"
     )
-    # assert (
-    #    units._get_quantity_dimension_string(EMMO.FineStructureConstant)
-    #    == "T0 L0 M0 I0 Θ0 N0 J0"
-    # )
+    assert (
+        units._get_quantity_dimension_string(EMMO.FineStructureConstant)
+        == "T0 L0 M0 I0 Θ0 N0 J0"
+    )
 
     # Test _parse_dimension_string()
     assert units._parse_dimension_string(
@@ -180,8 +189,10 @@ def test_units():
     assert unit.omIRI is None
     assert unit.ucumCodes == ["A"]
     assert unit.unitCode == "AMP"
-    assert unit.multiplier is None
+    assert unit.multiplier == 1.0  # implicit for SI coherent units
     assert unit.offset is None
+    assert unit.coherent is True
+    assert unit.siAccepted is False
 
     unit = units.get_unit(symbol="Pa")
     assert unit.name == "Pascal"
@@ -241,14 +252,15 @@ def test_units():
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 def test_unit_registry():
     """Test tripper.units.UnitRegistry."""
-    # pylint: disable=too-many-statements,too-many-locals
 
     from tripper import RDFS, Triplestore
     from tripper.units import UnitRegistry, get_ureg
     from tripper.units.units import (
+        SI_QUANTITY_VALUE,
         Dimension,
         MissingUnitError,
         NoDefaultUnitRegistryError,
+        UnitError,
     )
     from tripper.utils import en
 
@@ -273,7 +285,7 @@ def test_unit_registry():
 
     q = ureg.Quantity("3 kh")  # KiloHour does NOT exists in the ontology
     with pytest.raises(MissingUnitError):
-        q.u.info  # pylint: disable=pointless-statement
+        q.u.info
     assert q.dimension == Dimension(1, 0, 0, 0, 0, 0, 0)
     q2 = q.to_ontology_units()
     assert q2 == 3000 * ureg.Hour
@@ -312,13 +324,19 @@ def test_unit_registry():
     ts = Triplestore(backend="rdflib")
     NS = ts.bind("", "http://example.com/test#")
     ts.bind("emmo", "https://w3id.org/emmo#")
+
+    # emmo:SIQuantityDatatype was removed in EMMO 1.0.4
+    with pytest.raises(UnitError, match="SIQuantityDatatype is not supported"):
+        ureg.save_quantity(
+            ts, ureg.Quantity(1.1, "Pa"), NS.Pressure, si_datatype=True
+        )
+
     ureg.save_quantity(
         ts,
         ureg.Quantity(1.1, "Pa"),
         NS.ExperimentPressure,
         type=EMMO.Pressure,
         tbox=True,
-        si_datatype=True,
         annotations={RDFS.label: en("ExperimentPressure")},
     )
 
@@ -338,7 +356,6 @@ def test_unit_registry():
         NS.ExperimentEnergy,
         type=EMMO.Energy,
         tbox=False,
-        si_datatype=True,
         annotations={RDFS.label: en("ExperimentEnergy")},
     )
 
@@ -367,12 +384,25 @@ def test_unit_registry():
     speed = ureg.load_quantity(ts, NS.ExperimentSpeed)
     assert abs((speed - ureg.Quantity(4.4, "km/h")).m) < 1e-7
 
+    # Test another version of EMMO.  Before EMMO 1.0.4, units were classes
+    # and quantities were saved with emmo:SIQuantityDatatype by default.
+    ureg_old = UnitRegistry(emmo_version="1.0.0")
+    assert ureg_old._get_tripper_units().units_are_individuals is False
+    assert str(ureg_old.get_unit(symbol="Pa")) == "Pascal"
+    ts_old = Triplestore(backend="rdflib")
+    ureg_old.save_quantity(
+        ts_old, ureg_old.Quantity(1.1, "Pa"), NS.Pressure, type=EMMO.Pressure
+    )
+    assert ts_old.has(NS.Pressure, SI_QUANTITY_VALUE)
+    pressure = ureg_old.load_quantity(ts_old, NS.Pressure)
+    assert pressure == ureg_old.Quantity(1.1, "Pa")
+
     # Test set_as_default()
     # Since pytest lacks proper test separation, we have to manually
     # reset the module variable holding the default ureg
     import tripper.units.units
 
-    tripper.units.units._unit_reg = None  # pylint: disable=protected-access
+    tripper.units.units._unit_reg = None
 
     with pytest.raises(NoDefaultUnitRegistryError):
         get_ureg(nocreate=True)
@@ -398,9 +428,7 @@ def test_get_quantity():
     assert ureg.get_quantity(iso80000Ref="5-20-1") == 1 * ureg.Joule  # Energy
     assert ureg.get_quantity(
         iri="https://doi.org/10.1351/goldbook.A00051"
-    ) == ureg(
-        "1 m/s²"
-    )  # Acceleration
+    ) == ureg("1 m/s²")  # Acceleration
 
     with pytest.raises(MissingQuantityError):
         ureg.get_quantity("non-existing-quantity-name")

@@ -1,40 +1,62 @@
 # For developers
 
 ## Adding new backends
-
 See [interface.py], which defines the interface of a backend and may serve as a template for creating new backends.
 
 
 ## Setting up local GraphDB and Fuseki services for testing
 Tripper comes with an inbuilt backend to the SPARQLWrapper. In order
-to test this properly a real triplestore is needed. This is not done in the
-automatic workflows on github. However, local graphDB and Fuseki services
-can be setup as described below and tested with
-`tests/backends/test_sparqlwrapper_graphdb_fuseki.py`.
+to test this properly a real triplestore is needed. The automatic
+workflows on GitHub run the tests against a Fuseki service, but not
+against GraphDB. Local GraphDB and Fuseki services can be set up as
+described below and tested with `tests/backends/test_backends_sparql.py`.
 
 The backend configurations corresponding to the local GraphDB and Fuseki services
-can be found in `[tests/input/session.yaml]`.
+can be found in [tests/input/session.yaml].
 
+Tests that need a service which is not running are skipped.
+
+
+### Starting GraphDB and Fuseki services
+Start all services from the root of the repository with
+
+    docker compose -f test-services/compose.yaml up -d
+
+or only some of them, e.g.
+
+    docker compose -f test-services/compose.yaml up -d fuseki
+
+Add `--wait` to wait until the services are healthy.  Stop them again with
+
+    docker compose -f test-services/compose.yaml down
+
+
+<details>
+  <summary>▶ Manually start the services with docker</summary>
 
 ### Setting up GraphDB service
-To create the local instance of graphdb:
+To create the local instance of GraphDB:
 ```bash
 docker pull ontotext/graphdb:10.8.3 # latest tag 17.02.2025
 docker run -d -p 7200:7200 --name graphdb ontotext/graphdb:10.8.3
 ```
 
-Then go to [http://localhost:7200/](http://localhost:7200/) in your browser.
-You can add a new repository by pressing `create new reposotory` in the bottom right corner.
-Choose `GraphDB Reposotory` and write "test_repo" as repository ID.
-Tick off `Enable full-text search` and leave the rest as predefined.
-Click `Create`.
+GraphDB needs some time to start up.
+When it is up, create the "test_repo" repository (with full-text search
+enabled) from the configuration in [tests/input/graphdb-test_repo-config.ttl]:
 
-Go to `Setup` and select `Repositories`.
-Activating "test_repo" by clicking the pin icon (Set as default repository) and then the restart icon (Restart repository test_repo).
+```bash
+curl -X POST -F "config=@tests/input/graphdb-test_repo-config.ttl" \
+    http://localhost:7200/rest/repositories
+```
 
-You can now run the test test_sparqlwrapper_graphdb_fuseki.py with graphdb.
+Alternatively, go to [http://localhost:7200/](http://localhost:7200/) in your
+browser, press `Create new repository`, choose `GraphDB Repository`, write
+"test_repo" as repository ID, tick off `Enable full-text search` and click
+`Create`.
 
-Note that if the graphdb instance is not found the test will just be skipped.
+The GraphDB tests are skipped if GraphDB is not running or the "test_repo"
+repository does not exist.
 
 
 ### Setting up Fuseki service
@@ -44,27 +66,54 @@ Similarly a jena-fuseki instance can be tested locally as follows:
 docker pull stain/jena-fuseki
 docker run -d --name fuseki -p 3030:3030 -e ADMIN_PASSWORD=admin0 -e=FUSEKI_DATASET_1=test_repo stain/jena-fuseki
 ```
+</details>
 
-You can now run the test `test_sparqlwrapper_graphdb_fuseki.py` with fuseki.
+Tests that need a service which is not running are skipped.
 
-Note that if the fuseki instance is not found the test will just be skipped.
 
+### Running tests in parallel
+The tests can be run in parallel with [pytest-xdist], which is included
+in the `testing` extra:
+
+```bash
+pytest -n auto
+```
+
+Tests using the shared Fuseki and GraphDB "test_repo" datasets are marked
+with `@pytest.mark.xdist_group("triplestore")`, which makes them run in
+the same worker.  For debugging (e.g. with `--pdb` or `print()`), run
+without `-n`.
+
+The first time the tests are run, tripper creates a cache with e.g. the
+units table generated from EMMO.  To avoid that every worker creates it
+at the same time, you can create it before running the tests in
+parallel:
+
+```bash
+python tests/warm_cache.py
+```
+
+
+### Running tests without internet access
+Tests that need internet access are marked with `network`.
+A faster, offline test run can be done with
+
+```bash
+pytest -m "not network"
+```
 
 
 ## Creating new release
-To create a new release, it is good to have a release summary.
+Go to [create a new GitHub release](https://github.com/EMMC-ASBL/tripper/releases/new) and create a new tag for the version, e.g. `v1.0.8`.
+Use the tag as the release title (optionally write something else that defines this release as a title).
 
-To add this, create a milestone that matches the new version and tag, e.g., `v1.0.8`.
+Optionally, write a release summary in the description.
+The release notes, listing the pull requests merged since the previous release, are generated by GitHub and appended to the description by [the release workflow](https://github.com/EMMC-ASBL/tripper/actions/workflows/cd_release.yml).
+You can also generate them yourself with the "Generate release notes" button, in which case the workflow leaves the description as is.
+Pull requests with the `skip_changelog` label (e.g. dependency updates) are not included, see [.github/release.yml](https://github.com/EMMC-ASBL/tripper/blob/master/.github/release.yml).
 
-Then create a new issue, adding it to the milestone and add the `release-summary` label.
-
-For the issue description, write the actual release summary.
-This will be included as part of the changelog as well as the release notes on GitHub.
-
-Then, go to [create a new GitHub releases](https://github.com/EMMC-ASBL/tripper/releases/new) and select the tag that matches the milestone (creating a new one).
-Add again the tag as the release title (optionally write something else that defines this release as a title).
-
-Finally, press the "Publish release" button and ensure the release workflow succeeds (check [the release workflow](https://github.com/EMMC-ASBL/tripper/actions/workflows/cd_release.yml)).
+Finally, press the "Publish release" button and ensure the release workflow succeeds.
+The workflow sets the version of the package from the tag (the version in `tripper/__init__.py` is not updated in the repository), publishes it on PyPI and deploys the documentation for the release.
 
 
 
@@ -99,5 +148,7 @@ See https://pypi.org/project/pytest-profiling/ for more information.
 
 
 [interface.py]: https://github.com/EMMC-ASBL/tripper/blob/master/tripper/interface.py
+[pytest-xdist]: https://pytest-xdist.readthedocs.io/
 [mkdocs]: https://www.mkdocs.org/
-[tests/input/session.yaml]: https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/session.yaml)
+[tests/input/session.yaml]: https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/session.yaml
+[tests/input/graphdb-test_repo-config.ttl]: https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/graphdb-test_repo-config.ttl
