@@ -7,10 +7,13 @@ import pytest
 pytest.importorskip("pint")
 pytest.importorskip("rdflib")
 
+# EMMO namespace with labels looked up in the version of EMMO used for units
+from tripper.units import EMMO  # noqa: E402
+
 
 def test_get_unit_triplestore():
     """Test get_unit_triplestore()."""
-    from tripper import EMMO, units
+    from tripper import units
 
     ts = units.units.get_unit_triplestore()
     assert ts.has(EMMO.Atom)
@@ -30,8 +33,9 @@ def test_base_unit_expression():
 
 def test_load_emmo_quantity():
     """Test load_emmo_quantity()."""
-    from tripper import EMMO, OWL, RDF, RDFS, Literal, Triplestore
-    from tripper.units.units import load_emmo_quantity
+    from tripper import OWL, RDF, RDFS, Literal, Triplestore
+    from tripper.literal import SIQuantityDatatype
+    from tripper.units.units import SI_QUANTITY_VALUE, load_emmo_quantity
 
     ts = Triplestore(backend="rdflib")
     EX = ts.bind("ex", "http://example.com/")
@@ -41,39 +45,48 @@ def test_load_emmo_quantity():
             (EX.Width, RDFS.subClassOf, EMMO.Length),
             (EX.Width, RDFS.subClassOf, "_:r"),
             ("_:r", RDF.type, OWL.Restriction),
-            ("_:r", OWL.onProperty, EMMO.hasSIQuantityValue),
-            (
-                "_:r",
-                OWL.hasValue,
-                Literal("2 mm", datatype=EMMO.SIQuantityDatatype),
-            ),
+            ("_:r", OWL.onProperty, EMMO.numberValue),
+            ("_:r", OWL.hasValue, Literal(2.0)),
+            (EX.Width, RDFS.subClassOf, "_:r2"),
+            ("_:r2", RDF.type, OWL.Restriction),
+            ("_:r2", OWL.onProperty, EMMO.hasMeasurementUnit),
+            ("_:r2", OWL.hasValue, EMMO.MilliMetre),
             (EX.width, RDF.type, EMMO.Length),
-            (
-                EX.width,
-                EMMO.hasSIQuantityValue,
-                Literal("3 cm", datatype=EMMO.SIQuantityDatatype),
-            ),
+            (EX.width, EMMO.numberValue, Literal(3.0)),
+            (EX.width, EMMO.hasMeasurementUnit, EMMO.CentiMetre),
             (EX.BodyEnergy, RDF.type, OWL.Class),
             (EX.BodyEnergy, RDFS.subClassOf, EMMO.Energy),
-            (EX.BodyEnergy, RDFS.subClassOf, "_:r2"),
-            ("_:r2", RDF.type, OWL.Restriction),
-            ("_:r2", OWL.onProperty, EMMO.hasNumericalPart),
-            ("_:r2", OWL.hasValue, "_:v"),
-            ("_:v", EMMO.hasNumberValue, Literal(1.1)),
             (EX.BodyEnergy, RDFS.subClassOf, "_:r3"),
             ("_:r3", RDF.type, OWL.Restriction),
-            ("_:r3", OWL.onProperty, EMMO.hasReferencePart),
-            ("_:r3", OWL.someValuesFrom, EMMO.MilliJoule),
+            ("_:r3", OWL.onProperty, EMMO.hasNumericalPart),
+            ("_:r3", OWL.hasValue, "_:v"),
+            ("_:v", RDF.type, EMMO.Numerical),
+            ("_:v", EMMO.numberValue, Literal(1.1)),
+            (EX.BodyEnergy, RDFS.subClassOf, "_:r4"),
+            ("_:r4", RDF.type, OWL.Restriction),
+            ("_:r4", OWL.onProperty, EMMO.hasReferencePart),
+            ("_:r4", OWL.hasValue, EMMO.MilliJoule),
             (EX.body_energy, RDF.type, EX.BodyEnergy),
             (EX.body_energy, EMMO.hasNumericalPart, EX.val),
-            (EX.val, EMMO.hasNumberValue, Literal(2.2)),
+            (EX.val, RDF.type, EMMO.Numerical),
+            (EX.val, EMMO.numberValue, Literal(2.2)),
             (EX.body_energy, EMMO.hasReferencePart, EMMO.Joule),
+            # Representation used by EMMO 1.0.3 and earlier
+            (EX.height, RDF.type, EMMO.Length),
+            (
+                EX.height,
+                SI_QUANTITY_VALUE,
+                Literal("4 mm", datatype=SIQuantityDatatype),
+            ),
         ]
     )
-    assert load_emmo_quantity(ts, EX.Width) == (2, "mm")
-    assert load_emmo_quantity(ts, EX.width) == (3, "cm")
+    assert load_emmo_quantity(ts, EX.Width) == (2, EMMO.MilliMetre)
+    assert load_emmo_quantity(ts, EX.width) == (3, EMMO.CentiMetre)
     assert load_emmo_quantity(ts, EX.BodyEnergy) == (1.1, EMMO.MilliJoule)
     assert load_emmo_quantity(ts, EX.body_energy) == (2.2, EMMO.Joule)
+
+    # With emmo:hasSIQuantityValue, the unit is returned as a symbol
+    assert load_emmo_quantity(ts, EX.height) == (4, "mm")
 
 
 def test_units():
@@ -81,7 +94,6 @@ def test_units():
 
     from pathlib import Path
 
-    from tripper import EMMO
     from tripper.units.units import Dimension, Units
 
     units = Units()
@@ -177,8 +189,10 @@ def test_units():
     assert unit.omIRI is None
     assert unit.ucumCodes == ["A"]
     assert unit.unitCode == "AMP"
-    assert unit.multiplier is None
+    assert unit.multiplier == 1.0  # implicit for SI coherent units
     assert unit.offset is None
+    assert unit.coherent is True
+    assert unit.siAccepted is False
 
     unit = units.get_unit(symbol="Pa")
     assert unit.name == "Pascal"
@@ -239,12 +253,14 @@ def test_units():
 def test_unit_registry():
     """Test tripper.units.UnitRegistry."""
 
-    from tripper import EMMO, RDFS, Triplestore
+    from tripper import RDFS, Triplestore
     from tripper.units import UnitRegistry, get_ureg
     from tripper.units.units import (
+        SI_QUANTITY_VALUE,
         Dimension,
         MissingUnitError,
         NoDefaultUnitRegistryError,
+        UnitError,
     )
     from tripper.utils import en
 
@@ -308,13 +324,19 @@ def test_unit_registry():
     ts = Triplestore(backend="rdflib")
     NS = ts.bind("", "http://example.com/test#")
     ts.bind("emmo", "https://w3id.org/emmo#")
+
+    # emmo:SIQuantityDatatype was removed in EMMO 1.0.4
+    with pytest.raises(UnitError, match="SIQuantityDatatype is not supported"):
+        ureg.save_quantity(
+            ts, ureg.Quantity(1.1, "Pa"), NS.Pressure, si_datatype=True
+        )
+
     ureg.save_quantity(
         ts,
         ureg.Quantity(1.1, "Pa"),
         NS.ExperimentPressure,
         type=EMMO.Pressure,
         tbox=True,
-        si_datatype=True,
         annotations={RDFS.label: en("ExperimentPressure")},
     )
 
@@ -334,7 +356,6 @@ def test_unit_registry():
         NS.ExperimentEnergy,
         type=EMMO.Energy,
         tbox=False,
-        si_datatype=True,
         annotations={RDFS.label: en("ExperimentEnergy")},
     )
 
@@ -363,6 +384,19 @@ def test_unit_registry():
     speed = ureg.load_quantity(ts, NS.ExperimentSpeed)
     assert abs((speed - ureg.Quantity(4.4, "km/h")).m) < 1e-7
 
+    # Test another version of EMMO.  Before EMMO 1.0.4, units were classes
+    # and quantities were saved with emmo:SIQuantityDatatype by default.
+    ureg_old = UnitRegistry(emmo_version="1.0.0")
+    assert ureg_old._get_tripper_units().units_are_individuals is False
+    assert str(ureg_old.get_unit(symbol="Pa")) == "Pascal"
+    ts_old = Triplestore(backend="rdflib")
+    ureg_old.save_quantity(
+        ts_old, ureg_old.Quantity(1.1, "Pa"), NS.Pressure, type=EMMO.Pressure
+    )
+    assert ts_old.has(NS.Pressure, SI_QUANTITY_VALUE)
+    pressure = ureg_old.load_quantity(ts_old, NS.Pressure)
+    assert pressure == ureg_old.Quantity(1.1, "Pa")
+
     # Test set_as_default()
     # Since pytest lacks proper test separation, we have to manually
     # reset the module variable holding the default ureg
@@ -381,7 +415,6 @@ def test_unit_registry():
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 def test_get_quantity():
     """Test ureg.get_quantity() method."""
-    from tripper import EMMO
     from tripper.units import get_ureg
     from tripper.units.units import MissingQuantityError
 

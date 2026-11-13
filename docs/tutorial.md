@@ -220,9 +220,9 @@ Note:
 2. The curly brackets after the `WHERE` clause have to be written `{{`, `}}` because the query is an f-string.
 
 ```python
-# Load pre-inferred EMMO
+# Load EMMO 1.1.0
 >>> ts = Triplestore("rdflib", base_iri="https://w3id.org/emmo#")
->>> ts.parse("https://w3id.org/emmo#inferred")
+>>> ts.parse("https://w3id.org/emmo/1.1.0")
 
 # Bind "emmo" prefix to base_iri
 >>> EMMO = ts.bind("emmo", label_annotations=True, check=True)
@@ -235,11 +235,8 @@ Note:
 ...
 ... SELECT ?unit ?symbol
 ... WHERE {{
-...   ?unit rdfs:subClassOf <{EMMO.LengthUnit}> .
-...   ?unit rdfs:subClassOf ?r .
-...   ?r rdf:type owl:Restriction .
-...   ?r owl:onProperty <{EMMO.unitSymbolValue}> .
-...   ?r owl:hasValue ?symbol .
+...   ?unit rdf:type <{EMMO.LengthUnit}> .
+...   ?unit <{EMMO.unitSymbolValue}> ?symbol .
 ... }}
 ... """
 >>> r = ts.query(query)

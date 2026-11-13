@@ -9,9 +9,10 @@ def test_sparql_select():
     pytest.importorskip("rdflib")
     from tripper import Triplestore
 
-    # Load pre-inferred EMMO
+    # Load EMMO.  Use a fixed version, since the query depends on how
+    # units are represented (individuals since EMMO 1.0.4)
     ts = Triplestore("rdflib", base_iri="https://w3id.org/emmo#")
-    ts.parse("https://w3id.org/emmo#inferred")
+    ts.parse("https://w3id.org/emmo/1.1.0")
 
     # Bind "emmo" prefix to base_iri
     EMMO = ts.bind("emmo", label_annotations=True, check=True)
@@ -20,11 +21,8 @@ def test_sparql_select():
     query = f"""
     SELECT ?unit ?symbol
     WHERE {{
-      ?unit rdfs:subClassOf <{EMMO.LengthUnit}> .
-      ?unit rdfs:subClassOf ?r .
-      ?r rdf:type owl:Restriction .
-      ?r owl:onProperty <{EMMO.unitSymbolValue}> .
-      ?r owl:hasValue ?symbol .
+      ?unit rdf:type <{EMMO.LengthUnit}> .
+      ?unit <{EMMO.unitSymbolValue}> ?symbol .
     }}
     """
     r = ts.query(query)
@@ -32,7 +30,6 @@ def test_sparql_select():
     assert (EMMO.AstronomicalUnit, "au") in r
 
 
-# if True:
 def test_sparql_construct():
     """Test SPARQL construct query."""
     pytest.importorskip("rdflib")
@@ -185,7 +182,6 @@ def test_sparql_ask():
     assert r is True
 
 
-# if True:
 def test_sparql_describe():
     """Test SPARQL DESCRIBE query."""
     # From https://www.w3.org/TR/rdf-sparql-query/#describe
