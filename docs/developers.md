@@ -120,7 +120,7 @@ The workflow sets the version of the package from the tag (the version in `tripp
 ## Testing documentation locally
 To test the documentation locally, just install and run [mkdocs]:
 
-    pip install .[dev]
+    pip install '.[dev]'
     mkdocs build
     mkdocs serve
 
