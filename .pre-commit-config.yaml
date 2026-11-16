@@ -43,7 +43,7 @@ repos:
   # Ruff replaces isort, black, bandit and pylint.  It is configured in
   # pyproject.toml.  Keep the version in sync with the pre-commit extra.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.17.3
+    rev: v0.17.5
     hooks:
     # Run the linter (with auto-fix)
     - id: ruff-check
@@ -52,7 +52,7 @@ repos:
     - id: ruff-format
 
   - repo: https://github.com/SINTEF/ci-cd
-    rev: v2.10.0
+    rev: v2.11.0
     hooks:
     - id: docs-api-reference
       args:
