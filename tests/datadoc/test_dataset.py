@@ -479,6 +479,75 @@ def test_store():
     }
 
 
+def test_store_list_validate():
+    """Test that store() validates each resource in a list."""
+    from tripper import Namespace, Triplestore
+    from tripper.datadoc import store
+    from tripper.datadoc.errors import ValidateError
+
+    EX = Namespace("http://example.com/ex#")
+    ts = Triplestore("rdflib")
+    resources = [
+        {"@id": EX.a, "@type": "dcat:Dataset", "releaseDate": "2025-08-18"},
+        {"@id": EX.b, "@type": "dcat:Dataset", "releaseDate": "not-a-date"},
+    ]
+
+    # The error names the invalid resource, and nothing is stored
+    with pytest.raises(ValidateError, match=str(EX.b)):
+        store(ts, resources)
+    assert not ts.has(EX.a)
+    assert not ts.has(EX.b)
+
+    # Valid resources are stored
+    resources[1]["releaseDate"] = "2025-08-19T00:00:00"
+    store(ts, resources)
+    assert ts.has(EX.a)
+    assert ts.has(EX.b)
+
+
+def test_store_overwrite_invalid():
+    """Test that a failed overwrite doesn't delete existing data."""
+    from tripper import DCTERMS, Namespace, Triplestore
+    from tripper.datadoc import store
+    from tripper.datadoc.errors import ValidateError
+
+    EX = Namespace("http://example.com/ex#")
+    ts = Triplestore("rdflib")
+    store(ts, {"@id": EX.a, "@type": "dcat:Dataset", "title": "Old title"})
+
+    with pytest.raises(ValidateError):
+        store(
+            ts,
+            {"@id": EX.a, "@type": "dcat:Dataset", "releaseDate": "invalid"},
+            method="overwrite",
+        )
+    assert ts.has(EX.a, DCTERMS.title)
+
+
+def test_store_list_ignore():
+    """Test that method="ignore" only skips the existing resources."""
+    from tripper import DCTERMS, Namespace, Triplestore
+    from tripper.datadoc import store
+    from tripper.datadoc.errors import IRIExistsWarning
+
+    EX = Namespace("http://example.com/ex#")
+    ts = Triplestore("rdflib")
+    store(ts, {"@id": EX.a, "@type": "dcat:Dataset", "title": "Old title"})
+
+    with pytest.warns(IRIExistsWarning, match=str(EX.a)):
+        store(
+            ts,
+            [
+                {"@id": EX.a, "@type": "dcat:Dataset", "title": "New title"},
+                {"@id": EX.b, "@type": "dcat:Dataset", "title": "B"},
+            ],
+            method="ignore",
+        )
+    titles = {str(o) for o in ts.objects(EX.a, DCTERMS.title)}
+    assert titles == {"Old title"}  # existing resource is not changed
+    assert ts.has(EX.b)  # other resources are stored
+
+
 def test_update_context():
     """Test update_context()."""
     from tripper import HUME, OWL, SKOS, Namespace
