@@ -487,35 +487,52 @@ def store(
         unknown_key=unknown_key,
     )
 
-    docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
-    for d in docs:
-        iri = d["@id"]
-        if ts.has(iri):
-            if method == "overwrite":
-                delete_iri(ts, iri)
-            elif method == "raise":
-                raise IRIExistsError(f"Cannot overwrite existing IRI: {iri}")
-            elif method == "merge":
-                pass
-            elif method == "ignore":
-                warnings.warn(iri, category=IRIExistsWarning)
-                return doc
-            else:
-                raise ValueError(
-                    f"Invalid storage method: '{method}'. "
-                    "Should be one of: 'overwrite', 'raise', 'ignore' or "
-                    "'merge'"
-                )
-
     update_restrictions(doc, context=context, restrictions=restrictions)
 
-    # Validate the final JSON-LD before writing it to the triplestore.
-    validate(doc, type=type, keywords=keywords, context=context)
+    # Validate each resource before changing anything in the triplestore
+    docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
+    for d in docs:
+        try:
+            validate(d, type=type, keywords=keywords, context=context)
+        except ValidateError as exc:
+            raise ValidateError(
+                f"invalid resource '{d.get('@id')}': {exc}"
+            ) from exc
 
-    context.to_triplestore(ts, doc, baseiri=baseiri)
+    # Handle resources that already exist in the triplestore
+    existing = [d["@id"] for d in docs if ts.has(d["@id"])]
+    tostore = doc
+    if existing:
+        if method == "overwrite":
+            for iri in existing:
+                delete_iri(ts, iri)
+        elif method == "raise":
+            raise IRIExistsError(
+                f"Cannot overwrite existing IRI: {', '.join(existing)}"
+            )
+        elif method == "merge":
+            pass
+        elif method == "ignore":
+            for iri in existing:
+                warnings.warn(iri, category=IRIExistsWarning)
+            if not isinstance(doc, dict) or "@graph" not in doc:
+                return doc  # single resource that already exists
+            # Only store the resources that don't exist
+            tostore = {
+                **doc,
+                "@graph": [d for d in docs if d["@id"] not in existing],
+            }
+        else:
+            raise ValueError(
+                f"Invalid storage method: '{method}'. "
+                "Should be one of: 'overwrite', 'raise', 'ignore' or "
+                "'merge'"
+            )
+
+    context.to_triplestore(ts, tostore, baseiri=baseiri)
 
     # Add statements and data models to triplestore
-    save_extra_content(ts, doc)  # FIXME: SLOW!!
+    save_extra_content(ts, tostore)  # FIXME: SLOW!!
 
     return doc
 
