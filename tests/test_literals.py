@@ -104,6 +104,39 @@ def test_integer() -> None:
         Literal(-42, datatype=XSD.unsignedInt)
 
 
+def test_boolean() -> None:
+    """Test converting xsd:boolean literals to Python bools."""
+    from tripper import XSD, Literal
+
+    # Python bools are written as "true"/"false"
+    assert str(Literal(True)) == "true"
+    assert str(Literal(False)) == "false"
+    assert str(Literal(True, datatype=XSD.boolean)) == "true"
+    assert str(Literal(False, datatype=XSD.boolean)) == "false"
+    assert Literal(True).n3() == f'"true"^^<{XSD.boolean}>'
+    assert Literal(True).value is True
+    assert Literal(False).value is False
+
+    # These texts mean True and are stored as "true"
+    for text in ("true", "1", "True", "TRUE", " true "):
+        literal = Literal(text, datatype=XSD.boolean)
+        assert str(literal) == "true"
+        assert literal.value is True
+        assert literal == Literal(True)
+
+    # These texts mean False and are stored as "false"
+    for text in ("false", "0", "False", "FALSE", " false "):
+        literal = Literal(text, datatype=XSD.boolean)
+        assert str(literal) == "false"
+        assert literal.value is False
+        assert literal == Literal(False)
+
+    # These texts are not valid booleans
+    for text in ("No", "no", "yes", "maybe", "", "tRUE", "2"):
+        with pytest.raises(ValueError):
+            Literal(text, datatype=XSD.boolean)
+
+
 def test_hexbinary() -> None:
     """Test creating hexbinary literal."""
     from tripper import XSD, Literal

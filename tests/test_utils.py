@@ -331,7 +331,11 @@ def test_parse_literal():
     from tripper.utils import parse_literal
 
     assert parse_literal("abc") == Literal("abc", datatype=XSD.string)
-    assert parse_literal(True) == Literal("True", datatype=XSD.boolean)
+    assert parse_literal(True) == Literal("true", datatype=XSD.boolean)
+    assert parse_literal(f'"false"^^<{XSD.boolean}>').value is False
+    assert parse_literal(f'"0"^^<{XSD.boolean}>').value is False
+    with pytest.raises(ValueError):
+        parse_literal(f'"maybe"^^<{XSD.boolean}>')
     assert parse_literal(1) == Literal("1", datatype=XSD.integer)
     assert parse_literal(3.14) == Literal("3.14", datatype=XSD.double)
     assert parse_literal(f'"3.14"^^{XSD.double}') == Literal(
