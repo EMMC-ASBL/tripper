@@ -113,6 +113,29 @@ def test_fromdicts():
     ]
 
 
+def test_datetime_column():
+    """Test that xsd:dateTime cells are stored in the triplestore."""
+    pytest.importorskip("rdflib")
+
+    from tripper import DCTERMS, XSD, Literal, Namespace, Triplestore
+    from tripper.datadoc import TableDoc
+
+    EX = Namespace("http://example.com/ex#")
+    td = TableDoc(
+        headers=["@id", "@type", "releaseDate"],
+        data=[(EX.a, "dcat:Dataset", "2025-08-18T00:00:00")],
+    )
+    assert td.asdicts()[0]["releaseDate"] == "2025-08-18T00:00:00"
+
+    ts = Triplestore("rdflib")
+    td.save(ts)
+    assert ts.has(
+        EX.a,
+        DCTERMS.issued,
+        Literal("2025-08-18T00:00:00", datatype=XSD.dateTime),
+    )
+
+
 def test_csv():
     """Test parsing a csv file."""
     import io
