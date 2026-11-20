@@ -174,10 +174,10 @@ def test_infer_iri():
         uri = None
         uuid = "2b8a1c3e-1d0a-4c1f-9d6e-1b2c3d4e5f60"
 
-    class Soft7Model:
-        """Like a SOFT7 Pydantic model, with an `identity` attribute."""
+    class Datamodel:
+        """Like a Pydantic model, with an `identity` attribute."""
 
-        identity = "http://onto-ns.com/meta/0.1/Soft7"
+        identity = "http://onto-ns.com/meta/0.1/datamodel"
 
         def schema(self):
             return {}
@@ -191,10 +191,10 @@ def test_infer_iri():
         def __str__(self):
             return self.url
 
-    class Soft7ModelV2(Soft7Model):
-        """Like a SOFT7 model in Pydantic v2, where `identity` is an AnyUrl."""
+    class DatamodelV2(Datamodel):
+        """Like a datamodel in Pydantic v2, where `identity` is an AnyUrl."""
 
-        identity = AnyUrl("http://onto-ns.com/meta/0.1/Soft7v2")
+        identity = AnyUrl("http://onto-ns.com/meta/0.1/datamodelv2")
 
     class PydanticModel:
         """Like a Pydantic model, whose schema() describes its properties."""
@@ -212,9 +212,9 @@ def test_infer_iri():
     assert infer_iri(Metadata()) == "http://onto-ns.com/meta/0.1/User"
     assert infer_iri(Instance()) == "2b8a1c3e-1d0a-4c1f-9d6e-1b2c3d4e5f60"
 
-    # SOFT7 Pydantic models
-    assert infer_iri(Soft7Model()) == "http://onto-ns.com/meta/0.1/Soft7"
-    assert infer_iri(Soft7ModelV2()) == "http://onto-ns.com/meta/0.1/Soft7v2"
+    # Pydantic models
+    assert infer_iri(Datamodel()) == "http://onto-ns.com/meta/0.1/datamodel"
+    assert infer_iri(DatamodelV2()) == "http://onto-ns.com/meta/0.1/datamodelv2"
 
     # Other Pydantic models, with an IRI as `uri`, `identity` or `uuid`
     # property

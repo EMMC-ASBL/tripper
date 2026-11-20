@@ -324,7 +324,7 @@ def infer_iri(obj):
     elif hasattr(obj, "schema") and callable(obj.schema):
         # pydantic.BaseModel
         if getattr(obj, "identity", None):
-            # soft7 pydantic model.  In Pydantic v2, `identity` is an
+            # Pydantic model.  In Pydantic v2, `identity` is an
             # AnyUrl object, which is converted to a string below.
             iri = obj.identity
         else:
