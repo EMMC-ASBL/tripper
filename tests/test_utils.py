@@ -1,5 +1,8 @@
 """Test utils"""
 
+from pathlib import Path
+from unittest import mock
+
 import pytest
 
 
@@ -121,6 +124,21 @@ def test_openfile():
     with pytest.raises(IOError), openfile("xxx://unknown_scheme"):
         pass
 
+    # HTTP URLs are downloaded to a temporary file, which is removed
+    # afterwards
+    pytest.importorskip("requests")
+    response = mock.Mock(content=b"Downloaded file.")
+    with (
+        mock.patch("requests.get", return_value=response) as get,
+        openfile("https://example.com/file.txt", timeout=5) as f,
+    ):
+        assert f.read() == "Downloaded file."
+        tmpfile = Path(f.name)
+        assert tmpfile.exists()
+    get.assert_called_once_with("https://example.com/file.txt", timeout=5)
+    response.raise_for_status.assert_called_once()
+    assert not tmpfile.exists()
+
 
 @pytest.mark.network
 def test_openfile_http():
@@ -136,83 +154,68 @@ def test_openfile_http():
         assert f.read().strip() == "Example file."
 
 
-def infer_IRIs():
-    """Test infer_IRIs"""
+def test_infer_iri():
+    """Test infer_iri().
+
+    Tripper doesn't depend on DLite or Pydantic, so infer_iri() recognises
+    their objects by duck typing.  The classes below mimic them.
+    """
     from tripper import RDFS
     from tripper.utils import infer_iri
 
+    class Metadata:
+        """Like dlite.Metadata, which has an `uri` attribute."""
+
+        uri = "http://onto-ns.com/meta/0.1/User"
+
+    class Instance:
+        """Like dlite.Instance, which has an `uuid` attribute."""
+
+        uri = None
+        uuid = "2b8a1c3e-1d0a-4c1f-9d6e-1b2c3d4e5f60"
+
+    class Soft7Model:
+        """Like a SOFT7 Pydantic model, with an `identity` attribute."""
+
+        identity = "http://onto-ns.com/meta/0.1/Soft7"
+
+        def schema(self):
+            return {}
+
+    class PydanticModel:
+        """Like a Pydantic model, whose schema() describes its properties."""
+
+        def __init__(self, properties):
+            self.properties = properties
+
+        def schema(self):
+            return {"properties": self.properties}
+
+    # Strings are returned as is
     assert infer_iri(RDFS.subClassOf) == RDFS.subClassOf
 
+    # DLite metadata and instances
+    assert infer_iri(Metadata()) == "http://onto-ns.com/meta/0.1/User"
+    assert infer_iri(Instance()) == "2b8a1c3e-1d0a-4c1f-9d6e-1b2c3d4e5f60"
 
-def infer_Dlite_IRIs():
-    """
-    We have no dependencies on DLite, hence don't assume that it is installed.
-    In case we have dlite, lets see if we can infer IRIs."""
-    dlite = pytest.importorskip("dlite")
-    from tripper.utils import infer_iri
+    # SOFT7 Pydantic models
+    assert infer_iri(Soft7Model()) == "http://onto-ns.com/meta/0.1/Soft7"
 
-    coll = dlite.Collection()
-    assert infer_iri(coll.meta) == coll.meta.uri
-    assert infer_iri(coll) == coll.uuid
-
-
-def infer_SOFT7_IRIs():
-    """
-    We have no dependencies on pydantic, hence don't assume
-    that it is installed.
-    But if it is, infer_iri() should be able to infer
-    IRIs from SOFT7 datamodels.
-    """
-    pytest.importorskip("pydantic")
-    from typing import Any, Optional
-
-    from pydantic import (
-        AnyUrl,
-        BaseModel,
-        Field,
+    # Other Pydantic models, with an IRI as `uri`, `identity` or `uuid`
+    # property
+    assert infer_iri(PydanticModel({"uri": "http://example.com/a"})) == (
+        "http://example.com/a"
     )
-
-    from tripper.utils import infer_iri
-
-    class Property(BaseModel):
-        """A property."""
-
-        # Yet another pylint bug, see
-        # https://github.com/PyCQA/pylint/issues/1498
-        type: Any = Field(..., description="Valid type name.")
-        shape: Optional[list[str]] = Field(
-            None, description="List of dimension expressions."
-        )
-        unit: Optional[str] = Field(None, description="Unit of a property.")
-        description: Optional[str] = Field(
-            None, description="A human description of the property."
-        )
-
-    class Entity(BaseModel):
-        """An entity."""
-
-        identity: AnyUrl = Field(
-            ..., description="Unique URI identifying the entity."
-        )
-        description: str = Field(
-            "", description="A description of the entity."
-        )
-        dimensions: Optional[dict[str, str]] = Field(
-            None, description="Dict mapping dimension names to descriptions."
-        )
-        properties: dict[str, Property] = Field(
-            ..., description="Dict of properties."
-        )
-
-    user = Entity(
-        identity="http://onto-ns.com/meta/0.1/User",
-        properties={
-            "username": Property(type=str, description="username"),
-            "quota": Property(type=float, unit="GB", description="User quota"),
-        },
+    assert infer_iri(PydanticModel({"identity": "http://example.com/b"})) == (
+        "http://example.com/b"
     )
+    assert infer_iri(PydanticModel({"uuid": "1234"})) == "1234"
 
-    assert infer_iri(user) == "http://onto-ns.com/meta/0.1/User"
+    # Objects without an IRI raise TypeError
+    with pytest.raises(TypeError, match="from pydantic object"):
+        infer_iri(PydanticModel({"name": "John"}))
+    with pytest.raises(TypeError, match="cannot infer IRI from object"):
+        infer_iri(3.14)
 
 
 def test_split_iri():
