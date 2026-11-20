@@ -55,8 +55,10 @@ def test_save():
         assert iri.startswith("_:")
         assert file2.read_bytes() == b"second data"
 
-        # Saving to an existing dataset uses its distribution
-        save(ts, b"updated data", dataset=EX + "dataset1")
+        # Saving to an existing dataset uses its distribution.
+        # method="overwrite" is needed, since save() stores the
+        # documentation of the (blank node) distribution again.
+        save(ts, b"updated data", dataset=EX + "dataset1", method="overwrite")
         assert file1.read_bytes() == b"updated data"
 
     # `dataset` and `distribution` must be either a string or dict
