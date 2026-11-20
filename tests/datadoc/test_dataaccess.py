@@ -67,6 +67,10 @@ def test_save():
     with pytest.raises(TypeError):
         save(ts, b"data", dataset=EX + "dataset3", distribution=1)
 
+    # A distribution that is not documented has no URL to save to
+    with pytest.raises(ValueError, match="neither a downloadURL nor"):
+        save(ts, b"data", dataset=EX + "dataset3", distribution=EX + "nodistr")
+
     # Asking for a generator that the distribution doesn't have
     with pytest.raises(ValueError, match="has no such generator"):
         save(

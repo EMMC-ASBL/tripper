@@ -26,6 +26,11 @@ def test_get_backends():
     with mock.patch("tripper.backends.import_module", _import_only("rdflib")):
         assert get_backends(only_available=True) == ["rdflib"]
 
+    with mock.patch(
+        "tripper.backends.import_module", _import_only("rdflib", "ontopy")
+    ):
+        assert get_backends(only_available=True) == ["rdflib", "ontopy"]
+
     with mock.patch("tripper.backends.import_module", _import_only()):
         assert get_backends(only_available=True) == []
 
@@ -34,9 +39,9 @@ def test_get_dependencies():
     """Test get_dependencies()."""
     from tripper.backends import get_dependencies
 
-    # Dependencies of a given backend
+    # The modules that a given backend depends on
     assert get_dependencies("rdflib") == ["rdflib"]
-    assert get_dependencies("ontopy") == ["EMMOntoPy"]
+    assert get_dependencies("ontopy") == ["ontopy"]
 
     # Without argument, the dependencies of all backends are returned
-    assert sorted(get_dependencies()) == ["EMMOntoPy", "rdflib"]
+    assert sorted(get_dependencies()) == ["ontopy", "rdflib"]
