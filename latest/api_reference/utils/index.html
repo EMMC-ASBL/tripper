@@ -3499,8 +3499,9 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
         <span class="n">iri</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">"schema"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">schema</span><span class="p">):</span>
         <span class="c1"># pydantic.BaseModel</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">"identity"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="c1"># soft7 pydantic model</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">"identity"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># Pydantic model.  In Pydantic v2, `identity` is an</span>
+            <span class="c1"># AnyUrl object, which is converted to a string below.</span>
             <span class="n">iri</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">identity</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># pydantic instance</span>
