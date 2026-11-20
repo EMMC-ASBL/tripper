@@ -214,7 +214,9 @@ def test_infer_iri():
 
     # Pydantic models
     assert infer_iri(Datamodel()) == "http://onto-ns.com/meta/0.1/datamodel"
-    assert infer_iri(DatamodelV2()) == "http://onto-ns.com/meta/0.1/datamodelv2"
+    assert (
+        infer_iri(DatamodelV2()) == "http://onto-ns.com/meta/0.1/datamodelv2"
+    )
 
     # Other Pydantic models, with an IRI as `uri`, `identity` or `uuid`
     # property
