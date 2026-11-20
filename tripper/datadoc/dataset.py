@@ -32,6 +32,7 @@ Functions for working with the dict-representation:
 from __future__ import annotations
 
 import contextlib
+import datetime
 import json
 import logging
 import re
@@ -59,6 +60,7 @@ from tripper.datadoc.errors import (
 from tripper.datadoc.keywords import Keywords, get_keywords
 from tripper.datadoc.utils import add, asseq, get, getlabel, iriname
 from tripper.errors import NamespaceError
+from tripper.literal import Quantity
 from tripper.utils import (
     AttrDict,
     as_python,
@@ -88,6 +90,20 @@ MATCH_IRI = re.compile(
     r"^(([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?))|"
     r"([a-zA-Z0-9]*://[a-zA-Z_]([a-zA-Z0-9_/.?#=+-]*))$"
 )
+
+# Python types (other than str, int, float and bool) that are converted
+# to literals by told().  They are stored as the text that represents
+# them in RDF, e.g. "2025-08-18T00:00:00" for a datetime.
+LITERAL_TYPES: tuple = (
+    datetime.datetime,
+    datetime.date,
+    datetime.time,
+    datetime.timedelta,
+    bytes,
+    bytearray,
+)
+if Quantity:
+    LITERAL_TYPES += (Quantity,)
 
 logger = logging.getLogger(__name__)
 
@@ -291,6 +307,9 @@ def _told(
     if isinstance(descr, (str, int, float, bool)):
         return descr
 
+    if isinstance(descr, LITERAL_TYPES):
+        return str(Literal(descr))
+
     if isinstance(descr, list):
         lst = [_told(token, type, keywords, context) for token in descr]
         return {"@graph": lst} if root else lst
@@ -298,7 +317,8 @@ def _told(
     if not isinstance(descr, dict):
         raise InvalidDatadocError(
             "Malformed data documentation. Expected dict, list, string, "
-            f"int, float or bool. Got: {descr!r}"
+            "int, float, bool, date, time, datetime, timedelta or bytes. "
+            f"Got: {descr!r}"
         )
 
     # From hereon `descr` must be a dict.
@@ -359,6 +379,8 @@ def _told(
         #
         elif isinstance(v, (str, int, float, bool, None.__class__)):
             d[k] = v
+        elif isinstance(v, LITERAL_TYPES):
+            d[k] = str(Literal(v))
         elif isinstance(v, list):
             d[k] = _told(v, torange(k), keywords, context)
         elif isinstance(v, dict):
@@ -366,6 +388,11 @@ def _told(
                 d[k] = v
             else:
                 d[k] = _told(v, torange(k), keywords, context)
+        else:
+            raise InvalidDatadocError(
+                f"Unsupported value for '{k}' in data documentation: {v!r} "
+                f"(of type {v.__class__.__name__})"
+            )
 
     _deduplicate_types(d)
 
