@@ -1142,6 +1142,202 @@ def test_validate_class():
     # TODO: Add more tests with invalid input
 
 
+def test_validate_valid_input():
+    """Test that validate() accepts valid input that it used to reject."""
+    from tripper.datadoc import get_context, validate
+
+    a = "http://example.com/ex#a"
+
+    # Multi-valued literals are checked item by item
+    validate({"@id": a, "@type": "dcat:Dataset", "keyword": ["a", "b"]})
+    validate({"@id": a, "@type": "dcat:Dataset", "byteSize": [1, 2]})
+
+    # Strings that are valid values of the keyword datatype
+    for key, value in (
+        ("releaseDate", "2025-08-18T00:00:00"),
+        ("releaseDate", "2025-08-18T00:00:00+02:00"),
+        ("byteSize", "42"),
+        ("temporalResolution", "P2D"),
+    ):
+        validate({"@id": a, "@type": "dcat:Dataset", key: value})
+
+    # Language-tagged values. A list may mix languages: the plain string
+    # gets the default language from the context ("en")
+    title = {"@value": "Tittel", "@language": "no"}
+    validate({"@id": a, "@type": "dcat:Dataset", "title": title})
+    validate({"@id": a, "@type": "dcat:Dataset", "title": [title, "Title"]})
+
+    # A restriction (dict) in @type must not make validate() crash.
+    # Note that restrictions are not validated: their content is not
+    # checked, and they are ignored when finding the resource type.
+    restriction = {
+        "@type": "owl:Restriction",
+        "onProperty": "dcat:distribution",
+        "someValuesFrom": "http://example.com/ex#C",
+    }
+    validate({"@id": a, "@type": restriction})
+
+    # IRIs with query strings and other valid characters
+    for iri in (
+        "https://clowder.example.com/files/abc?dataset=def&space=ghi",
+        "https://docs.google.com/document/d/XX/edit?usp=drive_link&sd=true",
+        "https://example.com/a%20b",
+        "https://example.com/~user/page",
+        "mailto:john@example.com",
+    ):
+        validate({"@id": a, "@type": "dcat:Dataset", "documentation": iri})
+
+    # Keywords defined only in the context, also in nested resources.
+    # "myKey" has no "@type" in the context, so any string is accepted.
+    # See test_validate_context_keywords() for keywords with "@type".
+    context = get_context(context={"myKey": "http://example.com/ex#myKey"})
+    validate(
+        {"@id": a, "@type": "dcat:Dataset", "myKey": "x"},
+        context=context,
+    )
+    validate(
+        {"@id": a, "@type": "dcat:Dataset", "distribution": {"myKey": "x"}},
+        context=context,
+    )
+
+
+def test_validate_context_keywords():
+    """Test that values of keywords only defined in the context are
+    validated according to the "@type" in the context."""
+    from tripper import XSD
+    from tripper.datadoc import get_context, validate
+    from tripper.datadoc.errors import ValidateError
+
+    EX = "http://example.com/ex#"
+    datatypes = {
+        "myInt": XSD.integer,
+        "myNonNegInt": XSD.nonNegativeInteger,
+        "myDouble": XSD.double,
+        "myDecimal": XSD.decimal,
+        "myBool": XSD.boolean,
+        "myDate": XSD.date,
+        "myDateTime": XSD.dateTime,
+        "myTime": XSD.time,
+        "myDuration": XSD.duration,
+        "myURI": XSD.anyURI,
+        "myString": XSD.string,
+    }
+    ctx = {k: {"@id": EX + k, "@type": str(v)} for k, v in datatypes.items()}
+    ctx["myRef"] = {"@id": EX + "myRef", "@type": "@id"}
+    ctx["myText"] = {"@id": EX + "myText", "@language": "en"}
+    ctx["myJson"] = {"@id": EX + "myJson", "@type": "@json"}
+    context = get_context(context=ctx)
+
+    valid = [
+        # "@type": "@id": value must be an IRI or a nested resource
+        ("myRef", "http://example.com/ex#b?x=1&y=2"),
+        ("myRef", "ex:b"),
+        ("myRef", ["ex:b", "ex:c"]),
+        ("myRef", {"@id": "ex:b"}),
+        # "@type": datatype: value must be valid for this datatype, both
+        # as a string and as a Python value
+        ("myInt", "42"),
+        ("myInt", 42),
+        ("myNonNegInt", "0"),
+        ("myDouble", "1.5"),
+        ("myDouble", 1.5),
+        ("myDecimal", "1.5"),
+        ("myBool", "true"),
+        ("myBool", "0"),
+        ("myBool", True),
+        ("myDate", "2025-08-18"),
+        ("myDateTime", "2025-08-18T00:00:00"),
+        ("myDateTime", "2025-08-18T00:00:00+02:00"),
+        ("myDateTime", ["2025-08-18T00:00:00", "2025-08-19T00:00:00"]),
+        ("myTime", "12:30:00"),
+        ("myDuration", "P2D"),
+        ("myURI", "https://example.com/a?b=1"),
+        ("myString", "anything"),
+        # No "@type", but "@language": any string or language-tagged value
+        ("myText", "Hello"),
+        ("myText", {"@value": "Hei", "@language": "no"}),
+        # "@type": "@json": any JSON value, lists are not split
+        ("myJson", {"a": [1, 2]}),
+        ("myJson", [1, "two", None]),
+    ]
+    invalid = [
+        ("myRef", "not an iri"),
+        ("myRef", ["ex:b", "not an iri"]),
+        ("myRef", 42),
+        ("myInt", "4.2"),
+        ("myInt", "abc"),
+        ("myNonNegInt", "-1"),
+        ("myNonNegInt", -1),
+        ("myDouble", "abc"),
+        ("myDecimal", "abc"),
+        ("myDate", "2025-13-01"),
+        ("myDateTime", "not-a-date"),
+        ("myDateTime", ["2025-08-18T00:00:00", "not-a-date"]),
+        ("myTime", "25:00"),
+        ("myDuration", "2 days"),
+        ("myString", 42),
+    ]
+
+    # Check both at top level and in a nested resource
+    for key, value in valid:
+        validate({"@id": EX + "a", key: value}, context=context)
+        validate(
+            {"@id": EX + "a", "distribution": {key: value}}, context=context
+        )
+    for key, value in invalid:
+        with pytest.raises(ValidateError):
+            validate({"@id": EX + "a", key: value}, context=context)
+        with pytest.raises(ValidateError):
+            validate(
+                {"@id": EX + "a", "distribution": {key: value}},
+                context=context,
+            )
+
+
+def test_validate_invalid_values():
+    """Test that validate() rejects values not matching the datatype."""
+    from tripper.datadoc import validate
+    from tripper.datadoc.errors import ValidateError
+
+    for key, value in (
+        ("releaseDate", "not-a-date"),
+        ("releaseDate", "2020-13-45T00:00:00"),
+        ("byteSize", "abc"),
+        ("byteSize", "-1"),
+        ("temporalResolution", "2 days"),
+    ):
+        with pytest.raises(ValidateError):
+            validate(
+                {
+                    "@id": "http://example.com/ex#a",
+                    "@type": "dcat:Dataset",
+                    key: value,
+                }
+            )
+
+
+def test_validate_invalid_iri():
+    """Test that validate() rejects invalid IRIs."""
+    from tripper.datadoc import validate
+    from tripper.datadoc.errors import ValidateError
+
+    for iri in (
+        "plainword",
+        "not an iri",
+        "https://example.com/a b",
+        "ex:has space",
+        "https://example.com/<a>",
+    ):
+        with pytest.raises(ValidateError):
+            validate(
+                {
+                    "@id": "http://example.com/ex#a",
+                    "@type": "dcat:Dataset",
+                    "documentation": iri,
+                }
+            )
+
+
 def test_pipeline():
     """Test creating OTEAPI pipeline."""
     pytest.skip("Skip broken OTEAPI")
