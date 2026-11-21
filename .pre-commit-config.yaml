@@ -1,7 +1,5 @@
 # To install the git pre-commit hook run:
 #   pre-commit install
-# To update the pre-commit hooks run:
-#   pre-commit autoupdate && pre-commit autoupdate --freeze --repo https://github.com/SINTEF/ci-cd
 
 # pre-commit.ci
 ci:
@@ -50,18 +48,6 @@ repos:
       args: [--fix]
     # Run the formatter
     - id: ruff-format
-
-  - repo: https://github.com/SINTEF/ci-cd
-    rev: v2.11.0
-    hooks:
-    - id: docs-api-reference
-      args:
-      - --package-dir=tripper
-      - --unwanted-folder=__pycache__
-      - --unwanted-folder=context
-      - --unwanted-folder=old
-    - id: docs-landing-page
-    # - id: update-pyproject
 
   - repo: local
     hooks:
