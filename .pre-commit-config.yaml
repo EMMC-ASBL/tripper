@@ -51,6 +51,16 @@ repos:
 
   - repo: local
     hooks:
+    # Generate the API reference (docs/api_reference/) and the landing
+    # page (docs/index.md, copied from README.md).  The script is also
+    # run by the docs steps in the GitHub workflows.
+    - id: generate-docs
+      name: Generate API reference and landing page
+      entry: .hooks/generate-docs.py
+      language: script
+      pass_filenames: false
+      files: ^(tripper/.*\.py|README\.md)$
+
     - id: generate-context-and-doc
       name: Generate JSON-LD context and documentation
       entry: .hooks/generate-context-and-doc.sh

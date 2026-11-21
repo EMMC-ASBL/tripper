@@ -86,16 +86,13 @@ jobs:
       run: uv pip install --system -e .[dev]
 
     # Regenerate the API reference and the landing page with the same
-    # pre-commit hooks and options as used locally, such that the docs
-    # are built from the current sources.  A hook exits with a non-zero
-    # code when it changes files, so each hook is run a second time if
-    # the first run fails; the second run only fails if the hook is broken.
+    # script as the local pre-commit hook, such that the docs are built
+    # from the current sources.  The script exits with a non-zero code
+    # when it changes files, so it is run a second time if the first run
+    # fails; the second run only fails if the script is broken.
     - name: Update API reference and landing page
       run: |
-        for hook in docs-api-reference docs-landing-page; do
-          pre-commit run "$hook" --all-files \
-            || pre-commit run "$hook" --all-files
-        done
+        python .hooks/generate-docs.py || python .hooks/generate-docs.py
         git status --short docs
 
     - name: Build documentation
