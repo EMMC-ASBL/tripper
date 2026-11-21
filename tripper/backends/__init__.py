@@ -2,10 +2,10 @@
 
 from importlib import import_module
 
-# A dict mapping backend names to a list of dependencies
+# A dict mapping backend names to a list of the modules they depend on
 backend_dependencies = {
     "rdflib": ["rdflib"],
-    "ontopy": ["EMMOntoPy"],
+    "ontopy": ["ontopy"],  # provided by the EMMOntoPy package
 }
 
 
