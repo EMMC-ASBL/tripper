@@ -32,6 +32,29 @@ SIQuantityDatatype = (
 )
 
 
+def parse_boolean(value) -> bool:
+    """Return `value` converted to a Python bool.
+
+    The texts allowed for xsd:boolean are "true", "false", "1" and "0".
+    Like rdflib, also "True", "TRUE", "False" and "FALSE" are accepted.
+    Surrounding whitespace is ignored.
+
+    Raises:
+        ValueError: If `value` is not a valid boolean.
+    """
+    if isinstance(value, bool):
+        return value
+    text = str(value).strip()
+    if text in ("true", "1", "True", "TRUE"):
+        return True
+    if text in ("false", "0", "False", "FALSE"):
+        return False
+    raise ValueError(
+        f"invalid xsd:boolean value: '{value}'. "
+        "Expected one of 'true', 'false', '1' or '0'"
+    )
+
+
 class Literal(str):
     """A literal RDF value.
 
@@ -206,6 +229,12 @@ class Literal(str):
             for typ, names in cls.datatypes.items():
                 for name in names:
                     if name == datatype:
+                        if typ is bool:
+                            # Store booleans as "true"/"false".  Raises
+                            # ValueError for invalid values.  (bool() can't
+                            # be used, since any non-empty string is True.)
+                            val = "true" if parse_boolean(value) else "false"
+                            break
                         try:
                             if hasattr(typ, "fromisoformat"):
                                 val = typ.fromisoformat(value).isoformat()
@@ -231,6 +260,10 @@ class Literal(str):
         elif isinstance(value, str):
             string.datatype = None
         elif isinstance(value, bool):
+            # Write Python bools as "true"/"false", as required by
+            # xsd:boolean
+            string = super().__new__(cls, "true" if value else "false")
+            string.lang = None
             string.datatype = XSD.boolean
         elif isinstance(value, int):
             string.datatype = XSD.integer
@@ -341,7 +374,7 @@ class Literal(str):
         """Returns an appropriate python datatype derived from this RDF
         literal."""
         if self.datatype == XSD.boolean:
-            value = False if str(self) == "False" else bool(self)
+            value = parse_boolean(self)
         elif self.datatype in self.datatypes[int]:
             value = int(self)
         elif self.datatype in self.datatypes[float]:
