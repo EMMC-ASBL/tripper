@@ -955,6 +955,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.literal.parse_boolean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parse_boolean()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.literal.parse_duration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2090,6 +2101,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.literal.parse_boolean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parse_boolean()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.literal.parse_duration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2423,6 +2445,12 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="k">for</span> <span class="n">typ</span><span class="p">,</span> <span class="n">names</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">datatype</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">typ</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+                            <span class="c1"># Store booleans as "true"/"false".  Raises</span>
+                            <span class="c1"># ValueError for invalid values.  (bool() can't</span>
+                            <span class="c1"># be used, since any non-empty string is True.)</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="s2">"true"</span> <span class="k">if</span> <span class="n">parse_boolean</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"false"</span>
+                            <span class="k">break</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">"fromisoformat"</span><span class="p">):</span>
                                 <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
@@ -2448,6 +2476,10 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="c1"># Write Python bools as "true"/"false", as required by</span>
+            <span class="c1"># xsd:boolean</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">"true"</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">"false"</span><span class="p">)</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">integer</span>
@@ -2558,7 +2590,7 @@ inferred from <code>value</code>.  Should not be combined with
 <span class="w">        </span><span class="sd">"""Returns an appropriate python datatype derived from this RDF</span>
 <span class="sd">        literal."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"False"</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">parse_boolean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
@@ -2710,6 +2742,12 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="k">for</span> <span class="n">typ</span><span class="p">,</span> <span class="n">names</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">datatype</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">typ</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+                        <span class="c1"># Store booleans as "true"/"false".  Raises</span>
+                        <span class="c1"># ValueError for invalid values.  (bool() can't</span>
+                        <span class="c1"># be used, since any non-empty string is True.)</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="s2">"true"</span> <span class="k">if</span> <span class="n">parse_boolean</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"false"</span>
+                        <span class="k">break</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">"fromisoformat"</span><span class="p">):</span>
                             <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
@@ -2735,6 +2773,10 @@ inferred from <code>value</code>.  Should not be combined with
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="c1"># Write Python bools as "true"/"false", as required by</span>
+        <span class="c1"># xsd:boolean</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">"true"</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">"false"</span><span class="p">)</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">integer</span>
@@ -2866,7 +2908,7 @@ literal.</p>
 <span class="w">    </span><span class="sd">"""Returns an appropriate python datatype derived from this RDF</span>
 <span class="sd">    literal."""</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span><span class="p">:</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"False"</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">parse_boolean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
@@ -2955,6 +2997,69 @@ literal.</p>
     <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">S"</span> <span class="k">if</span> <span class="n">t</span> <span class="k">else</span> <span class="s2">""</span>
     <span class="n">T</span> <span class="o">=</span> <span class="s2">"T"</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">or</span> <span class="n">m</span> <span class="ow">or</span> <span class="n">s</span> <span class="k">else</span> <span class="s2">""</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sign</span><span class="si">}</span><span class="s2">P</span><span class="si">{</span><span class="n">Y</span><span class="si">}{</span><span class="n">M</span><span class="si">}{</span><span class="n">D</span><span class="si">}{</span><span class="n">T</span><span class="si">}{</span><span class="n">h</span><span class="si">}{</span><span class="n">m</span><span class="si">}{</span><span class="n">s</span><span class="si">}</span><span class="s2">"</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.literal.parse_boolean" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_boolean</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code>
+
+
+<a href="#tripper.literal.parse_boolean" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return <code>value</code> converted to a Python bool.</p>
+<p>The texts allowed for xsd:boolean are "true", "false", "1" and "0".
+Like rdflib, also "True", "TRUE", "False" and "FALSE" are accepted.
+Surrounding whitespace is ignored.</p>
+
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ValueError</code></td>
+        <td><p>If <code>value</code> is not a valid boolean.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/literal.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_boolean</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return `value` converted to a Python bool.</span>
+
+<span class="sd">    The texts allowed for xsd:boolean are "true", "false", "1" and "0".</span>
+<span class="sd">    Like rdflib, also "True", "TRUE", "False" and "FALSE" are accepted.</span>
+<span class="sd">    Surrounding whitespace is ignored.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If `value` is not a valid boolean.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">text</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"true"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">,</span> <span class="s2">"True"</span><span class="p">,</span> <span class="s2">"TRUE"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">text</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"false"</span><span class="p">,</span> <span class="s2">"0"</span><span class="p">,</span> <span class="s2">"False"</span><span class="p">,</span> <span class="s2">"FALSE"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"invalid xsd:boolean value: '</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">'. "</span>
+        <span class="s2">"Expected one of 'true', 'false', '1' or '0'"</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
