@@ -296,9 +296,14 @@ def _told(
         return {"@graph": lst} if root else lst
 
     if not isinstance(descr, dict):
+        # Other values supported by Literal (e.g. datetime) are converted
+        # to the text that represents them in RDF
+        if descr is not None and isinstance(descr, tuple(Literal.datatypes)):
+            return str(Literal(descr))
         raise InvalidDatadocError(
             "Malformed data documentation. Expected dict, list, string, "
-            f"int, float or bool. Got: {descr!r}"
+            "int, float, bool, date, time, datetime, timedelta or bytes. "
+            f"Got: {descr!r}"
         )
 
     # From hereon `descr` must be a dict.
@@ -366,6 +371,15 @@ def _told(
                 d[k] = v
             else:
                 d[k] = _told(v, torange(k), keywords, context)
+        elif isinstance(v, tuple(Literal.datatypes)):
+            # Other values supported by Literal (e.g. datetime) are
+            # converted to the text that represents them in RDF
+            d[k] = str(Literal(v))  # type: ignore[arg-type]
+        else:
+            raise InvalidDatadocError(
+                f"Unsupported value for '{k}' in data documentation: {v!r} "
+                f"(of type {v.__class__.__name__})"
+            )
 
     _deduplicate_types(d)
 
