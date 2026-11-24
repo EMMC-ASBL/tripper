@@ -315,6 +315,10 @@ def _told(
         return {"@graph": lst} if root else lst
 
     if not isinstance(descr, dict):
+        # Other values supported by Literal (e.g. datetime) are converted
+        # to the text that represents them in RDF
+        if descr is not None and isinstance(descr, tuple(Literal.datatypes)):
+            return str(Literal(descr))
         raise InvalidDatadocError(
             "Malformed data documentation. Expected dict, list, string, "
             "int, float, bool, date, time, datetime, timedelta or bytes. "
@@ -388,6 +392,10 @@ def _told(
                 d[k] = v
             else:
                 d[k] = _told(v, torange(k), keywords, context)
+        elif isinstance(v, tuple(Literal.datatypes)):
+            # Other values supported by Literal (e.g. datetime) are
+            # converted to the text that represents them in RDF
+            d[k] = str(Literal(v))  # type: ignore[arg-type]
         else:
             raise InvalidDatadocError(
                 f"Unsupported value for '{k}' in data documentation: {v!r} "
@@ -733,13 +741,15 @@ def infer_restriction_types(
                 ):
                     vexp = context.expand(v, strict=False)
                     d[kexp] = "some" if _isclass(vexp, context) else "value"
-                elif isinstance(v, list):
-                    if any(_isclass(e, context) for e in v):
-                        d[kexp] = "some"
-            elif isinstance(v, list):
-                if any(_isclass(e, context) for e in v):
+                elif isinstance(v, list) and any(
+                    _isclass(e, context) for e in v
+                ):
                     d[kexp] = "some"
-            elif _isclass(v, context):
+            elif (
+                isinstance(v, list)
+                and any(_isclass(e, context) for e in v)
+                or _isclass(v, context)
+            ):
                 d[kexp] = "some"
         if d:
             restrictions[iri] = d
