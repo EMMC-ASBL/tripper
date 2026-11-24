@@ -260,6 +260,41 @@ def test_told():
 
 
 @pytest.mark.network
+def test_told_python_values():
+    """Test that told() keeps date, time, duration and bytes values."""
+    import datetime
+
+    from tripper.datadoc.dataset import told
+    from tripper.datadoc.errors import InvalidDatadocError
+
+    values = {
+        datetime.datetime(2025, 8, 18, 12, 30): "2025-08-18T12:30:00",
+        datetime.date(2025, 8, 18): "2025-08-18",
+        datetime.time(12, 30): "12:30:00",
+        datetime.timedelta(days=2): "P2D",
+        b"\x01\xff": "01ff",
+    }
+    for value, text in values.items():
+        d = told({"@id": "http://example.com/ex#a", "releaseDate": value})
+        assert d["releaseDate"] == text
+
+    # Also in lists
+    d = told(
+        {
+            "@id": "http://example.com/ex#a",
+            "releaseDate": [
+                datetime.date(2025, 1, 1),
+                datetime.date(2025, 2, 1),
+            ],
+        }
+    )
+    assert d["releaseDate"] == ["2025-01-01", "2025-02-01"]
+
+    # Unsupported values raise an error instead of being silently dropped
+    with pytest.raises(InvalidDatadocError):
+        told({"@id": "http://example.com/ex#a", "releaseDate": {1, 2}})
+
+
 def test_get_jsonld_context():
     """Test get_context()."""
     import warnings

@@ -41,10 +41,7 @@ jobs:
     # See the docs job in ci_tests.yml
     - name: Update API reference and landing page
       run: |
-        for hook in docs-api-reference docs-landing-page; do
-          pre-commit run "$hook" --all-files \
-            || pre-commit run "$hook" --all-files
-        done
+        python .hooks/generate-docs.py || python .hooks/generate-docs.py
 
     - name: Set up git user
       run: |
