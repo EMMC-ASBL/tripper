@@ -1,17 +1,11 @@
 """Provides the ITriplestore protocol class, that documents the interface
 of the triplestore backends."""
 
-import sys
-from typing import TYPE_CHECKING
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Protocol
-else:
-    from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Sequence
-    from typing import Generator, Optional
+    from collections.abc import Generator, Sequence
+    from typing import Optional
 
     from tripper.triplestore import Triple
 

@@ -1,10 +1,9 @@
 """Test using SPARQL via Tripper."""
 
-# pylint: disable=invalid-name,import-outside-toplevel
-
 import pytest
 
 
+@pytest.mark.network
 def test_sparql_select():
     """Test SPARQL SELECT query."""
     pytest.importorskip("rdflib")

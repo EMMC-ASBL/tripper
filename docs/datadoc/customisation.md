@@ -122,23 +122,26 @@ The context can be generated from a triplestore with the ontology with the Keywo
 from tripper import Triplestore
 from tripper.datadoc import get_keywords
 
-ts = Triplestore('rdflib')
+ts = Triplestore("rdflib")
 
 ts.parse(
-    'https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/ontologies/family.ttl',
-    format='turtle',
+    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/ontologies/family.ttl",
+    format="turtle",
 )
 
-kw =  get_keywords() # create an Keywords instance populated with the default keywords (ddoc:datadoc)
+kw = get_keywords()  # create an Keywords instance populated with the default keywords (ddoc:datadoc)
 # Before loading the keywords file it is required that all namespaces have a prefix.
 # The family namespace does not have prefix by defualt and it must be added:
-kw.add_prefix('fam', 'http://onto-ns.com/ontologies/examples/family#')
+kw.add_prefix("fam", "http://onto-ns.com/ontologies/examples/family#")
 
 # We can now load the ontology into the keywords
-kw.load_rdf(ts, redefine='skip') # keywords that are already defined are skipped
+kw.load_rdf(
+    ts, redefine="skip"
+)  # keywords that are already defined are skipped
 # or
-lw.load_rdf(ts, redefine='allow') # keywords that are already defined are redefined
-
+lw.load_rdf(
+    ts, redefine="allow"
+)  # keywords that are already defined are redefined
 ```
 
 
@@ -328,16 +331,19 @@ prefixes = {"myns": "https://example.org/myns/"}
 ts = Triplestore("rdflib")
 
 # 1. Parse and store the table that defines classes
-classes_doc = TableDoc.parse_csv("classes.csv", context=context, prefixes=prefixes)
+classes_doc = TableDoc.parse_csv(
+    "classes.csv", context=context, prefixes=prefixes
+)
 classes_doc.save(ts)
 
 # 2. Register the newly-parsed classes in the shared context
 update_context(classes_doc.asdicts(), context)
 
 # 3. Now parse tables and store that reference those classes — restrictions will be inferred correctly
-resources_doc = TableDoc.parse_csv("resources.csv", context=context, prefixes=prefixes)
+resources_doc = TableDoc.parse_csv(
+    "resources.csv", context=context, prefixes=prefixes
+)
 resources_doc.save(ts)
-
 ```
 
 This pattern applies whenever:
@@ -360,10 +366,14 @@ context = get_context("https://example.org/context/", theme=None)
 prefixes = {"myns": "https://example.org/myns/"}
 
 # 1. Parse the table that defines classes
-classes_doc = TableDoc.parse_csv("classes.csv", context=context, prefixes=prefixes)
+classes_doc = TableDoc.parse_csv(
+    "classes.csv", context=context, prefixes=prefixes
+)
 
 # 2. Parse the table that defines resources that reference those classes
-resources_doc = TableDoc.parse_csv("resources.csv", context=context, prefixes=prefixes)
+resources_doc = TableDoc.parse_csv(
+    "resources.csv", context=context, prefixes=prefixes
+)
 
 # 3. Create one big dict with all resources from all tables
 dicts = classes_doc.asdicts() + resources_doc.asdicts()

@@ -3,13 +3,12 @@
 Pint is used for programatic unit conversions.
 """
 
-# pylint: disable=too-few-public-methods,too-many-lines
-
 import math
-import pickle  # nosec
+import pickle
 import re
+import sys
 import warnings
-from collections import namedtuple
+from collections import deque, namedtuple
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
@@ -27,12 +26,17 @@ from tripper import (
     Triplestore,
 )
 from tripper.errors import IRIExistsError, PermissionWarning, TripperError
-from tripper.namespace import get_cachedir
+from tripper.namespace import atomic_write, get_cachedir
 from tripper.utils import AttrDict, bnode_iri
 
 if TYPE_CHECKING:  # pragma: no cover
-    from pathlib import Path, PurePath
-    from typing import Any, Iterable, Mapping, Optional, Tuple, Union
+    from collections.abc import Generator
+    from pathlib import Path
+    from typing import (
+        Any,
+        Optional,
+        Union,
+    )
 
     from pint.compat import TypeAlias
 
@@ -93,7 +97,7 @@ def get_ureg(*args, nocreate=False, **kwargs) -> "UnitRegistry":
     arguments.
 
     """
-    global _unit_reg  # pylint: disable=global-statement
+    global _unit_reg
     if not _unit_reg:
         if nocreate:
             raise NoDefaultUnitRegistryError("No default unit registry")
@@ -117,7 +121,7 @@ def _default_url_name(url, name) -> tuple:
 
 def get_unit_triplestore(
     url: "Optional[Union[str, Path]]" = None,
-    format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+    format: "Optional[str]" = None,
     name: "Optional[str]" = None,
     cache: "Union[bool, None]" = True,
 ) -> Triplestore:
@@ -135,7 +139,7 @@ def get_unit_triplestore(
             - None: Don't use cache.
 
     """
-    global _unit_ts  # pylint: disable=global-statement
+    global _unit_ts
     if not _unit_ts:
         _unit_ts = Triplestore("rdflib")
         url, name = _default_url_name(url, name)
@@ -144,14 +148,20 @@ def get_unit_triplestore(
         if cache and cachefile.exists():
             _unit_ts.parse(cachefile, format="ntriples")
         else:
-            print("* caching units triplestore... ", end="", flush=True)
+            print(  # noqa: T201
+                "* caching units triplestore... ",
+                end="",
+                flush=True,
+                file=sys.stderr,
+            )
             _unit_ts.parse(url, format=format)
-            print("done")
+            print("done", file=sys.stderr)  # noqa: T201
             if cache is not None:
                 try:
-                    _unit_ts.serialize(
-                        cachefile, format="ntriples", encoding="utf-8"
-                    )
+                    with atomic_write(cachefile) as tmp:
+                        _unit_ts.serialize(
+                            tmp, format="ntriples", encoding="utf-8"
+                        )
                 except PermissionError as exc:
                     warnings.warn(
                         f"{exc}: {cachefile}",
@@ -179,7 +189,7 @@ def base_unit_expression(dimension: Dimension) -> str:
     return " * ".join(expr) if expr else "1"
 
 
-def load_emmo_quantity(ts: Triplestore, iri: str) -> "Tuple[float, str]":
+def load_emmo_quantity(ts: Triplestore, iri: str) -> "tuple[float, str]":
     """Return value and unit for EMMO quantity with given `iri`."""
     isclass = ts.query(f"ASK {{<{iri}> a owl:Class}}")
 
@@ -241,7 +251,7 @@ def save_emmo_quantity(
     ts: Triplestore,
     q: "Quantity",
     iri: str,
-    type: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+    type: "Optional[str]" = None,
     tbox: bool = False,
     si_datatype: bool = True,
     annotations: "Optional[dict]" = None,
@@ -326,13 +336,11 @@ def save_emmo_quantity(
 class Units:
     """A class representing all units in an ontology."""
 
-    # pylint: disable=too-many-instance-attributes
-
     def __init__(
         self,
         ts: "Optional[Triplestore]" = None,
         url: "Optional[Union[str, Path]]" = None,
-        format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        format: "Optional[str]" = None,
         name: "Optional[str]" = None,
         formalisation: str = "emmo",
         include_prefixed: bool = False,
@@ -368,6 +376,9 @@ class Units:
                 url=url, format=format, name=name, cache=cache
             )
 
+        # Created on demand by _get_dimension_maps()
+        self._dimension_maps: Optional[tuple[dict, dict, dict]] = None
+
         self.ns = Namespace(
             iri="https://w3id.org/emmo#",
             label_annotations=True,
@@ -381,27 +392,37 @@ class Units:
         cachefile = cachedir / fname
         if cache and cachefile.exists():
             with open(cachefile, "rb") as f:
-                d = pickle.load(f)  # nosec
+                d = pickle.load(f)  # noqa: S301
                 self.units = d["units"]
                 self.quantities = d["quantities"]
                 self.constants = d["constants"]
         else:
-            print("* caching units... ", end="", flush=True)
+            print("* caching units... ", end="", flush=True, file=sys.stderr)  # noqa: T201
             self.units = self._parse_units(include_prefixed=include_prefixed)
-            print("done\n* caching quantities... ", end="", flush=True)
+            print(  # noqa: T201
+                "done\n* caching quantities... ",
+                end="",
+                flush=True,
+                file=sys.stderr,
+            )
             self.quantities = self._parse_quantities(constants=False)
-            print("done\n* caching constants... ", end="", flush=True)
+            print(  # noqa: T201
+                "done\n* caching constants... ",
+                end="",
+                flush=True,
+                file=sys.stderr,
+            )
             self.constants = self._parse_quantities(constants=True)
-            print("done")
+            print("done", file=sys.stderr)  # noqa: T201
 
-        if cache is not None:
-            with open(cachefile, "wb") as f:
+            if cache is not None:
                 d = {
                     "units": self.units,
                     "quantities": self.quantities,
                     "constants": self.constants,
                 }
-                pickle.dump(d, f)
+                with atomic_write(cachefile) as tmp, open(tmp, "wb") as f:
+                    pickle.dump(d, f)
 
         self.url = url
         self.name = name
@@ -433,7 +454,7 @@ class Units:
         }}
         """
         # Bug in mupy... seems to be fixed in master
-        return [iri for iri, in self.ts.query(query)]  # type: ignore
+        return [iri for (iri,) in self.ts.query(query)]  # type: ignore
 
     def _emmo_quantity_iris(self, constants: bool = False) -> list:
         """Return a list with the IRIs of all EMMO quantities.
@@ -466,64 +487,102 @@ class Units:
         }}
         """
         # Bug in mupy... seems to be fixed in master
-        return [iri for iri, in self.ts.query(query)]  # type: ignore
+        return [iri for (iri,) in self.ts.query(query)]  # type: ignore
 
     def _get_unit_symbols(self, iri: str) -> list:
-        """Return a list with unit symbols for unit with the given IRI."""
-        symbols = []
-        for r in self.ts.restrictions(
-            iri, self.ns.unitSymbolValue, type="value"
-        ):
-            symbols.append(str(r["value"]))
+        """Return a list with unit symbols for unit with the given IRI.
 
-        for symbol in self.ts.value(iri, self.ns.unitSymbol, any=None):
-            s = str(symbol)
-            symbols.append(f"1{s}" if s.startswith("/") else s)
-
+        Symbols from restrictions come first, followed by symbols from
+        annotations.  Within each group, symbols are sorted, since the
+        iteration order of the triplestore may differ between processes.
+        """
+        symbols = sorted(
+            str(r["value"])
+            for r in self.ts.restrictions(
+                iri, self.ns.unitSymbolValue, type="value"
+            )
+        )
+        annotated = sorted(
+            str(symbol)
+            for symbol in self.ts.value(iri, self.ns.unitSymbol, any=None)
+        )
+        symbols.extend(f"1{s}" if s.startswith("/") else s for s in annotated)
         return symbols
+
+    def _get_dimension_maps(self) -> "tuple[dict, dict, dict]":
+        """Return dicts used for looking up dimension strings.
+
+        Returns a tuple of three dicts:
+            - parents: maps a class to a sorted list of its direct
+              superclasses (rdfs:subClassOf).
+            - dimstrs: maps a hasDimensionString restriction to its
+              dimension string.
+            - measurement_units: maps a hasMeasurementUnit restriction to
+              its unit (owl:someValuesFrom).
+
+        The dicts are created on first call by reading the triplestore
+        once.  This is much faster than doing a SPARQL query with a
+        `rdfs:subClassOf+` property path for every unit and quantity.
+        """
+        maps = self._dimension_maps
+        if maps is None:
+            parents: dict[str, list] = {}
+            for s, _, o in self.ts.triples(predicate=RDFS.subClassOf):
+                parents.setdefault(s, []).append(o)
+            for superclasses in parents.values():
+                superclasses.sort()
+
+            onprop = {
+                s: o for s, _, o in self.ts.triples(predicate=OWL.onProperty)
+            }
+            dimstr_prop = EMMO.hasDimensionString
+            dimstrs = {
+                s: o
+                for s, _, o in self.ts.triples(predicate=OWL.hasValue)
+                if onprop.get(s) == dimstr_prop
+            }
+            unit_prop = EMMO.hasMeasurementUnit
+            measurement_units = {
+                s: o
+                for s, _, o in self.ts.triples(predicate=OWL.someValuesFrom)
+                if onprop.get(s) == unit_prop
+            }
+            maps = (parents, dimstrs, measurement_units)
+            self._dimension_maps = maps
+        return maps
+
+    def _superclasses(self, iri: str) -> "Generator[str, None, None]":
+        """Generate all superclasses of `iri` (rdfs:subClassOf+) in
+        breadth-first order."""
+        parents = self._get_dimension_maps()[0]
+        visited = set()
+        queue = deque(parents.get(iri, ()))
+        while queue:
+            cls = queue.popleft()
+            if cls not in visited:
+                visited.add(cls)
+                yield cls
+                queue.extend(parents.get(cls, ()))
 
     def _get_unit_dimension_string(self, iri: str) -> str:
         """Return the dimension string for unit with the given IRI."""
-        query = f"""
-        PREFIX rdfs: <{RDFS}>
-        PREFIX owl: <{OWL}>
-        SELECT ?dimstr
-        WHERE {{
-          <{iri}> rdfs:subClassOf+ ?r .
-          ?r owl:onProperty <{EMMO.hasDimensionString}> .
-          ?r owl:hasValue ?dimstr .
-        }}
-        """
-        result = self.ts.query(query)
-        if result:
-            # Bug in mupy
-            return result[0][0]  # type: ignore
+        dimstrs = self._get_dimension_maps()[1]
+        for cls in self._superclasses(iri):
+            if cls in dimstrs:
+                return dimstrs[cls]
         raise MissingDimensionStringError(iri)
 
     def _get_quantity_dimension_string(self, iri: str) -> str:
         """Return the dimension string for quantity with the given IRI."""
-        # Note, the use of subquery greately speeds up this SPARQL query
-        query = f"""
-        PREFIX rdfs: <{RDFS}>
-        PREFIX owl: <{OWL}>
-        SELECT ?dimstr
-        WHERE {{
-          {{
-            SELECT ?dimunit WHERE {{
-              <{iri}> rdfs:subClassOf+ ?r .
-              ?r owl:onProperty <{EMMO.hasMeasurementUnit}> .
-              ?r owl:someValuesFrom ?dimunit .
-            }}
-          }}
-          ?dimunit rdfs:subClassOf+ ?rr .
-          ?rr owl:onProperty <{EMMO.hasDimensionString}> .
-          ?rr owl:hasValue ?dimstr .
-        }}
-        """  # nosec
-        result = self.ts.query(query)
-        if result:
-            # Bug in mupy
-            return result[0][0]  # type: ignore
+        measurement_units = self._get_dimension_maps()[2]
+        for cls in self._superclasses(iri):
+            if cls in measurement_units:
+                try:
+                    return self._get_unit_dimension_string(
+                        measurement_units[cls]
+                    )
+                except MissingDimensionStringError:
+                    pass
         raise MissingDimensionStringError(iri)
 
     def _parse_dimension_string(self, dimstr: str) -> "Any":
@@ -540,7 +599,7 @@ class Units:
             return Dimension(*[int(d) for d in m.groups()])
         raise InvalidDimensionStringError(dimstr)
 
-    def _parse_unitname(self, unitname: str) -> "Tuple[float, dict]":
+    def _parse_unitname(self, unitname: str) -> "tuple[float, dict]":
         """Parse CamelCase unit name and return a multiplication factor (from
         prefixes) and a dict mapping each unit component to its power.
 
@@ -644,17 +703,19 @@ class Units:
             d[name] = AttrDict(
                 name=name,
                 description=description,
-                aliases=[
+                # Sort, since the iteration order of the triplestore may
+                # differ between processes
+                aliases=sorted(
                     str(s) for s in self.ts.value(iri, SKOS.altLabel, any=None)
-                ],
+                ),
                 symbols=self._get_unit_symbols(iri),
                 dimension=dimension,
                 emmoIRI=iri,
                 qudtIRI=str(qudtIRI) if qudtIRI else None,
                 omIRI=str(omIRI) if omIRI else None,
-                ucumCodes=[
+                ucumCodes=sorted(
                     str(s) for s in self.ts.value(iri, EMMO.ucumCode, any=None)
-                ],
+                ),
                 unitCode=str(unitCode) if unitCode else None,
                 multiplier=float(mult[0]["value"]) if mult else None,
                 offset=float(offset[0]["value"]) if offset else None,
@@ -689,9 +750,11 @@ class Units:
             d[name] = AttrDict(
                 name=name,
                 description=description,
-                aliases=[
+                # Sort, since the iteration order of the triplestore may
+                # differ between processes
+                aliases=sorted(
                     str(s) for s in self.ts.value(iri, SKOS.altLabel, any=None)
-                ],
+                ),
                 dimension=dimension,
                 emmoIRI=iri,
                 qudtIRI=str(qudtIRI) if qudtIRI else None,
@@ -781,7 +844,6 @@ class Units:
 
     def write_pint_units(self, filename: "Union[str, Path]") -> None:
         """Write Pint units definition to `filename`."""
-        # pylint: disable=too-many-branches
 
         # For now, include prefixes and base units...
         # TODO: infer from ontology
@@ -882,7 +944,7 @@ class Units:
                 elif unit.offset:
                     s = [f"{unit.name} = {baseexpr}; offset: {-unit.offset}"]
                 else:
-                    assert False, "should never happen"  # nosec
+                    raise AssertionError("should never happen")
             elif baseexpr == "1":
                 s = [f"{unit.name} = []"]
             else:
@@ -952,7 +1014,7 @@ class Units:
             ]
         )
 
-        with open(filename, "wt", encoding="utf-8") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write("\n".join(content) + "\n")
 
     def clear_cache(self) -> None:
@@ -966,7 +1028,6 @@ class Units:
             tsfile.unlink()
 
 
-# pylint: disable=too-many-ancestors
 class Unit(pint.Unit):
     """A subclass of pint.Unit with additional methods and properties."""
 
@@ -1052,7 +1113,6 @@ class Quantity(pint.Quantity):
                magnitude of the quantity when expressed in SI base units.
 
         """
-        # pylint: disable=protected-access
         ureg = self._REGISTRY
 
         try:
@@ -1110,7 +1170,7 @@ class UnitRegistry(pint.UnitRegistry):
         *args: "Any",
         ts: "Optional[Triplestore]" = None,
         url: "Optional[Union[str, Path]]" = None,
-        format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        format: "Optional[str]" = None,
         name: "Optional[str]" = None,
         formalisation: str = "emmo",
         include_prefixed: bool = False,
@@ -1179,16 +1239,15 @@ class UnitRegistry(pint.UnitRegistry):
             kwargs["filename"] = unitsfile
             if not unitsfile.exists():
                 units = self._get_tripper_units()
-                units.write_pint_units(unitsfile)
+                with atomic_write(unitsfile) as tmp:
+                    units.write_pint_units(tmp)
 
         if cache:
             kwargs.setdefault("cache_folder", self._tripper_cachedir)
 
         super().__init__(*args, **kwargs)
 
-    def parse_units(  # pylint: disable=arguments-differ
-        self, units, *args, **kwargs
-    ):
+    def parse_units(self, units, *args, **kwargs):
         """Parses a unit expression string and returns a UnitContainer object
         with canonical unit names."""
         try:
@@ -1291,7 +1350,6 @@ class UnitRegistry(pint.UnitRegistry):
             value: Value of the quantity value in units of SI base units.
 
         """
-        # pylint: disable=too-many-branches
         units = self._get_tripper_units()
         if name:
             if name not in units.quantities:
@@ -1347,7 +1405,7 @@ class UnitRegistry(pint.UnitRegistry):
         ts: Triplestore,
         q: Quantity,
         iri: str,
-        type: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        type: "Optional[str]" = None,
         tbox: bool = False,
         si_datatype: bool = True,
         annotations: "Optional[dict]" = None,
@@ -1399,7 +1457,7 @@ class UnitRegistry(pint.UnitRegistry):
         This unit registry can then be accessed with `get_ureg()`.
 
         Returns the previous default unit registry."""
-        global _unit_reg  # pylint: disable=global-statement
+        global _unit_reg
         old = _unit_reg
         _unit_reg = self
         return old

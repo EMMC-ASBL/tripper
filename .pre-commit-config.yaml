@@ -1,7 +1,5 @@
 # To install the git pre-commit hook run:
 #   pre-commit install
-# To update the pre-commit hooks run:
-#   pre-commit autoupdate && pre-commit autoupdate --freeze --repo https://github.com/SINTEF/ci-cd
 
 # pre-commit.ci
 ci:
@@ -13,7 +11,6 @@ ci:
   autoupdate_branch: 'master'
   autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
   autoupdate_schedule: 'weekly'
-  skip: [pylint, pylint-tests]
   submodules: false
 
 # hooks
@@ -31,30 +28,8 @@ repos:
     - id: trailing-whitespace
       args: [--markdown-linebreak-ext=md]
 
-  - repo: https://github.com/PyCQA/isort
-    rev: 9.0.2
-    hooks:
-    - id: isort
-      args:
-      - --profile=black
-      - --filter-files
-      - --skip-gitignore
-
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.10.1
-    hooks:
-    - id: black
-      args: [--line-length=79]
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.9.4
-    hooks:
-    - id: bandit
-      args: ["-r"]
-      files: ^tripper/.*$
-
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.4.0
+    rev: v2.4.1
     hooks:
     - id: mypy
       exclude: ^tests/.*$
@@ -63,20 +38,29 @@ repos:
         - "types-pyyaml"
         - "pydantic"
 
-  - repo: https://github.com/SINTEF/ci-cd
-    rev: v2.10.0
+  # Ruff replaces isort, black, bandit and pylint.  It is configured in
+  # pyproject.toml.  Keep the version in sync with the pre-commit extra.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.5
     hooks:
-    - id: docs-api-reference
-      args:
-      - --package-dir=tripper
-      - --unwanted-folder=__pycache__
-      - --unwanted-folder=context
-      - --unwanted-folder=old
-    - id: docs-landing-page
-    # - id: update-pyproject
+    # Run the linter (with auto-fix)
+    - id: ruff-check
+      args: [--fix]
+    # Run the formatter
+    - id: ruff-format
 
   - repo: local
     hooks:
+    # Generate the API reference (docs/api_reference/) and the landing
+    # page (docs/index.md, copied from README.md).  The script is also
+    # run by the docs steps in the GitHub workflows.
+    - id: generate-docs
+      name: Generate API reference and landing page
+      entry: .hooks/generate-docs.py
+      language: script
+      pass_filenames: false
+      files: ^(tripper/.*\.py|README\.md)$
+
     - id: generate-context-and-doc
       name: Generate JSON-LD context and documentation
       entry: .hooks/generate-context-and-doc.sh
@@ -92,25 +76,3 @@ repos:
     #   language: script
     #   pass_filenames: false
     #   stages: ["pre-commit"]
-
-    - id: pylint
-      name: pylint
-      entry: pylint
-      args:
-      - --rcfile=pyproject.toml
-      language: python
-      types: [python]
-      require_serial: true
-      files: ^.*$
-      exclude: ^tests/.*$
-
-    - id: pylint-tests
-      name: pylint - tests
-      entry: pylint
-      args:
-      - "--rcfile=pyproject.toml"
-      - "--disable=import-outside-toplevel,redefined-outer-name"
-      language: python
-      types: [python]
-      require_serial: true
-      files: ^tests/.*$

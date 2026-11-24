@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from tripper import OWL, RDF, VANN, XSD, Literal, Triplestore
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Iterator, Tuple
+    pass
 
 
 _bnode_counter = 0
@@ -13,7 +13,7 @@ _bnode_counter = 0
 
 def bnode() -> str:
     """Returns a new unique blank node."""
-    global _bnode_counter  # pylint: disable=global-statement
+    global _bnode_counter
     _bnode_counter += 1
     return f"_:b{_bnode_counter}"
 

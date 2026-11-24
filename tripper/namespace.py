@@ -2,9 +2,11 @@
 
 import hashlib
 import os
-import pickle  # nosec
+import pickle
 import sys
+import uuid
 import warnings
+from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -16,7 +18,8 @@ from tripper.errors import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional, Sequence, Union
+    from collections.abc import Generator, Sequence
+    from typing import Optional, Union
 
     from tripper.triplestore import Triplestore
 
@@ -51,8 +54,6 @@ class Namespace:
         triplestore_url: Deprecated. Use the `triplestore` argument instead.
     """
 
-    # pylint: disable=too-many-instance-attributes
-
     __slots__ = (
         "_iri",  # Ontology IRI
         "_label_annotations",  # Recognised annotations for labels
@@ -75,7 +76,6 @@ class Namespace:
         cachemode: int = -1,
         triplestore_url: "Optional[str]" = None,
     ):
-        # pylint: disable=redefined-builtin
         if cachemode != -1:
             warnings.warn(
                 "The `cachemode` argument of Triplestore.__init__() is "
@@ -110,8 +110,8 @@ class Namespace:
             tuple(label_annotations) if label_annotations else ()
         )
         self._check = bool(check)
-        self._iris: "Optional[dict]" = {} if need_triplestore else None
-        self._reviris: "dict" = {}
+        self._iris: Optional[dict] = {} if need_triplestore else None
+        self._reviris: dict = {}
         self._reload = reload
         self._triplestore = triplestore
         self._format = format
@@ -125,10 +125,9 @@ class Namespace:
             format: If `triplestore` is a tring or Path, parse it using this
                 format.
         """
-        # pylint: disable=redefined-builtin
 
         # Import Triplestore here to avoid cyclic import
-        from .triplestore import (  # pylint: disable=import-outside-toplevel,cyclic-import
+        from .triplestore import (
             Triplestore,
         )
 
@@ -174,7 +173,7 @@ class Namespace:
     def _get_labels(self, iri):
         """Return annotation labels corresponding to the given IRI."""
         self._update_iris()
-        if not ":" in iri:
+        if ":" not in iri:
             iri = self._iri + iri
         labels = [
             k
@@ -185,18 +184,16 @@ class Namespace:
 
     def _get_cachefile(self) -> Path:
         """Return path to cache file for this namespace."""
-        # pylint: disable=too-many-function-args
         name = self._iri.rstrip("#/").rsplit("/", 1)[-1]
         hashno = hashlib.shake_128(self._iri.encode()).hexdigest(5)
         return get_cachedir() / f"{name}-{hashno}.cache"
 
     def _save_cache(self):
         """Save current cache."""
-        # pylint: disable=invalid-name
         try:
             cachefile = self._get_cachefile()
             if self._iris and not sys.is_finalizing():
-                with open(cachefile, "wb") as f:
+                with atomic_write(cachefile) as tmp, open(tmp, "wb") as f:
                     pickle.dump(self._iris, f)
         except OSError as exc:
             warnings.warn(
@@ -210,14 +207,13 @@ class Namespace:
 
         Returns true if there exists a cache file to load from.
         """
-        # pylint: disable=invalid-name
         try:
             cachefile = self._get_cachefile()
             if self._iris is None:
                 self._iris = {}
             if cachefile.exists():
                 with open(cachefile, "rb") as f:
-                    self._iris.update(pickle.load(f))  # nosec
+                    self._iris.update(pickle.load(f))  # noqa: S301
                 return True
             return False
         except OSError as exc:
@@ -229,6 +225,12 @@ class Namespace:
             return False
 
     def __getattr__(self, name):
+        # Never treat dunder names as ontology concepts.  Tools like doctest,
+        # pytest, copy and pickle probe for attributes like `__wrapped__`,
+        # which would otherwise trigger loading (and possibly downloading)
+        # the ontology.
+        if name.startswith("__") and name.endswith("__"):
+            raise AttributeError(name)
         if self._iris and name in self._iris:
             return self._iris[name]
         if self._iris == {}:
@@ -240,13 +242,6 @@ class Namespace:
             if name in self._iris:
                 return self._iris[name]
         if self._check:
-
-            # Hack to work around a pytest bug.  During its collection
-            # phase pytest tries to mock namespace objects with an
-            # attribute `__wrapped__`.
-            if name == "__wrapped__":
-                return super().__getattr__(self, name)
-
             msg = ""
             try:
                 cachefile = self._get_cachefile()
@@ -378,8 +373,7 @@ class Namespace:
                 return default
             cachefile = self._get_cachefile()
             raise NoSuchIRIError(
-                f"{iri}\n"
-                f"Maybe you have to remove the cache file: {cachefile}"
+                f"{iri}\nMaybe you have to remove the cache file: {cachefile}"
             )
         return self._reviris[iri]
 
@@ -415,6 +409,36 @@ def get_cachedir(create=True) -> Path:
             )
 
     return cachedir
+
+
+@contextmanager
+def atomic_write(path: "Union[str, Path]") -> "Generator[Path, None, None]":
+    """Context manager for atomically writing a file.
+
+    Yields a temporary path in the same directory as `path`.  When the
+    context exits without an exception, the temporary file is renamed
+    to `path`.  Hence, concurrent processes (like pytest-xdist workers)
+    will either see the old file or the complete new file, never a
+    partly written file.
+
+    Example:
+
+        >>> import tempfile
+        >>> with tempfile.TemporaryDirectory() as tmpdir:
+        ...     with atomic_write(Path(tmpdir) / "file.txt") as tmp:
+        ...         _ = tmp.write_text("content")
+        ...     print((Path(tmpdir) / "file.txt").read_text())
+        content
+
+    """
+    path = Path(path)
+    tmp = path.with_name(f".{path.name}.{os.getpid()}-{uuid.uuid4().hex}.tmp")
+    try:
+        yield tmp
+        os.replace(tmp, path)
+    finally:
+        if tmp.exists():
+            tmp.unlink()
 
 
 # Pre-defined namespaces (without label lookup or checking)

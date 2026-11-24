@@ -104,7 +104,7 @@ nav:
   - ... | api_reference/**
   - For developers: developers.md
   - Known issues: known-issues.md
-  - Changelog: CHANGELOG.md
+  - Release notes: https://github.com/EMMC-ASBL/tripper/releases
   - License: LICENSE.md
 
 watch:

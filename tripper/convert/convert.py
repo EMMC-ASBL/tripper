@@ -1,4 +1,3 @@
-# pylint: disable=line-too-long
 """Tripper module for converting between RDF and other repetations.
 
 Example use:
@@ -25,18 +24,18 @@ ValueError: Unrecognised predicate 'http://purl.org/dc/terms/title' in dict: :da
 
 ```
 
-"""
+"""  # noqa: E501
 
-# pylint: disable=invalid-name,redefined-builtin
 import warnings
-from typing import TYPE_CHECKING, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from tripper import DCAT, DCTERMS, EMMO, MAP, OTEIO, OWL, RDF, RDFS, Literal
 from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Dict, Optional, Union
+    from typing import Any, Optional, Union
 
     from tripper import Triplestore
 
@@ -77,7 +76,7 @@ def from_container(
     container: "Union[Mapping[str, Any], Sequence[Any]]",
     iri: str,
     lang: str = "en",
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
     keep: bool = False,
 ) -> list:
     """Serialise a basic Python container type (mapping or sequence) as RDF.
@@ -137,7 +136,7 @@ def from_container(
         return obj_iri
 
     if isinstance(container, Sequence):
-        assert not isinstance(container, str)  # nosec
+        assert not isinstance(container, str)  # noqa: S101
         if not container:
             raise ValueError("empty sequence is not supported")
 
@@ -193,7 +192,7 @@ def save_container(
     container: "Union[Mapping[str, Any], Sequence[Any]]",
     iri: str,
     lang: str = "en",
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
     keep: bool = False,
 ) -> None:
     """Save a basic Python container object to a triplestore.
@@ -234,7 +233,7 @@ def save_container(
 def load_container(
     ts: "Triplestore",
     iri: str,
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
     ignore_unrecognised: bool = False,
 ) -> "Union[dict, list]":
     """Deserialise a Python container object from a triplestore.
@@ -253,7 +252,6 @@ def load_container(
     Returns:
         A Python container object corresponding to `iri`.
     """
-    # pylint: disable=too-many-branches
     if iri == RDF.nil:
         return []
 
@@ -279,7 +277,7 @@ def load_container(
         return value.value if isinstance(value, Literal) else value
 
     if OTEIO.Dictionary in parents:
-        container: "Dict[str, Any]" = {}
+        container: dict[str, Any] = {}
         for pred, obj in ts.predicate_objects(iri):
             if pred == OTEIO.hasKeyValuePair:
                 key_iri = ts.value(obj, OTEIO.hasDictionaryKey)
@@ -335,7 +333,7 @@ def from_dict(
     iri: str,
     bases: "Optional[Sequence]" = None,
     lang: str = "en",
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
     keep: bool = False,
 ) -> list:
     """Serialise a dict as RDF.
@@ -373,7 +371,7 @@ def save_dict(
     iri: str,
     bases: "Optional[Sequence]" = None,
     lang: str = "en",
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
     keep: bool = False,
 ) -> None:
     """Save a dict to a triplestore.
@@ -406,7 +404,7 @@ def save_dict(
 def load_dict(
     ts: "Triplestore",
     iri: str,
-    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    recognised_keys: "Optional[Union[dict, str]]" = None,
 ) -> "Union[dict, list]":
     """Deserialise a dict from an RDF triplestore.
 

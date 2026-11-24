@@ -1,7 +1,5 @@
 """Test convertions."""
 
-# pylint: disable=invalid-name
-
 import pytest
 
 

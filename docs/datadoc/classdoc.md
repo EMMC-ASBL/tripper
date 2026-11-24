@@ -15,11 +15,14 @@ It is consistent with the physicalistic/nominalistic approach taken by major ont
     "elucidation": "A simulation using my physics-based materials models.",
     "isParticipatedBy": {
         "@id": "ex:MyModel",
-        "@type": "owl:Class"  # restrictionType defaults to some
+        "@type": "owl:Class",  # restrictionType defaults to some
     },
     "command": "mymodel infile.txt -o outfile.txt",  # Command to execute the model
     "workdir": ".",  # Relative path to working directory
-    "environment": {"VAR1": "val1", "VAR2": "val2"},  # Environment variables (JSON-encoded)
+    "environment": {
+        "VAR1": "val1",
+        "VAR2": "val2",
+    },  # Environment variables (JSON-encoded)
     "install_command": "pip install git+ssh://git@github.com:MyProj/myrepo.git@master",
     "hasInput": [
         {
@@ -33,9 +36,9 @@ It is consistent with the physicalistic/nominalistic approach taken by major ont
                 "accessURL": "file:./infile.txt",
                 "accessService": {
                     "conformsTo": "https://github.com/SINTEF/dlite/",
-                    "generator": "ex:inputplugin"  # for generating input
-                }
-            }
+                    "generator": "ex:inputplugin",  # for generating input
+                },
+            },
         }
     ],
     "hasOutput": [
@@ -51,10 +54,10 @@ It is consistent with the physicalistic/nominalistic approach taken by major ont
                 "accessService": {
                     "conformsTo": "https://github.com/SINTEF/dlite/",
                     "parser": "ex:outputplugin",  # for parsing output
-                    "generator": "ex:outputplugin"  # for storing output to external storage
-                }
-            }
+                    "generator": "ex:outputplugin",  # for storing output to external storage
+                },
+            },
         }
-    ]
+    ],
 }
 ```

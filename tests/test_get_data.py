@@ -1,7 +1,5 @@
 """Test Triplestore.get_data() and related methods."""
 
-# pylint: disable=unused-argument,invalid-name,import-outside-toplevel
-
 
 def test_get_data():
     """Test get_data()"""

@@ -4,7 +4,6 @@ import pytest
 
 pytest.importorskip("pyld")
 
-# pylint: disable=wrong-import-position
 from tripper.datadoc.context import Context, get_context
 
 # A fixture used by all the tests
@@ -42,7 +41,7 @@ def test_add_context():
 
 def test_add_context_seq():
     """Test add_context() method with list input."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     c = Context(theme=None)
     assert c.get_mappings() == {}
@@ -311,7 +310,6 @@ def test_is_class():
 
 def test_to_triplestore():
     """Test to_triplestore() method."""
-    # pylint: disable=too-many-locals
     from tripper import OWL, RDF, RDFS, Namespace, Triplestore
     from tripper.errors import NamespaceError
 

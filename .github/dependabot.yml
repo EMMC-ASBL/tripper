@@ -1,11 +1,40 @@
 version: 2
 updates:
+
+# GitHub Actions used in the workflows.  All updates are collected in
+# one PR per week.
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
-    interval: daily
-    time: "05:24"
-  target-branch: ci/dependency-updates
+    interval: weekly
+    day: monday
+    time: "05:30"
+  groups:
+    github-actions:
+      patterns: ["*"]
+  labels:
+    - CI/CD
+    - skip_changelog
+
+# Python dependencies in pyproject.toml.  The version ranges are only
+# widened when a new release falls outside them.  All updates are
+# collected in one PR per week.
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: weekly
+    day: monday
+    time: "05:30"
+  versioning-strategy: increase-if-necessary
+  ignore:
+    # pytest 9.2 breaks `--dist=loadgroup` in pytest-xdist 3.8.0, so the
+    # tests sharing the Fuseki/GraphDB test services run concurrently and
+    # fail.  Remove when pytest-xdist supports pytest 9.2.
+    - dependency-name: pytest
+      versions: [">=9.2"]
+  groups:
+    python-dependencies:
+      patterns: ["*"]
   labels:
     - CI/CD
     - skip_changelog

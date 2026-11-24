@@ -5,19 +5,15 @@ def test_collection():
     """Test if we can use a DLite collection as backend."""
     import pytest
 
-    dlite = pytest.importorskip("dlite")  # pylint: disable=unused-variable
+    dlite = pytest.importorskip("dlite")
     from tripper import DM, EMMO, MAP, XSD, Literal, Triplestore
     from tripper.utils import en
 
     ts = Triplestore(backend="collection")
     assert not list(ts.triples())
 
-    STRUCTURE = ts.bind(  # pylint: disable=invalid-name
-        "structure", "http://onto-ns.com/meta/0.1/Structure#"
-    )
-    CIF = ts.bind(  # pylint: disable=invalid-name
-        "cif", "http://emmo.info/0.1/cif-ontology#"
-    )
+    STRUCTURE = ts.bind("structure", "http://onto-ns.com/meta/0.1/Structure#")
+    CIF = ts.bind("cif", "http://emmo.info/0.1/cif-ontology#")
     triples = [
         (STRUCTURE.name, DM.hasLabel, en("Strontium titanate")),
         (STRUCTURE.masses, DM.hasUnit, Literal("u", datatype=XSD.string)),

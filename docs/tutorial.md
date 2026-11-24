@@ -335,6 +335,7 @@ A namespace object for this data model can be created with
 
 ```python
 from tripper import Namespace
+
 DM = Namespace("http://onto-ns.com/meta/ex/0.1/MyDataModel#")
 ```
 
@@ -350,6 +351,7 @@ Here we repeat the above with DLite:
 
 ```python
 import dlite
+
 mymodel = dlite.get_instance("http://onto-ns.com/meta/ex/0.1/MyDataModel")
 ts.map(mymodel.velocity, ONTO.Velocity)
 ```
@@ -362,7 +364,8 @@ For example, to semantically document the general function `mean()` applied to t
 ```python
 def mean(x, y):
     """Returns the mean value of `x` and `y`."""
-    return (x + y)/2
+    return (x + y) / 2
+
 
 ts.add_function(
     mean,

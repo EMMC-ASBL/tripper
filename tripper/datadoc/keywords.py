@@ -1,19 +1,17 @@
 """Parse keywords definition and generate context."""
 
-# pylint: disable=too-many-branches,redefined-builtin,too-many-lines
-# pylint: disable=logging-not-lazy,logging-fstring-interpolation
-
 import json
 import logging
 import os
 import warnings
+from collections.abc import Sequence
 from copy import deepcopy
 from importlib import import_module
 from io import IOBase
 
 # from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
 
 import yaml
 from rdflib.util import SUFFIX_FORMAT_MAP as RDFLIB_SUFFIX_FORMAT_MAP
@@ -47,7 +45,8 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import IO, Any, Iterable, List, Optional, Set, Tuple, Union
+    from collections.abc import Iterable
+    from typing import IO, Optional, Union
 
     from tripper.datadoc.context import ContextType
 
@@ -107,7 +106,6 @@ def get_keywords(
     Returns:
         Keywords instance.
     """
-    # pylint: disable=import-outside-toplevel
     from tripper.datadoc.context import get_context
 
     def from_context():
@@ -193,8 +191,6 @@ def load_datadoc_schema(ts: "Triplestore") -> None:
 class Keywords:
     """A class representing all keywords within a theme."""
 
-    # pylint: disable=too-many-public-methods
-
     rootdir = Path(__file__).absolute().parent.parent.parent.resolve()
 
     def __init__(
@@ -229,7 +225,7 @@ class Keywords:
         self.keywords = AttrDict()
 
         # Themes and files that has been parsed
-        self.parsed: "set" = set()
+        self.parsed: set = set()
 
         # Used for parsing dicts. Maps any of the elements in the
         # value to the key (with highest precedence first).
@@ -387,7 +383,6 @@ class Keywords:
                         name = kw.name if hasattr(kw, "name") else kw
                         fmt = Path(name).suffix
                     fmt = fmt.lstrip(".").lower()
-                    # pylint:disable=consider-using-get
                     if fmt in RDFLIB_SUFFIX_FORMAT_MAP:
                         fmt = RDFLIB_SUFFIX_FORMAT_MAP[fmt]
 
@@ -546,8 +541,6 @@ class Keywords:
                   - "raise": Raise an RedefineError (default).
 
         """
-        # pylint: disable=too-many-nested-blocks,too-many-statements
-        # pylint: disable=too-many-locals
         self.add(d.get("basedOn"))
 
         required_resource_keys = {"iri"}
@@ -648,7 +641,6 @@ class Keywords:
             resval.setdefault("keywords", AttrDict())
 
             for keyword, value in defs.get("keywords", AttrDict()).items():
-
                 # If a value only contain an IRI, replace it with a more
                 # elaborate definition (if it exists)
                 if len(value) == 1:
@@ -662,7 +654,7 @@ class Keywords:
 
                 # If strict, check that all keys are known
                 if strict:
-                    for k in value.keys():
+                    for k in value:
                         if k not in valid_keywords:
                             raise InvalidKeywordError(
                                 f"keyword '{keyword}' has invalid key: {k}"
@@ -790,16 +782,16 @@ class Keywords:
         recursive_update(data, {}, cls=dict)
         data["resources"] = resources
 
-        with open(yamlfile, "wt", encoding="utf-8") as f:
+        with open(yamlfile, "w", encoding="utf-8") as f:
             yaml.safe_dump(data, f, sort_keys=False)
 
     def load_table(
         self,
         filename: "FileLoc",
-        format: "Optional[str]" = None,  # pylint: disable=unused-argument
+        format: "Optional[str]" = None,
         prefixes: "Optional[dict]" = None,
         theme: "Optional[str]" = None,
-        basedOn: "Optional[Union[str, List[str]]]" = None,
+        basedOn: "Optional[Union[str, list[str]]]" = None,
         **kwargs,
     ) -> None:
         """Load keywords from a csv file.
@@ -812,7 +804,6 @@ class Keywords:
             basedOn: Theme(s) that the table is based on.
             kwargs: Keyword arguments passed on to TableDoc.parse_csv().
         """
-        # pylint: disable=import-outside-toplevel
         from tripper.datadoc.tabledoc import TableDoc
 
         td = TableDoc.parse_csv(
@@ -824,13 +815,12 @@ class Keywords:
     def save_table(
         self,
         filename: "FileLoc",
-        format: "Optional[str]" = None,  # pylint: disable=unused-argument
+        format: "Optional[str]" = None,
         names: "Optional[Sequence]" = None,
         strip: bool = True,
         keymode: str = "name",
         **kwargs,
     ) -> None:
-        # pylint: disable=line-too-long
         """Load keywords from a csv file.
 
         Arguments:
@@ -848,7 +838,6 @@ class Keywords:
         References:
         [write_csv()]: https://emmc-asbl.github.io/tripper/latest/api_reference/datadoc/tabledoc/#tripper.datadoc.tabledoc.TableDoc.write_csv
         """
-        # pylint: disable=import-outside-toplevel
         from tripper.datadoc.tabledoc import TableDoc
 
         dicts = self.asdicts(names, keymode=keymode)
@@ -857,7 +846,7 @@ class Keywords:
 
     def keywordnames(self) -> "list":
         """Return a list with all keyword names defined in this instance."""
-        return [k for k in self.keywords.keys() if ":" not in k]
+        return [k for k in self.keywords if ":" not in k]
 
     def classnames(self) -> "list":
         """Return a list with all class names defined in this instance."""
@@ -867,7 +856,7 @@ class Keywords:
         self,
         names: "Optional[Sequence]" = None,
         keymode: str = "prefixed",
-    ) -> "List[dict]":
+    ) -> "list[dict]":
         """Return the content of this Keywords object as a list of JSON-LD
         dicts.
 
@@ -941,7 +930,7 @@ class Keywords:
 
         if classes:
             classmaps = {}
-            for k, v in self.data.resources.items():
+            for k in self.data.resources:
                 classmaps[k] = k
                 classmaps[self.expanded(k)] = k
                 classmaps[self.prefixed(k)] = k
@@ -964,7 +953,7 @@ class Keywords:
         dicts: "Sequence[dict]",
         prefixes: "Optional[dict]" = None,
         theme: "Optional[str]" = None,
-        basedOn: "Optional[Union[str, List[str]]]" = None,
+        basedOn: "Optional[Union[str, list[str]]]" = None,
         strict: bool = False,
         redefine: str = "raise",
     ) -> None:
@@ -999,12 +988,11 @@ class Keywords:
         dicts: "Sequence[dict]",
         prefixes: "Optional[dict]" = None,
         theme: "Optional[str]" = None,
-        basedOn: "Optional[Union[str, List[str]]]" = None,
+        basedOn: "Optional[Union[str, list[str]]]" = None,
     ) -> dict:
         """Help method for `fromdicts()` that returns a dict with
         keyword definitions following the format of the YAML file.
         """
-        # pylint: disable=too-many-locals,too-many-statements
 
         def to_prefixed(x, prefixes, strict=True):
             """Help function that converts an IRI or list of IRIs to
@@ -1124,11 +1112,15 @@ class Keywords:
                     else:
                         r = self.data.resources[domainname].copy()
                     resources[domainname] = r
-                    for l in [label] if isinstance(label, str) else set(label):
-                        r.keywords[l] = d
+                    for lbl in (
+                        [label] if isinstance(label, str) else set(label)
+                    ):
+                        r.keywords[lbl] = d
                 else:
-                    for l in [label] if isinstance(label, str) else set(label):
-                        resources[domainname].keywords[l] = d
+                    for lbl in (
+                        [label] if isinstance(label, str) else set(label)
+                    ):
+                        resources[domainname].keywords[lbl] = d
             if "range" in value:
                 _types = asseq(d.get("type", OWL.AnnotationProperty))
                 types = [expand_iri(t, p) for t in _types]
@@ -1155,7 +1147,7 @@ class Keywords:
         ts: "Triplestore",
         include_classes: bool = False,
         return_existing: bool = False,
-    ) -> "Union[list, Tuple[list, list]]":
+    ) -> "Union[list, tuple[list, list]]":
         """List keywords not defined in triplestore `ts`.
 
         Arguments:
@@ -1169,7 +1161,7 @@ class Keywords:
             List with the names of keywords in this instance that are
             not defined in triplestore `ts`.
         """
-        expanded = {k for k in self.keywords.keys() if "://" in k}
+        expanded = {k for k in self.keywords if "://" in k}
         if include_classes:
             expanded.update(self.expanded(c) for c in self.classnames())
 
@@ -1178,7 +1170,7 @@ class Keywords:
 
         query = f"""
         SELECT ?s WHERE {{
-          VALUES ?s {{ { ' '.join(f'<{iri}>' for iri in expanded) } }}
+          VALUES ?s {{ {" ".join(f"<{iri}>" for iri in expanded)} }}
           ?s a ?o
         }}
         """
@@ -1199,8 +1191,6 @@ class Keywords:
 
         If `iris` is not given, all OWL properties in `ts` will be loaded.
         """
-        # pylint: disable=import-outside-toplevel,too-many-nested-blocks
-        # pylint: disable=too-many-locals
         from tripper.datadoc.context import Context
         from tripper.datadoc.dataset import acquire
 
@@ -1251,7 +1241,6 @@ class Keywords:
 
     def save_rdf(self, ts: "Triplestore") -> dict:
         """Save to triplestore."""
-        # pylint: disable=import-outside-toplevel,cyclic-import
         from tripper.datadoc.dataset import store
 
         for prefix, ns in self.get_prefixes().items():
@@ -1276,8 +1265,8 @@ class Keywords:
 
         Arguments:
             ts: Triplestore to load keywords from.
-            iris: IRIs to load. The default is to load IRIs corresponding to all
-                properties an classes.
+            iris: IRIs to load. The default is to load IRIs corresponding
+                to all properties an classes.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
             redefine: Determine how to handle redefinition of existing
@@ -1336,9 +1325,7 @@ class Keywords:
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""
         d = self.keywords[keyword]
-        if "datatype" in d or d.range == "rdfs:Literal":
-            return False
-        return True
+        return not ("datatype" in d or d.range == "rdfs:Literal")
 
     def expanded(self, keyword: str, strict: bool = True) -> str:
         """Return the keyword expanded to its full IRI."""
@@ -1421,7 +1408,7 @@ class Keywords:
         """
         if iri in self.keywords:
             return self.keywords[iri].name
-        if iri in self.data.resources.keys():
+        if iri in self.data.resources:
             return iri
         expanded = self.expanded(iri)
         for k, v in self.data.resources.items():
@@ -1559,7 +1546,7 @@ class Keywords:
             indent: Indentation level. Defaults to two.
         """
         context = {"@context": self.get_context()}
-        with open(outfile, "wt", encoding="utf-8") as f:
+        with open(outfile, "w", encoding="utf-8") as f:
             json.dump(context, f, indent=indent)
             f.write(os.linesep)
 
@@ -1569,7 +1556,7 @@ class Keywords:
         classes: "Optional[Union[str, Sequence[str]]]" = None,
         themes: "Optional[Union[str, Sequence[str]]]" = None,
         namespace_filter: "Optional[Union[str, Sequence[str]]]" = None,
-    ) -> "Tuple[Set[str], Set[str], Set[str]]":
+    ) -> "tuple[set[str], set[str], set[str]]":
         """Help function returning a list of keywords corresponding to
         arguments `keywords`, `classes` and `themes`.
 
@@ -1657,13 +1644,12 @@ class Keywords:
     def _keywords_table(
         self,
         keywords: "Sequence[str]",
-    ) -> "List[str]":
+    ) -> "list[str]":
         """Help function for save_markdown_table().
 
         Returns a list with Markdown table documenting the provided
         sequence of keywords.
         """
-        # pylint: disable=too-many-locals,too-many-branches
         header = [
             "Keyword",
             "Range",
@@ -1709,7 +1695,7 @@ class Keywords:
     ) -> None:
         """Save markdown file with documentation of the keywords."""
         table = self._keywords_table(keywords)
-        with open(outfile, "wt", encoding="utf-8") as f:
+        with open(outfile, "w", encoding="utf-8") as f:
             f.write(os.linesep.join(table) + os.linesep)
 
     def save_markdown(
@@ -1738,7 +1724,6 @@ class Keywords:
                 JSON-LD keywords.
 
         """
-        # pylint: disable=too-many-locals,too-many-branches
         keywords, classes, themes = self._keywords_list(
             keywords, classes, themes, namespace_filter=namespace_filter
         )
@@ -1774,15 +1759,14 @@ class Keywords:
             "## Special keywords (from JSON-LD)",
             "See the [JSON-LD specification] for more details.",
             "",
-            # pylint: disable=line-too-long
-            "| Keyword    | Range         | Conformance | Definition                                                              | Usage note |",
-            "|------------|---------------|-------------|-------------------------------------------------------------------------|------------|",
-            "| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |",
-            "| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |",
-            "| [@context] | dict&#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |",
-            "| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |",
-            "| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |",
-            "| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |",
+            "| Keyword    | Range         | Conformance | Definition                                                              | Usage note |",  # noqa: E501
+            "|------------|---------------|-------------|-------------------------------------------------------------------------|------------|",  # noqa: E501
+            "| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |",  # noqa: E501
+            "| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |",  # noqa: E501
+            "| [@context] | dict&#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |",  # noqa: E501
+            "| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |",  # noqa: E501
+            "| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |",  # noqa: E501
+            "| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |",  # noqa: E501
             "",
         ]
         if explanation:
@@ -1834,7 +1818,6 @@ class Keywords:
 
         # References
         extra_refs = [
-            # pylint: disable=line-too-long
             "[@id]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords",
             "[@type]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords",
             "[@context]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords",
@@ -1847,7 +1830,7 @@ class Keywords:
         out.append("")
         out.append("")
         out.extend(refs)
-        with open(outfile, "wt", encoding="utf-8") as f:
+        with open(outfile, "w", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
 
     def save_markdown_prefixes(self, outfile: "FileLoc") -> None:
@@ -1872,12 +1855,11 @@ class Keywords:
         out.append("")
         out.extend(
             [
-                # pylint: disable=line-too-long
                 "[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json",
-                "[User-defined prefixes]: customisation.md/#user-defined-prefixes",
+                "[User-defined prefixes]: customisation.md/#user-defined-prefixes",  # noqa: E501
             ]
         )
-        with open(outfile, "wt", encoding="utf-8") as f:
+        with open(outfile, "w", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
 
     def _to_table(self, header: "Sequence", rows: "Iterable") -> list:
@@ -1920,9 +1902,9 @@ class Keywords:
         return lines
 
 
-def main(argv=None):  # pylint: disable=too-many-statements
+def main(argv=None):
     """Main function providing CLI access to keywords."""
-    import argparse  # pylint: disable=import-outside-toplevel
+    import argparse
 
     parser = argparse.ArgumentParser(
         description=(
@@ -1964,7 +1946,7 @@ def main(argv=None):  # pylint: disable=too-many-statements
         action="store_true",
         help="Whether to raise an exception of input contains an unknown key.",
     )
-    parser.add_argument(  # pylint: disable=duplicate-code
+    parser.add_argument(
         "--redefine",
         default="raise",
         choices=["raise", "allow", "skip"],

@@ -1,3 +1,6 @@
+# FIXME - remove this when we officially have switched to uv
+uv.lock
+
 # Python
 *.egg-info
 __pycache__

@@ -1,7 +1,5 @@
 """Test Triplestore.eval_function()"""
 
-# pylint: disable=import-outside-toplevel
-
 import pytest
 
 
@@ -14,7 +12,6 @@ def eval_function():
 
     def func(a, b):
         """Returns the sum of `a` and `b`."""
-        # pylint: disable=invalid-name
         return a + b
 
     ts = Triplestore(backend="rdflib")
