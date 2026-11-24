@@ -81,7 +81,7 @@ docs = [  # documentation requires Python 3.11
 ]
 pre-commit = [
     "pre-commit==4.6.2",
-    "ruff==0.17.5",
+    "ruff==0.17.6",
 ]
 dev = [
     "tripper[pre-commit,docs]",
