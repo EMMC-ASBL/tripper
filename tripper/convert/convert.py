@@ -71,6 +71,14 @@ BASIC_RECOGNISED_KEYS = {
     # "configuration": OTEIO.Configuration,
 }
 
+# EMMO 1.0.4 renamed hasStringValue to stringValue and hasDataValue to
+# dataValue, while keeping their IRIs.  Refer to them by IRI, such that
+# this module works with all versions of EMMO.
+STRING_VALUE = (
+    "https://w3id.org/emmo#EMMO_02face50_43a1_40ce_a909_dfe54d5e186b"
+)
+DATA_VALUE = "https://w3id.org/emmo#EMMO_b6292331_94af_4f00_976b_ea55960c2f1c"
+
 
 def from_container(
     container: "Union[Mapping[str, Any], Sequence[Any]]",
@@ -170,11 +178,11 @@ def from_container(
                         (key_indv, RDF.type, OTEIO.DictionaryKey),
                         (
                             key_indv,
-                            EMMO.hasStringValue,
+                            STRING_VALUE,
                             Literal(key, lang=lang),
                         ),
                         (value_indv, RDF.type, OTEIO.DictionaryValue),
-                        (value_indv, EMMO.hasDataValue, value_iri),
+                        (value_indv, DATA_VALUE, value_iri),
                         (pair, RDF.type, OTEIO.KeyValuePair),
                         (pair, OTEIO.hasDictionaryKey, key_indv),
                         (pair, OTEIO.hasDictionaryValue, value_indv),
@@ -281,9 +289,9 @@ def load_container(
         for pred, obj in ts.predicate_objects(iri):
             if pred == OTEIO.hasKeyValuePair:
                 key_iri = ts.value(obj, OTEIO.hasDictionaryKey)
-                key = ts.value(key_iri, EMMO.hasStringValue)
+                key = ts.value(key_iri, STRING_VALUE)
                 value_iri = ts.value(obj, OTEIO.hasDictionaryValue)
-                value = ts.value(value_iri, EMMO.hasDataValue)
+                value = ts.value(value_iri, DATA_VALUE)
                 container[str(key)] = get_obj(value)
             elif pred in recognised_iris:
                 container[recognised_iris[pred]] = get_obj(obj)

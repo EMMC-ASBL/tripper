@@ -45,6 +45,11 @@ class Namespace:
             Can be either a Triplestore object or an URL to load from.
             Defaults to `iri`.
         format: Format to use when loading from a triplestore.
+        cachename: Name of the cache file (without extension) for the
+            label lookup.  Defaults to a name derived from `iri`.  Give
+            different names to namespaces with the same IRI, but with
+            labels looked up in different triplestores, e.g. different
+            versions of an ontology.
         cachemode: Deprecated. Use `reload` instead (with `cachemode=NO_CACHE`
             corresponding to `reload=True`).
         triplestore_url: Deprecated. Use the `triplestore` argument instead.
@@ -59,6 +64,7 @@ class Namespace:
         "_reload",  # Whether to reload
         "_triplestore",  # Triplestore for label lookup and checking
         "_format",  # Format to use when loading from a triplestore
+        "_cachename",  # Name of cache file
     )
 
     def __init__(
@@ -71,6 +77,7 @@ class Namespace:
         format: "Optional[str]" = None,
         cachemode: int = -1,
         triplestore_url: "Optional[str]" = None,
+        cachename: "Optional[str]" = None,
     ):
         if cachemode != -1:
             warnings.warn(
@@ -111,6 +118,7 @@ class Namespace:
         self._reload = reload
         self._triplestore = triplestore
         self._format = format
+        self._cachename = cachename
 
     def _update_iris(self, triplestore=None, reload=False, format=None):
         """Update the internal cache from `triplestore`.
@@ -180,6 +188,8 @@ class Namespace:
 
     def _get_cachefile(self) -> Path:
         """Return path to cache file for this namespace."""
+        if self._cachename:
+            return get_cachedir() / f"{self._cachename}.cache"
         name = self._iri.rstrip("#/").rsplit("/", 1)[-1]
         hashno = hashlib.shake_128(self._iri.encode()).hexdigest(5)
         return get_cachedir() / f"{name}-{hashno}.cache"
