@@ -323,8 +323,9 @@ def infer_iri(obj):
         iri = str(obj.uuid)
     elif hasattr(obj, "schema") and callable(obj.schema):
         # pydantic.BaseModel
-        if hasattr(obj, "identity") and isinstance(obj.identity, str):
-            # soft7 pydantic model
+        if getattr(obj, "identity", None):
+            # Pydantic model.  In Pydantic v2, `identity` is an
+            # AnyUrl object, which is converted to a string below.
             iri = obj.identity
         else:
             # pydantic instance
@@ -541,8 +542,12 @@ def parse_literal(literal: "Any") -> "Any":
             for pytype, datatypes in Literal.datatypes.items():
                 types.update({t: pytype for t in datatypes})
             type_ = types.get(datatype, str)
-            if type_ is bool and value in ("False", "false", "0", 0, False):
-                return Literal(False)
+            if type_ is bool:
+                # Do not call bool() on strings, since any non-empty
+                # string is True.  Literal checks the text.
+                if not isinstance(value, bool):
+                    value = str(value)
+                return Literal(value, datatype=datatype)
             with suppress(TypeError):
                 value = type_(value)
         return Literal(value, lang=lang, datatype=datatype)
