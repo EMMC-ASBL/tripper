@@ -4567,35 +4567,52 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
         <span class="n">unknown_key</span><span class="o">=</span><span class="n">unknown_key</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">doc</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"@graph"</span><span class="p">,</span> <span class="p">[</span><span class="n">doc</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-        <span class="n">iri</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"overwrite"</span><span class="p">:</span>
-                <span class="n">delete_iri</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"raise"</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">IRIExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot overwrite existing IRI: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"merge"</span><span class="p">:</span>
-                <span class="k">pass</span>
-            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"ignore"</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">IRIExistsWarning</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">doc</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Invalid storage method: '</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">'. "</span>
-                    <span class="s2">"Should be one of: 'overwrite', 'raise', 'ignore' or "</span>
-                    <span class="s2">"'merge'"</span>
-                <span class="p">)</span>
-
     <span class="n">update_restrictions</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="n">restrictions</span><span class="p">)</span>
 
-    <span class="c1"># Validate the final JSON-LD before writing it to the triplestore.</span>
-    <span class="n">validate</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+    <span class="c1"># Validate each resource before changing anything in the triplestore</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">doc</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"@graph"</span><span class="p">,</span> <span class="p">[</span><span class="n">doc</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">validate</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ValidateError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidateError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"invalid resource '</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'@id'</span><span class="p">)</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
-    <span class="n">context</span><span class="o">.</span><span class="n">to_triplestore</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="n">baseiri</span><span class="p">)</span>
+    <span class="c1"># Handle resources that already exist in the triplestore</span>
+    <span class="n">existing</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span> <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">])]</span>
+    <span class="n">tostore</span> <span class="o">=</span> <span class="n">doc</span>
+    <span class="k">if</span> <span class="n">existing</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"overwrite"</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">existing</span><span class="p">:</span>
+                <span class="n">delete_iri</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"raise"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">IRIExistsError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Cannot overwrite existing IRI: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">existing</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"merge"</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"ignore"</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">existing</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">IRIExistsWarning</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"@graph"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">doc</span>  <span class="c1"># single resource that already exists</span>
+            <span class="c1"># Only store the resources that don't exist</span>
+            <span class="n">tostore</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="o">**</span><span class="n">doc</span><span class="p">,</span>
+                <span class="s2">"@graph"</span><span class="p">:</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existing</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Invalid storage method: '</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">'. "</span>
+                <span class="s2">"Should be one of: 'overwrite', 'raise', 'ignore' or "</span>
+                <span class="s2">"'merge'"</span>
+            <span class="p">)</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">to_triplestore</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">tostore</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="n">baseiri</span><span class="p">)</span>
 
     <span class="c1"># Add statements and data models to triplestore</span>
-    <span class="n">save_extra_content</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>  <span class="c1"># FIXME: SLOW!!</span>
+    <span class="n">save_extra_content</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">tostore</span><span class="p">)</span>  <span class="c1"># FIXME: SLOW!!</span>
 
     <span class="k">return</span> <span class="n">doc</span>
 </code></pre></div>
