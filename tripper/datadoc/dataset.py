@@ -32,6 +32,7 @@ Functions for working with the dict-representation:
 from __future__ import annotations
 
 import contextlib
+import datetime
 import json
 import logging
 import re
@@ -59,6 +60,7 @@ from tripper.datadoc.errors import (
 from tripper.datadoc.keywords import Keywords, get_keywords
 from tripper.datadoc.utils import add, asseq, get, getlabel, iriname
 from tripper.errors import NamespaceError
+from tripper.literal import Quantity
 from tripper.utils import (
     AttrDict,
     as_python,
@@ -84,10 +86,24 @@ CONTEXT_URL = (
     "master/tripper/context/0.3/context.json"
 )
 
-MATCH_IRI = re.compile(
-    r"^(([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?))|"
-    r"([a-zA-Z0-9]*://[a-zA-Z_]([a-zA-Z0-9_/.?#=+-]*))$"
+# Matches a full IRI (e.g. "https://example.com/a?b=c&d=e") or a prefixed
+# IRI (e.g. "ex:a").  After the colon, any character is allowed except
+# whitespace and the characters that are not allowed in IRIs (RFC 3987).
+MATCH_IRI = re.compile(r'^([a-zA-Z_][a-zA-Z0-9_.+-]*)?:[^\s<>"{}|\\^`]+$')
+
+# Python types (other than str, int, float and bool) that are converted
+# to literals by told().  They are stored as the text that represents
+# them in RDF, e.g. "2025-08-18T00:00:00" for a datetime.
+LITERAL_TYPES: tuple = (
+    datetime.datetime,
+    datetime.date,
+    datetime.time,
+    datetime.timedelta,
+    bytes,
+    bytearray,
 )
+if Quantity:
+    LITERAL_TYPES += (Quantity,)
 
 logger = logging.getLogger(__name__)
 
@@ -291,6 +307,9 @@ def _told(
     if isinstance(descr, (str, int, float, bool)):
         return descr
 
+    if isinstance(descr, LITERAL_TYPES):
+        return str(Literal(descr))
+
     if isinstance(descr, list):
         lst = [_told(token, type, keywords, context) for token in descr]
         return {"@graph": lst} if root else lst
@@ -364,6 +383,8 @@ def _told(
         #
         elif isinstance(v, (str, int, float, bool, None.__class__)):
             d[k] = v
+        elif isinstance(v, LITERAL_TYPES):
+            d[k] = str(Literal(v))
         elif isinstance(v, list):
             d[k] = _told(v, torange(k), keywords, context)
         elif isinstance(v, dict):
@@ -1310,12 +1331,14 @@ def validate(
     effective_type: str | Sequence[str] | None = type
 
     if effective_type is None and "@type" in dct:
-        detected_type = dct["@type"]
-        if isinstance(detected_type, list):
-            effective_type = detected_type
-        else:
+        # Skip restrictions (dicts) when finding the type.  Restrictions
+        # are not validated, since keys starting with "@" are not checked.
+        detected_types = [t for t in get(dct, "@type") if isinstance(t, str)]
+        if len(detected_types) > 1:
+            effective_type = detected_types
+        elif detected_types:
             with contextlib.suppress(NoSuchTypeError):
-                effective_type = keywords.typename(detected_type)
+                effective_type = keywords.typename(detected_types[0])
 
     # Resolve datatypes using prefixes from the active context only.
     prefixes = {k: str(v) for k, v in context.get_prefixes().items()}
@@ -1326,6 +1349,8 @@ def validate(
         """Check that the resource type `type` has keyword `keyword`."""
         if isinstance(type, list):
             return any(check_keyword(keyword, item) for item in type)
+        if keyword not in keywords:  # e.g. keywords only in the context
+            return False
         try:
             typename = keywords.typename(type)
         except NoSuchTypeError:
@@ -1341,32 +1366,74 @@ def validate(
             return check_keyword(name, subclass)
         return False
 
+    # Map datatype IRIs to Python types.  Used to compare datatypes.
+    pytypes = {dt: t for t, seq in Literal.datatypes.items() for dt in seq}
+
     def _check_keywords(k, v):
+        """Check value `v` of keyword `k`.
+
+        What is checked is taken from the keyword definition, or from the
+        context if `k` is only defined in the context.
+        """
         if k in keywords:
             r = keywords[k]
-            if "datatype" in r:
-                datatype = expand_iri(r.datatype, prefixes)
+            datatype = (
+                expand_iri(r.datatype, prefixes) if "datatype" in r else None
+            )
+            isref = r.range != "rdfs:Literal"  # value should be an IRI
+            rtype = r.get("range")
+        elif re.match(MATCH_IRI, k):
+            return
+        elif k in context:
+            # Keyword only defined in the context.  The "@type" of the
+            # context definition tells whether the value is an IRI ("@id"),
+            # JSON ("@json") or a literal of a given datatype.  No "@type"
+            # means a plain or language-tagged string.
+            t = context.getdef(k, strict=False).get("@type")
+            isref = t in ("@id", "@vocab")
+            if t == "@json":
+                datatype = RDF.JSON
+            elif t and not isref and t not in (OWL.Class, RDFS.Class):
+                datatype = expand_iri(t, prefixes)
+            else:
+                datatype = None
+            rtype = None
+        else:
+            raise ValidateError(f"unknown keyword: '{k}'")
+
+        if isinstance(v, list) and datatype != RDF.JSON:
+            # Multi-valued keyword. Check each value.
+            for it in v:
+                _check_keywords(k, it)
+        elif isinstance(v, dict) and "@value" in v:
+            # Value object. Language-tagged values and values with an
+            # explicit datatype are accepted as they are.
+            if "@language" not in v and "@type" not in v:
+                _check_keywords(k, v["@value"])
+        elif datatype:
+            # A non-string value (e.g. an int) must have a Python type
+            # matching `datatype`
+            if not isinstance(v, str) or datatype == RDF.JSON:
                 literal = parse_literal(v)
-                tr = {}
-                for t, seq in Literal.datatypes.items():
-                    for dt in seq:
-                        tr[dt] = t
-                if tr.get(literal.datatype) != tr.get(datatype):
+                if pytypes.get(literal.datatype) != pytypes.get(datatype):
                     raise ValidateError(
                         f"invalid datatype for '{v}'. "
                         f"Got '{literal.datatype}', expected '{datatype}'"
                     )
-            elif isinstance(v, dict):
-                validate(v, type=r.get("range"), keywords=keywords)
-            elif isinstance(v, list):
-                for it in v:
-                    _check_keywords(k, it)
-            elif r.range != "rdfs:Literal" and not re.match(MATCH_IRI, v):
-                raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
-        elif re.match(MATCH_IRI, k):
-            pass
-        elif k not in context:
-            raise ValidateError(f"unknown keyword: '{k}'")
+            # The value must be a valid value of `datatype`
+            if datatype != RDF.JSON:
+                try:
+                    Literal(v, datatype=datatype).value  # noqa: B018
+                except (ValueError, TypeError) as exc:
+                    raise ValidateError(
+                        f"invalid value for '{k}': '{v}' is not a valid "
+                        f"'{datatype}'"
+                    ) from exc
+        elif isinstance(v, dict):
+            # Nested resource
+            validate(v, type=rtype, keywords=keywords, context=context)
+        elif isref and not (isinstance(v, str) and re.match(MATCH_IRI, v)):
+            raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
 
     # Check the keyword-value pairs in `dct`
     for k, v in dct.items():
