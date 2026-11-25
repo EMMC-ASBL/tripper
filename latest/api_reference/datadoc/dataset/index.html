@@ -2528,6 +2528,7 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
 
 
 
+
   <div class="doc doc-object doc-function">
 
 
@@ -5172,12 +5173,14 @@ to call <code>infer_restriction_types()</code>.</p></td>
     <span class="n">effective_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="nb">type</span>
 
     <span class="k">if</span> <span class="n">effective_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">"@type"</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
-        <span class="n">detected_type</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">detected_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="n">effective_type</span> <span class="o">=</span> <span class="n">detected_type</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Skip restrictions (dicts) when finding the type.  Restrictions</span>
+        <span class="c1"># are not validated, since keys starting with "@" are not checked.</span>
+        <span class="n">detected_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">"@type"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">detected_types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">effective_type</span> <span class="o">=</span> <span class="n">detected_types</span>
+        <span class="k">elif</span> <span class="n">detected_types</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">NoSuchTypeError</span><span class="p">):</span>
-                <span class="n">effective_type</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">typename</span><span class="p">(</span><span class="n">detected_type</span><span class="p">)</span>
+                <span class="n">effective_type</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">typename</span><span class="p">(</span><span class="n">detected_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># Resolve datatypes using prefixes from the active context only.</span>
     <span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -5188,6 +5191,8 @@ to call <code>infer_restriction_types()</code>.</p></td>
 <span class="w">        </span><span class="sd">"""Check that the resource type `type` has keyword `keyword`."""</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">check_keyword</span><span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">keyword</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keywords</span><span class="p">:</span>  <span class="c1"># e.g. keywords only in the context</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">typename</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">typename</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">NoSuchTypeError</span><span class="p">:</span>
@@ -5203,32 +5208,74 @@ to call <code>infer_restriction_types()</code>.</p></td>
             <span class="k">return</span> <span class="n">check_keyword</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">subclass</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
+    <span class="c1"># Map datatype IRIs to Python types.  Used to compare datatypes.</span>
+    <span class="n">pytypes</span> <span class="o">=</span> <span class="p">{</span><span class="n">dt</span><span class="p">:</span> <span class="n">t</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">}</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_keywords</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Check value `v` of keyword `k`.</span>
+
+<span class="sd">        What is checked is taken from the keyword definition, or from the</span>
+<span class="sd">        context if `k` is only defined in the context.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keywords</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">keywords</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">"datatype"</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
-                <span class="n">datatype</span> <span class="o">=</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">expand_iri</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span> <span class="k">if</span> <span class="s2">"datatype"</span> <span class="ow">in</span> <span class="n">r</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="n">isref</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">range</span> <span class="o">!=</span> <span class="s2">"rdfs:Literal"</span>  <span class="c1"># value should be an IRI</span>
+            <span class="n">rtype</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"range"</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">MATCH_IRI</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+            <span class="c1"># Keyword only defined in the context.  The "@type" of the</span>
+            <span class="c1"># context definition tells whether the value is an IRI ("@id"),</span>
+            <span class="c1"># JSON ("@json") or a literal of a given datatype.  No "@type"</span>
+            <span class="c1"># means a plain or language-tagged string.</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"@type"</span><span class="p">)</span>
+            <span class="n">isref</span> <span class="o">=</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"@id"</span><span class="p">,</span> <span class="s2">"@vocab"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s2">"@json"</span><span class="p">:</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span>
+            <span class="k">elif</span> <span class="n">t</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isref</span> <span class="ow">and</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">Class</span><span class="p">):</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">rtype</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidateError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unknown keyword: '</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">datatype</span> <span class="o">!=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
+            <span class="c1"># Multi-valued keyword. Check each value.</span>
+            <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="n">_check_keywords</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"@value"</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+            <span class="c1"># Value object. Language-tagged values and values with an</span>
+            <span class="c1"># explicit datatype are accepted as they are.</span>
+            <span class="k">if</span> <span class="s2">"@language"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="s2">"@type"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="n">_check_keywords</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s2">"@value"</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">datatype</span><span class="p">:</span>
+            <span class="c1"># A non-string value (e.g. an int) must have a Python type</span>
+            <span class="c1"># matching `datatype`</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">datatype</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
                 <span class="n">literal</span> <span class="o">=</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-                <span class="n">tr</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
-                        <span class="n">tr</span><span class="p">[</span><span class="n">dt</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
-                <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span> <span class="o">!=</span> <span class="n">tr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">datatype</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">pytypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span> <span class="o">!=</span> <span class="n">pytypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">datatype</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="n">ValidateError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">"invalid datatype for '</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">'. "</span>
                         <span class="sa">f</span><span class="s2">"Got '</span><span class="si">{</span><span class="n">literal</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2">', expected '</span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">'"</span>
                     <span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">validate</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"range"</span><span class="p">),</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
-                    <span class="n">_check_keywords</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">range</span> <span class="o">!=</span> <span class="s2">"rdfs:Literal"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">MATCH_IRI</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">ValidateError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"value of '</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">' is an invalid IRI: '</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">MATCH_IRI</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ValidateError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unknown keyword: '</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
+            <span class="c1"># The value must be a valid value of `datatype`</span>
+            <span class="k">if</span> <span class="n">datatype</span> <span class="o">!=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># noqa: B018</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ValidateError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"invalid value for '</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">': '</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">' is not a valid "</span>
+                        <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">'"</span>
+                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># Nested resource</span>
+            <span class="n">validate</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">rtype</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">isref</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">MATCH_IRI</span><span class="p">,</span> <span class="n">v</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">ValidateError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"value of '</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">' is an invalid IRI: '</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
     <span class="c1"># Check the keyword-value pairs in `dct`</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
